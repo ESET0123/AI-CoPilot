@@ -13,7 +13,7 @@ import {
 } from '@tabler/icons-react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout } from '../../features/auth/authSlice';
-import { resetChats } from '../../features/chat/chatSlice';
+// import { resetChats } from '../../features/chat/chatSlice';
 import { toggleTheme } from '../../features/theme/themeSlice';
 import { useNavigate } from 'react-router-dom';
 
@@ -84,7 +84,7 @@ export default function UserMenu({ collapsed = false }: Props) {
           leftSection={<IconLogout size={16} />}
           onClick={() => {
             dispatch(logout());
-            dispatch(resetChats());
+            // dispatch(resetChats());
             navigate('/', { replace: true });
           }}
         >

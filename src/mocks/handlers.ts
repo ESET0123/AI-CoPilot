@@ -2,8 +2,8 @@ import { http, HttpResponse } from 'msw';
 import { nanoid } from '@reduxjs/toolkit';
 
 import { users } from './data/users';
-import { chatStore } from './data/chatStore';
-import type { Message } from '../features/chat/types';
+// import { chatStore } from './data/chatStore';
+// import type { Message } from '../features/chat/types';
 
 /* ================================
    MSW HANDLERS
@@ -72,47 +72,30 @@ export const handlers = [
   }),
 
   /* ========= CHAT ========= */
-  http.post('/api/chat', async ({ request }) => {
-    const authHeader = request.headers.get('authorization');
-    const userId = authHeader?.replace('Bearer mock-token-', '');
+http.post('/api/chat', async ({ request }) => {
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader?.startsWith('Bearer mock-token-')) {
+    return HttpResponse.json(
+      { message: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+  const userId = authHeader.replace('Bearer mock-token-', '');
 
-    if (!userId) {
-      return HttpResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+  const userExists = users.some((u) => u.id === userId);
+  
+  if (!userExists) {
+    return HttpResponse.json(
+      { message: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
 
-    // Initialize per-user store
-    if (!chatStore[userId]) {
-      chatStore[userId] = {
-        conversations: [],
-        messages: [],
-      };
-    }
+  const { message } = (await request.json()) as { message: string };
 
-    const { message } = (await request.json()) as {
-      message: string;
-    };
+  return HttpResponse.json({
+    reply: `You typed: ${message}`,
+  });
+}),
 
-    const userMsg: Message = {
-      id: nanoid(),
-      role: 'user',
-      text: message,
-      createdAt: new Date().toISOString(),
-    };
-
-    const botMsg: Message = {
-      id: nanoid(),
-      role: 'assistant',
-      text: `You typed: ${message}`,
-      createdAt: new Date().toISOString(),
-    };
-
-    chatStore[userId].messages.push(userMsg, botMsg);
-
-    return HttpResponse.json({
-      reply: botMsg.text,
-    });
-  }),
 ];

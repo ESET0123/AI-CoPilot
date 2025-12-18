@@ -1,30 +1,29 @@
-import {
-  Textarea,
-  Group,
-  ActionIcon,
-  Paper,
-} from '@mantine/core';
+import { Textarea, Group, ActionIcon, Paper } from '@mantine/core';
 import { IconSend } from '@tabler/icons-react';
 import { useState } from 'react';
-import { useAppDispatch } from '../../app/hooks';
-import {
-  sendMessage,
-  addUserMessage,
-} from '../../features/chat/chatSlice';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { sendMessage, addUserMessage, } from '../../features/chat/chatSlice';
 
 export default function ChatInput() {
   const dispatch = useAppDispatch();
   const [value, setValue] = useState('');
 
+  const activeConversationId = useAppSelector(
+    (s) => s.chat.activeConversationId
+  );
+
   const handleSend = () => {
     const message = value.trim();
     if (!message) return;
-
-    // 🔴 ADD USER MESSAGE IMMEDIATELY
+    
     dispatch(addUserMessage(message));
 
-    // 🔵 THEN call API
-    dispatch(sendMessage(message));
+    dispatch(
+      sendMessage({
+        conversationId: activeConversationId,
+        message,
+      })
+    );
 
     setValue('');
   };

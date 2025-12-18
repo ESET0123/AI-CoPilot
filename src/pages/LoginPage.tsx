@@ -1,22 +1,13 @@
-import {
-  TextInput,
-  Button,
-  Stack,
-  Text,
-  Box,
-  Paper,
-  ActionIcon,
-  Divider,
-} from '@mantine/core';
+import {TextInput, Button, Stack, Text, Box, Paper, ActionIcon, Divider, } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { IconSun, IconMoon, IconLogin } from '@tabler/icons-react';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { login } from '../features/auth/authSlice';
-import { hydrateChats } from '../features/chat/chatSlice';
+// import { hydrateChats } from '../features/chat/chatSlice';
 import { toggleTheme } from '../features/theme/themeSlice';
-import { chatStorage } from '../services/chatStorage';
+// import { chatStorage } from '../services/chatStorage';
 import HeaderBar from '../components/layout/HeaderBar';
 
 export default function LoginPage() {
@@ -31,29 +22,35 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
 
   /* ================= Hydrate chats after login ================= */
-  useEffect(() => {
-    if (!auth.user) return;
+  // useEffect(() => {
+  //   if (!auth.user) return;
 
-    const userId = String(auth.user.id);
-    const storedChats = chatStorage.load(userId);
+  //   const userId = String(auth.user.id);
+  //   const storedChats = chatStorage.load(userId);
 
-    dispatch(
-      hydrateChats(
-        storedChats ?? {
-          conversations: [
-            {
-              id: crypto.randomUUID(),
-              title: 'New Chat',
-              messages: [],
-            },
-          ],
-          activeConversationId: '',
-        }
-      )
-    );
+  //   dispatch(
+  //     hydrateChats(
+  //       storedChats ?? {
+  //         conversations: [
+  //           {
+  //             id: crypto.randomUUID(),
+  //             title: 'New Chat',
+  //             messages: [],
+  //           },
+  //         ],
+  //         activeConversationId: '',
+  //       }
+  //     )
+  //   );
 
-    navigate('/dashboard', { replace: true });
-  }, [auth.user, dispatch, navigate]);
+  //   navigate('/dashboard', { replace: true });
+  // }, [auth.user, dispatch, navigate]);
+
+    useEffect(() => {
+      if (auth.user) {
+        navigate('/dashboard', { replace: true });
+      }
+    }, [auth.user, navigate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

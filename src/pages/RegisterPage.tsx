@@ -1,13 +1,4 @@
-import {
-  TextInput,
-  Button,
-  Stack,
-  Text,
-  Box,
-  Paper,
-  ActionIcon,
-  Divider,
-} from '@mantine/core';
+import {  TextInput, Button, Stack, Text, Box, Paper, ActionIcon, Divider, } from '@mantine/core';
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { IconSun, IconMoon, IconUserPlus } from '@tabler/icons-react';
