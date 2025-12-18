@@ -1,77 +1,59 @@
-################################
-# LOGS
-################################
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-################################
-# DEPENDENCIES
-################################
-node_modules/
-
-################################
-# BUILD OUTPUTS
-################################
-dist/
-dist-ssr/
-build/
-out/
-
-################################
-# ENV FILES (CRITICAL)
-################################
+# ======================
+# Environment variables
+# ======================
 .env
 .env.*
 !.env.example
 
-################################
-# VITE / CACHE
-################################
+# ======================
+# Node / Frontend
+# ======================
+node_modules/
+dist/
+dist-ssr/
 .vite/
-.cache/
+*.local
 
-################################
-# TYPESCRIPT
-################################
-*.tsbuildinfo
+# ======================
+# Python / Backend
+# ======================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+pip-wheel-metadata/
 
-################################
-# TEST / COVERAGE
-################################
-coverage/
-.nyc_output/
+# ======================
+# Database / Local data
+# ======================
+*.sqlite3
+*.db
 
-################################
-# EDITORS / IDEs
-################################
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-.idea/
+# ======================
+# Logs
+# ======================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
 
-################################
-# OS FILES
-################################
+# ======================
+# OS / Editor
+# ======================
 .DS_Store
 Thumbs.db
-*.tmp
-*.swp
-*.swo
-
-################################
-# WINDOWS / VISUAL STUDIO
-################################
+.vscode/
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 
-################################
-# LOCAL FILES
-################################
-*.local
+# ======================
+# Docker
+# ======================
+docker-compose.override.yml
