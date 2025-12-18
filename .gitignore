@@ -1,5 +1,7 @@
-# Logs
-logs
+################################
+# LOGS
+################################
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,18 +9,69 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+################################
+# DEPENDENCIES
+################################
+node_modules/
 
-# Editor directories and files
+################################
+# BUILD OUTPUTS
+################################
+dist/
+dist-ssr/
+build/
+out/
+
+################################
+# ENV FILES (CRITICAL)
+################################
+.env
+.env.*
+!.env.example
+
+################################
+# VITE / CACHE
+################################
+.vite/
+.cache/
+
+################################
+# TYPESCRIPT
+################################
+*.tsbuildinfo
+
+################################
+# TEST / COVERAGE
+################################
+coverage/
+.nyc_output/
+
+################################
+# EDITORS / IDEs
+################################
 .vscode/*
 !.vscode/extensions.json
-.idea
+!.vscode/settings.json
+.idea/
+
+################################
+# OS FILES
+################################
 .DS_Store
+Thumbs.db
+*.tmp
+*.swp
+*.swo
+
+################################
+# WINDOWS / VISUAL STUDIO
+################################
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+
+################################
+# LOCAL FILES
+################################
+*.local
