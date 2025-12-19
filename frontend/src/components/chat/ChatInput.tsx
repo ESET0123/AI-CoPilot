@@ -38,7 +38,6 @@ export default function ChatInput() {
 
       dispatch(addUserMessage(message));
 
-      // dispatch(addAssistantLoading({ conversationId: convo.id }));
       dispatch(addAssistantLoading());
 
       dispatch(

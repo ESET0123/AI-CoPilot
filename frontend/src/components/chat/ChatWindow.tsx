@@ -30,7 +30,7 @@ export default function ChatWindow() {
         <MessageBubble key={idx} {...msg} />
       ))}
 
-      {/* 👇 Scroll target */}
+      {/* Scroll target */}
       <div ref={bottomRef} />
     </Stack>
   );

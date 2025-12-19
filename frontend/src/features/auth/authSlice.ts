@@ -1,69 +1,117 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { loginApi } from './authService';
-import type { User } from './../chat/types';
+import { authApi } from '../../services/api';
+import type { User } from '../chat/types';
 
-const storedAuth = localStorage.getItem('auth');
+/* ================= STATE ================= */
+
+type AuthStep = 'email' | 'otp';
 
 type AuthState = {
   user: User | null;
   token: string | null;
+  step: AuthStep;
+  email: string | null;
   error: string | null;
 };
 
-const initialState: AuthState = storedAuth
-  ? JSON.parse(storedAuth)
-  : { user: null, token: null, error: null };
+const storedAuth = localStorage.getItem('auth');
 
-export const login = createAsyncThunk(
-  'auth/login',
-  async (
-    payload: { email: string; password: string },
-    { rejectWithValue }
-  ) => {
+const initialState: AuthState = storedAuth
+  ? {
+      ...JSON.parse(storedAuth),
+      step: 'email',
+      email: null,
+      error: null,
+    }
+  : {
+      user: null,
+      token: null,
+      step: 'email',
+      email: null,
+      error: null,
+    };
+
+/* ================= THUNKS ================= */
+
+export const sendOtp = createAsyncThunk(
+  'auth/sendOtp',
+  async (email: string, { rejectWithValue }) => {
     try {
-      const { data } = await loginApi(payload.email, payload.password);
-      return data as { user: User; token: string };
+      await authApi.sendOtp(email);
+      return email;
     } catch {
-      return rejectWithValue('Invalid credentials');
+      return rejectWithValue('Failed to send OTP');
     }
   }
 );
+
+export const verifyOtp = createAsyncThunk(
+  'auth/verifyOtp',
+  async (
+    payload: { email: string; otp: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const { data } = await authApi.verifyOtp(payload);
+      return data as { user: User; token: string };
+    } catch {
+      return rejectWithValue('Invalid or expired OTP');
+    }
+  }
+);
+
+
+/* ================= SLICE ================= */
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    logout(state) {
-      state.user = null;
-      state.token = null;
-      state.error = null;
+    logout() {
       localStorage.removeItem('auth');
+      return initialState;
+    },
+
+    resetAuthStep(state) {
+      state.step = 'email';
+      state.email = null;
+      state.error = null;
     },
   },
+
   extraReducers: (builder) => {
     builder
-      .addCase(login.fulfilled, (state, action) => {
+      /* ===== SEND OTP ===== */
+      .addCase(sendOtp.fulfilled, (state, action) => {
+        state.step = 'otp';
+        state.email = action.payload;
+        state.error = null;
+      })
+      .addCase(sendOtp.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+
+      /* ===== VERIFY OTP ===== */
+      .addCase(verifyOtp.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.error = null;
 
-        state.token = action.payload.token;
-
         localStorage.setItem(
-        'auth',
-        JSON.stringify({
-            user: action.payload.user,
-            token: action.payload.token,
-            error: null,
-        })
+          'auth',
+          JSON.stringify({
+            user: state.user,
+            token: state.token,
+          })
         );
-
       })
-      .addCase(login.rejected, (state) => {
-        state.error = 'Invalid credentials';
+      .addCase(verifyOtp.rejected, (state, action) => {
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { logout } = authSlice.actions;
+/* ================= EXPORTS ================= */
+
+export const { logout, resetAuthStep } = authSlice.actions;
 export default authSlice.reducer;

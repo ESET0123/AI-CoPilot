@@ -1,45 +1,28 @@
 import nodemailer from 'nodemailer';
 
-export const mailer = nodemailer.createTransport({
-  service: 'gmail',
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: false,
   auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
 });
 
-export async function sendVerificationEmail(
+export async function sendOtpEmail(
   to: string,
-  token: string
+  otp: string
 ) {
-  const verifyUrl = `http://localhost:5000/auth/verify-email?token=${token}`;
-
-  await mailer.sendMail({
-    from: `"Chatbot" <${process.env.MAIL_USER}>`,
+  await transporter.sendMail({
+    from: process.env.MAIL_FROM,
     to,
-    subject: 'Verify your email',
+    subject: 'Your login OTP',
     html: `
-      <h3>Verify your email</h3>
-      <p>Click the link below:</p>
-      <a href="${verifyUrl}">${verifyUrl}</a>
+      <h3>Login OTP</h3>
+      <p>Your OTP is:</p>
+      <h2>${otp}</h2>
+      <p>This OTP is valid for 5 minutes.</p>
     `,
   });
-  console.log('📧 EMAIL VERIFICATION SENT ');
-
 }
-
-
-// export async function sendVerificationEmail(
-//   to: string,
-//   token: string
-// ) {
-//   const link = `http://localhost:5000/auth/verify-email?token=${token}`;
-
-//   console.log('===================================');
-//   console.log('📧 EMAIL VERIFICATION (DEV MODE)');
-//   console.log('To:', to);
-//   console.log('Verify URL:', link);
-//   console.log('===================================');
-
-//   return;
-// }

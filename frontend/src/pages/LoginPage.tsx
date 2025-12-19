@@ -1,10 +1,19 @@
-import {TextInput, Button, Stack, Text, Box, Paper, ActionIcon, Divider, } from '@mantine/core';
+import {
+  TextInput,
+  Button,
+  Stack,
+  Text,
+  Box,
+  Paper,
+  ActionIcon,
+  Divider,
+} from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { IconSun, IconMoon, IconLogin } from '@tabler/icons-react';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { login } from '../features/auth/authSlice';
+import { sendOtp, verifyOtp } from '../features/auth/authSlice';
 import HeaderBar from '../components/layout/HeaderBar';
 import { toggleTheme } from '../features/theme/themeSlice';
 
@@ -12,22 +21,27 @@ export default function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const auth = useAppSelector((s) => s.auth);
-  const scheme = useAppSelector((s) => s.theme.colorScheme);
-  const error = useAppSelector((s) => s.auth.error);
+  const { user, step, email, error } = useAppSelector(s => s.auth);
+  const scheme = useAppSelector(s => s.theme.colorScheme);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [otp, setOtp] = useState('');
 
-    useEffect(() => {
-      if (auth.user) {
-        navigate('/dashboard', { replace: true });
-      }
-    }, [auth.user, navigate]);
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSendOtp = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(login({ email, password }));
+    dispatch(sendOtp(emailInput));
+  };
+
+  const handleVerifyOtp = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    dispatch(verifyOtp({ email, otp }));
   };
 
   return (
@@ -42,7 +56,7 @@ export default function LoginPage() {
         <HeaderBar />
       </Box>
 
-      {/* Page Background */}
+      {/* Page */}
       <Box
         style={{
           minHeight: 'calc(100vh - 64px)',
@@ -55,78 +69,67 @@ export default function LoginPage() {
               : 'radial-gradient(circle at top, #f8fafc, #eef2ff)',
         }}
       >
-        {/* Login Card */}
-        <Paper
-          withBorder
-          radius="xl"
-          shadow="lg"
-          p="xl"
-          w={360}
-        >
+        <Paper withBorder radius="xl" shadow="lg" p="xl" w={360}>
           <Stack gap="md">
             <Stack gap={4}>
               <Text size="xl" fw={600}>
-                Welcome back
+                Sign in
               </Text>
               <Text size="sm" c="dimmed">
-                Sign in to continue to Esyasoft AI Copilot
+                Login using email OTP
               </Text>
             </Stack>
 
             <Divider />
 
-            <form onSubmit={handleSubmit}>
-              <Stack gap="sm">
-                <TextInput
-                  label="Username"
-                  placeholder="admin"
-                  value={email}
-                  onChange={(e) => setEmail(e.currentTarget.value)}
-                />
+            {step === 'email' ? (
+              <form onSubmit={handleSendOtp}>
+                <Stack gap="sm">
+                  <TextInput
+                    label="Email"
+                    placeholder="you@example.com"
+                    value={emailInput}
+                    onChange={(e) =>
+                      setEmailInput(e.currentTarget.value)
+                    }
+                  />
 
-                <TextInput
-                  label="Password"
-                  type="password"
-                  placeholder="admin"
-                  value={password}
-                  onChange={(e) => setPassword(e.currentTarget.value)}
-                />
+                  {error && <Text c="red">{error}</Text>}
 
-                {error && (
-                  <Text c="red" size="sm">
-                    {error}
-                  </Text>
-                )}
+                  <Button
+                    type="submit"
+                    fullWidth
+                    leftSection={<IconLogin size={16} />}
+                  >
+                    Send OTP
+                  </Button>
+                </Stack>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOtp}>
+                <Stack gap="sm">
+                  <TextInput
+                    label="Enter OTP"
+                    placeholder="6-digit code"
+                    value={otp}
+                    onChange={(e) =>
+                      setOtp(e.currentTarget.value)
+                    }
+                  />
 
-                <Button
-                  type="submit"
-                  fullWidth
-                  leftSection={<IconLogin size={16} />}
-                  mt="sm"
-                >
-                  Sign In
-                </Button>
-              </Stack>
-            </form>
+                  {error && <Text c="red">{error}</Text>}
 
-            
-            <Text size="sm" ta="center">
-              New here?{' '}
-              <Text
-                component={Link}
-                to="/register"
-                fw={500}
-                c="blue"
-                style={{ textDecoration: 'none' }}
-              >
-                Create an account
-              </Text>
-            </Text>
+                  <Button type="submit" fullWidth>
+                    Verify OTP
+                  </Button>
+                </Stack>
+              </form>
+            )}
           </Stack>
         </Paper>
       </Box>
 
-      {/* Theme Toggle — Bottom Right */}
+      {/* Theme toggle */}
       <ActionIcon
         onClick={() => dispatch(toggleTheme())}
         size="lg"
@@ -137,11 +140,9 @@ export default function LoginPage() {
           position: 'fixed',
           right: 24,
           bottom: 24,
-          zIndex: 1000,
         }}
-        aria-label="Toggle theme"
       >
-        {scheme === 'dark' ? <IconSun size={18} /> : <IconMoon size={18} />}
+        {scheme === 'dark' ? <IconSun /> : <IconMoon />}
       </ActionIcon>
     </>
   );

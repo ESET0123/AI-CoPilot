@@ -1,14 +1,18 @@
 import { Router } from 'express';
 import {
-  register,
-  login,
-  verifyEmail,
+  sendLoginOtp,
+  verifyLoginOtp,
 } from './auth.controller';
 
 const router = Router();
 
-router.post('/register', register);
-router.post('/login', login);
-router.get('/verify-email', verifyEmail);
+/* 🔍 ROUTE DEBUG */
+router.use((req, _res, next) => {
+  console.log('[AUTH ROUTE HIT]', req.method, req.originalUrl);
+  next();
+});
+
+router.post('/send-otp', sendLoginOtp);
+router.post('/verify-otp', verifyLoginOtp);
 
 export default router;
