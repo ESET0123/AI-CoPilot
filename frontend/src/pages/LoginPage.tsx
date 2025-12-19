@@ -5,10 +5,8 @@ import { IconSun, IconMoon, IconLogin } from '@tabler/icons-react';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { login } from '../features/auth/authSlice';
-// import { hydrateChats } from '../features/chat/chatSlice';
-import { toggleTheme } from '../features/theme/themeSlice';
-// import { chatStorage } from '../services/chatStorage';
 import HeaderBar from '../components/layout/HeaderBar';
+import { toggleTheme } from '../features/theme/themeSlice';
 
 export default function LoginPage() {
   const dispatch = useAppDispatch();
@@ -20,31 +18,6 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  /* ================= Hydrate chats after login ================= */
-  // useEffect(() => {
-  //   if (!auth.user) return;
-
-  //   const userId = String(auth.user.id);
-  //   const storedChats = chatStorage.load(userId);
-
-  //   dispatch(
-  //     hydrateChats(
-  //       storedChats ?? {
-  //         conversations: [
-  //           {
-  //             id: crypto.randomUUID(),
-  //             title: 'New Chat',
-  //             messages: [],
-  //           },
-  //         ],
-  //         activeConversationId: '',
-  //       }
-  //     )
-  //   );
-
-  //   navigate('/dashboard', { replace: true });
-  // }, [auth.user, dispatch, navigate]);
 
     useEffect(() => {
       if (auth.user) {

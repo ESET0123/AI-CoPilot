@@ -1,45 +1,68 @@
 import { Textarea, Group, ActionIcon, Paper } from '@mantine/core';
 import { IconSend } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   sendMessage,
   addUserMessage,
-  renameConversation,
+  createConversation,
+  addAssistantLoading,
 } from '../../features/chat/chatSlice';
 
 export default function ChatInput() {
   const dispatch = useAppDispatch();
   const [value, setValue] = useState('');
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const { activeConversationId, conversations } = useAppSelector(
-    s => s.chat
-  );
+  
+  const {
+    activeConversationId,
+    draftMessageMode,
+  } = useAppSelector(s => s.chat);
+  
+  useEffect(() => {
+    if (draftMessageMode) {
+      inputRef.current?.focus();
+    }
+  }, [draftMessageMode]);
 
-  const activeConversation = conversations.find(
-    c => c.id === activeConversationId
-  );
-
-  const handleSend = () => {
+  const handleSend = async () => {
     const message = value.trim();
-    if (!message || !activeConversationId) return;
+    if (!message) return;
 
-    dispatch(addUserMessage(message));
+    // Draft chat → create conversation now
+    if (draftMessageMode) {
+      const convo = await dispatch(
+        createConversation(message.slice(0, 40))
+      ).unwrap();
 
-    if (
-      activeConversation?.title === 'New Chat' &&
-      activeConversation.messages.length === 0
-    ) {
+      dispatch(addUserMessage(message));
+
+      // dispatch(addAssistantLoading({ conversationId: convo.id }));
+      dispatch(addAssistantLoading());
+
       dispatch(
-        renameConversation({
-          conversationId: activeConversationId,
-          title: message.slice(0, 40),
+        sendMessage({
+          conversationId: convo.id,
+          message,
         })
       );
+
+      setValue('');
+      return;
     }
 
-    dispatch(sendMessage({ conversationId: activeConversationId, message }));
-    setValue('');
+    // Existing conversation
+    if (activeConversationId) {
+      dispatch(addUserMessage(message));
+      dispatch(
+        sendMessage({
+          conversationId: activeConversationId,
+          message,
+        })
+      );
+      setValue('');
+    }
   };
 
   return (
@@ -52,6 +75,7 @@ export default function ChatInput() {
       >
         <Group wrap="nowrap">
           <Textarea
+            ref={inputRef}
             value={value}
             onChange={(e) => setValue(e.currentTarget.value)}
             placeholder="Message..."
@@ -61,12 +85,6 @@ export default function ChatInput() {
             radius="xl"
             style={{ flex: 1 }}
             autoFocus
-            styles={{
-              input: {
-                paddingLeft: 14,
-                paddingRight: 14,
-              },
-            }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -74,6 +92,7 @@ export default function ChatInput() {
               }
             }}
           />
+
           <ActionIcon
             type="submit"
             color="blue"

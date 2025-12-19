@@ -28,9 +28,9 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   setActiveConversation,
   fetchMessages,
-  createConversation,
   renameConversation,
   deleteConversation,
+  startNewChat,
 } from '../../features/chat/chatSlice';
 
 type Props = {
@@ -90,7 +90,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
             size="lg"
             variant="filled"
             type="button"
-            onClick={() => dispatch(createConversation('New Chat'))}
+            onClick={() => dispatch(startNewChat())}
           >
             <IconPlus size={18} />
           </ActionIcon>
@@ -102,7 +102,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
               type="button"
               leftSection={<IconPlus size={16} />}
               radius="xl"
-              onClick={() => dispatch(createConversation('New Chat'))}
+              onClick={() => dispatch(startNewChat())}
             >
               New chat
             </Button>
@@ -134,129 +134,144 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
           <ScrollArea style={{ flex: 1 }} scrollbarSize={0}>
             <Collapse in={open}>
               <Stack gap={4}>
-                {conversations.map((c) => {
-                  const isActive = c.id === activeConversationId;
-                  const isEditing = editingId === c.id;
+                {conversations
+                  // ✅ ONLY FIX: hide empty / invalid conversations
+                  .filter(
+                    (c) => c.title && c.title.trim().length > 0
+                  )
+                  .map((c) => {
+                    const isActive = c.id === activeConversationId;
+                    const isEditing = editingId === c.id;
 
-                  return (
-                    <Group
-                      key={c.id}
-                      wrap="nowrap"
-                      align="center"
-                      px="xs"
-                      py={4}
-                      style={{
-                        borderRadius: 20,
-                        backgroundColor: isActive
-                          ? 'var(--mantine-color-blue-light)'
-                          : 'transparent',
-                      }}
-                    >
-                      {/* ================= TITLE / INPUT ================= */}
-                      {isEditing ? (
-                        <Group
-                          gap={6}
-                          style={{
-                            flex: 1,
-                            alignItems: 'center',
-                          }}
-                        >
-                          <TextInput
-                            value={draftTitle}
-                            autoFocus
-                            size="xs"
-                            variant="unstyled"
-                            onChange={(e) =>
-                              setDraftTitle(e.currentTarget.value)
-                            }
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') saveRename(c.id);
-                              if (e.key === 'Escape') cancelRename();
+                    return (
+                      <Group
+                        key={c.id}
+                        wrap="nowrap"
+                        align="center"
+                        px="xs"
+                        py={4}
+                        style={{
+                          borderRadius: 20,
+                          backgroundColor: isActive
+                            ? 'var(--mantine-color-blue-light)'
+                            : 'transparent',
+                        }}
+                      >
+                        {/* ================= TITLE / INPUT ================= */}
+                        {isEditing ? (
+                          <Group
+                            gap={6}
+                            style={{
+                              flex: 1,
+                              alignItems: 'center',
+                            }}
+                          >
+                            <TextInput
+                              value={draftTitle}
+                              autoFocus
+                              size="xs"
+                              variant="unstyled"
+                              onChange={(e) =>
+                                setDraftTitle(e.currentTarget.value)
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter')
+                                  saveRename(c.id);
+                                if (e.key === 'Escape')
+                                  cancelRename();
+                              }}
+                              styles={{
+                                input: {
+                                  paddingLeft: 12,
+                                  paddingRight: 4,
+                                },
+                              }}
+                              style={{ flex: 1 }}
+                            />
+
+                            <ActionIcon
+                              size="sm"
+                              radius="xl"
+                              variant="subtle"
+                              type="button"
+                              onClick={() => saveRename(c.id)}
+                            >
+                              <IconCheck size={14} />
+                            </ActionIcon>
+                          </Group>
+                        ) : (
+                          <Button
+                            type="button"
+                            variant="subtle"
+                            radius="md"
+                            fullWidth
+                            justify="flex-start"
+                            onClick={() => {
+                              dispatch(setActiveConversation(c.id));
+                              dispatch(fetchMessages(c.id));
                             }}
                             styles={{
-                              input: {
-                                paddingLeft: 12,
-                                paddingRight: 4,
+                              root: {
+                                flexGrow: 1,
+                                background: 'transparent',
                               },
                             }}
-                            style={{ flex: 1 }}
-                          />
-
-                          <ActionIcon
-                            size="sm"
-                            radius="xl"
-                            variant="subtle"
-                            type="button"
-                            onClick={() => saveRename(c.id)}
                           >
-                            <IconCheck size={14} />
-                          </ActionIcon>
-                        </Group>
-                      ) : (
-                        <Button
-                          type="button"
-                          variant="subtle"
-                          radius="md"
-                          fullWidth
-                          justify="flex-start"
-                          onClick={() => {
-                            dispatch(setActiveConversation(c.id));
-                            dispatch(fetchMessages(c.id));
-                          }}
-                          styles={{
-                            root: {
-                              flexGrow: 1,
-                              background: 'transparent',
-                            },
-                          }}
-                        >
-                          {c.title}
-                        </Button>
-                      )}
+                            {c.title}
+                          </Button>
+                        )}
 
-                      {/* ================= MENU (HIDDEN DURING RENAME) ================= */}
-                      {!isEditing && (
-                        <Menu position="right" withinPortal>
-                          <Menu.Target>
-                            <ActionIcon
-                              type="button"
-                              variant="subtle"
-                              radius="xl"
-                              size="sm"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <IconDots size={14} />
-                            </ActionIcon>
-                          </Menu.Target>
+                        {/* ================= MENU ================= */}
+                        {!isEditing && (
+                          <Menu position="right" withinPortal>
+                            <Menu.Target>
+                              <ActionIcon
+                                type="button"
+                                variant="subtle"
+                                radius="xl"
+                                size="sm"
+                                onClick={(e) =>
+                                  e.stopPropagation()
+                                }
+                              >
+                                <IconDots size={14} />
+                              </ActionIcon>
+                            </Menu.Target>
 
-                          <Menu.Dropdown>
-                            <Menu.Item
-                              leftSection={<IconPencil size={14} />}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setEditingId(c.id);
-                                setDraftTitle(c.title);
-                              }}
-                            >
-                              Rename
-                            </Menu.Item>
+                            <Menu.Dropdown>
+                              <Menu.Item
+                                leftSection={
+                                  <IconPencil size={14} />
+                                }
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingId(c.id);
+                                  setDraftTitle(c.title);
+                                }}
+                              >
+                                Rename
+                              </Menu.Item>
 
-                            <Menu.Item
-                              color="red"
-                              leftSection={<IconTrash size={14} />}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                dispatch(deleteConversation(c.id));
-                              }}
-                            >
-                              Delete
-                            </Menu.Item>
-                          </Menu.Dropdown>
-                        </Menu>
-                      )}
-                    </Group>
-                  );
-                })}
+                              <Menu.Item
+                                color="red"
+                                leftSection={
+                                  <IconTrash size={14} />
+                                }
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  dispatch(
+                                    deleteConversation(c.id)
+                                  );
+                                }}
+                              >
+                                Delete
+                              </Menu.Item>
+                            </Menu.Dropdown>
+                          </Menu>
+                        )}
+                      </Group>
+                    );
+                  })}
               </Stack>
             </Collapse>
           </ScrollArea>

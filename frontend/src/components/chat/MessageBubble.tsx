@@ -3,9 +3,10 @@ import { Paper, Text } from '@mantine/core';
 type Props = {
   role: 'user' | 'assistant';
   text: string;
+  loading?: boolean;
 };
 
-export default function MessageBubble({ role, text }: Props) {
+export default function MessageBubble({ role, text, loading }: Props) {
   const isUser = role === 'user';
 
   return (
@@ -17,9 +18,12 @@ export default function MessageBubble({ role, text }: Props) {
       style={{
         alignSelf: isUser ? 'flex-end' : 'flex-start',
         maxWidth: '75%',
+        opacity: loading ? 0.6 : 1,
       }}
     >
-      <Text size="sm">{text}</Text>
+      <Text size="sm">
+        {loading ? 'Thinking…' : text}
+      </Text>
     </Paper>
   );
 }
