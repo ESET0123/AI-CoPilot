@@ -41,8 +41,8 @@ const initialState: ChatState = {
   draftMessageMode: true,
 };
 
-const delay = (ms: number) =>
-  new Promise(resolve => setTimeout(resolve, ms));
+// const delay = (ms: number) =>
+//   new Promise(resolve => setTimeout(resolve, ms));
 
 /* ================= THUNKS ================= */
 
@@ -124,7 +124,7 @@ export const sendMessage = createAsyncThunk<
     return rejectWithValue('Not authenticated');
   }
 
-  await delay(1200);
+  // await delay(1200);
 
   const { data } = await chatApi.sendMessage(
     payload.conversationId,

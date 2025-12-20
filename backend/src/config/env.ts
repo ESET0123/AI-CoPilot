@@ -20,4 +20,7 @@ export const env = {
   DB_PASSWORD: required('DB_PASSWORD'),
 
   JWT_SECRET: required('JWT_SECRET'),
+
+  GROQ_API_KEY: required('GROQ_API_KEY'),
+
 };
