@@ -21,11 +21,13 @@ export default function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { user, step, email, error } = useAppSelector(s => s.auth);
+  const { user, email, error } = useAppSelector(s => s.auth);
   const scheme = useAppSelector(s => s.theme.colorScheme);
 
   const [emailInput, setEmailInput] = useState('');
   const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [sendingOtp, setSendingOtp] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -33,9 +35,17 @@ export default function LoginPage() {
     }
   }, [user, navigate]);
 
-  const handleSendOtp = (e: React.FormEvent) => {
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(sendOtp(emailInput));
+    if (sendingOtp || otpSent) return;
+
+    setSendingOtp(true);
+    try {
+      await dispatch(sendOtp(emailInput)).unwrap();
+      setOtpSent(true);
+    } finally {
+      setSendingOtp(false);
+    }
   };
 
   const handleVerifyOtp = (e: React.FormEvent) => {
@@ -46,7 +56,7 @@ export default function LoginPage() {
 
   return (
     <>
-      {/* Header */}
+      {/* ================= HEADER ================= */}
       <Box
         style={{
           borderBottom: '1px solid var(--mantine-color-default-border)',
@@ -56,7 +66,7 @@ export default function LoginPage() {
         <HeaderBar />
       </Box>
 
-      {/* Page */}
+      {/* ================= PAGE ================= */}
       <Box
         style={{
           minHeight: 'calc(100vh - 64px)',
@@ -82,32 +92,24 @@ export default function LoginPage() {
 
             <Divider />
 
-            {step === 'email' ? (
-              <form onSubmit={handleSendOtp}>
-                <Stack gap="sm">
-                  <TextInput
-                    label="Email"
-                    placeholder="you@example.com"
-                    value={emailInput}
-                    onChange={(e) =>
-                      setEmailInput(e.currentTarget.value)
-                    }
-                  />
+            <form
+              onSubmit={otpSent ? handleVerifyOtp : handleSendOtp}
+            >
+              <Stack gap="sm">
+                {/* ================= EMAIL ================= */}
+                <TextInput
+                  label="Email"
+                  placeholder="you@example.com"
+                  value={otpSent ? email ?? emailInput : emailInput}
+                  onChange={(e) =>
+                    setEmailInput(e.currentTarget.value)
+                  }
+                  disabled={otpSent}
+                  required
+                />
 
-                  {error && <Text c="red">{error}</Text>}
-
-                  <Button
-                    type="submit"
-                    fullWidth
-                    leftSection={<IconLogin size={16} />}
-                  >
-                    Send OTP
-                  </Button>
-                </Stack>
-              </form>
-            ) : (
-              <form onSubmit={handleVerifyOtp}>
-                <Stack gap="sm">
+                {/* ================= OTP (AFTER SEND) ================= */}
+                {otpSent && (
                   <TextInput
                     label="Enter OTP"
                     placeholder="6-digit code"
@@ -115,21 +117,35 @@ export default function LoginPage() {
                     onChange={(e) =>
                       setOtp(e.currentTarget.value)
                     }
+                    required
                   />
+                )}
 
-                  {error && <Text c="red">{error}</Text>}
+                {error && <Text c="red">{error}</Text>}
 
-                  <Button type="submit" fullWidth>
-                    Verify OTP
-                  </Button>
-                </Stack>
-              </form>
-            )}
+                {/* ================= ACTION BUTTON ================= */}
+                <Button
+                  type="submit"
+                  fullWidth
+                  leftSection={
+                    !otpSent ? (
+                      <IconLogin size={16} />
+                    ) : undefined
+                  }
+                  disabled={
+                    sendingOtp ||
+                    (otpSent && otp.trim().length === 0)
+                  }
+                >
+                  {otpSent ? 'Verify OTP' : 'Send OTP'}
+                </Button>
+              </Stack>
+            </form>
           </Stack>
         </Paper>
       </Box>
 
-      {/* Theme toggle */}
+      {/* ================= THEME TOGGLE ================= */}
       <ActionIcon
         onClick={() => dispatch(toggleTheme())}
         size="lg"

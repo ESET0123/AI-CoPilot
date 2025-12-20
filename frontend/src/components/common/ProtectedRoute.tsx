@@ -9,7 +9,6 @@ export default function ProtectedRoute({
 }) {
   const token = useAppSelector((s) => s.auth.token);
   
-
   if (!token) {
     return <Navigate to="/" replace />;
   }

@@ -37,7 +37,7 @@ export default function UserMenu({ collapsed = false }: Props) {
       {/* ===== Trigger ===== */}
       <Menu.Target>
         <Tooltip
-          label={collapsed ? user?.name ?? 'User' : undefined}
+          label={collapsed ? user?.email ?? 'User' : undefined}
           position="right"
           disabled={!collapsed}
         >
@@ -58,7 +58,7 @@ export default function UserMenu({ collapsed = false }: Props) {
 
             {!collapsed && (
               <Text size="sm" fw={500}>
-                {user?.name ?? 'User'}
+                {user?.email ?? 'User'}
               </Text>
             )}
           </Group>

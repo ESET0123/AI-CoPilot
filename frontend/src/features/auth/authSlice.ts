@@ -4,12 +4,9 @@ import type { User } from '../chat/types';
 
 /* ================= STATE ================= */
 
-type AuthStep = 'email' | 'otp';
-
 type AuthState = {
   user: User | null;
   token: string | null;
-  step: AuthStep;
   email: string | null;
   error: string | null;
 };
@@ -19,14 +16,12 @@ const storedAuth = localStorage.getItem('auth');
 const initialState: AuthState = storedAuth
   ? {
       ...JSON.parse(storedAuth),
-      step: 'email',
       email: null,
       error: null,
     }
   : {
       user: null,
       token: null,
-      step: 'email',
       email: null,
       error: null,
     };
@@ -53,6 +48,14 @@ export const verifyOtp = createAsyncThunk(
   ) => {
     try {
       const { data } = await authApi.verifyOtp(payload);
+      localStorage.setItem(
+        'auth',
+        JSON.stringify({
+          user: data.user,
+          token: data.token,
+        })
+      );
+
       return data as { user: User; token: string };
     } catch {
       return rejectWithValue('Invalid or expired OTP');
@@ -73,7 +76,6 @@ const authSlice = createSlice({
     },
 
     resetAuthStep(state) {
-      state.step = 'email';
       state.email = null;
       state.error = null;
     },
@@ -83,7 +85,6 @@ const authSlice = createSlice({
     builder
       /* ===== SEND OTP ===== */
       .addCase(sendOtp.fulfilled, (state, action) => {
-        state.step = 'otp';
         state.email = action.payload;
         state.error = null;
       })

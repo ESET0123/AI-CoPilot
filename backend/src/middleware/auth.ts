@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { env } from '../config/env';
 
 interface JwtPayload {
   sub: string;
@@ -19,11 +20,7 @@ export function requireAuth(
   const token = header.replace('Bearer ', '');
 
   try {
-    const payload = jwt.verify(
-      token,
-      process.env.JWT_SECRET as string
-    ) as JwtPayload;
-
+    const payload = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
     req.userId = payload.sub;
     next();
   } catch {

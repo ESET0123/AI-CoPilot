@@ -7,6 +7,7 @@ import {
   addUserMessage,
   createConversation,
   addAssistantLoading,
+  setActiveConversation,
 } from '../../features/chat/chatSlice';
 
 export default function ChatInput() {
@@ -26,43 +27,42 @@ export default function ChatInput() {
     }
   }, [draftMessageMode]);
 
-  const handleSend = async () => {
-    const message = value.trim();
-    if (!message) return;
+const handleSend = async () => {
+  const message = value.trim();
+  if (!message) return;
 
-    // Draft chat → create conversation now
-    if (draftMessageMode) {
-      const convo = await dispatch(
-        createConversation(message.slice(0, 40))
-      ).unwrap();
+  if (draftMessageMode) {
+    const convo = await dispatch(
+      createConversation(message.slice(0, 40))
+    ).unwrap();
 
-      dispatch(addUserMessage(message));
+    dispatch(setActiveConversation(convo.id));
+    dispatch(addUserMessage(message));
+    dispatch(addAssistantLoading());
 
-      dispatch(addAssistantLoading());
+    dispatch(
+      sendMessage({
+        conversationId: convo.id,
+        message,
+      })
+    );
 
-      dispatch(
-        sendMessage({
-          conversationId: convo.id,
-          message,
-        })
-      );
+    setValue('');
+    return;
+  }
 
-      setValue('');
-      return;
-    }
+  if (activeConversationId) {
+    dispatch(addUserMessage(message));
+    dispatch(
+      sendMessage({
+        conversationId: activeConversationId,
+        message,
+      })
+    );
+    setValue('');
+  }
+};
 
-    // Existing conversation
-    if (activeConversationId) {
-      dispatch(addUserMessage(message));
-      dispatch(
-        sendMessage({
-          conversationId: activeConversationId,
-          message,
-        })
-      );
-      setValue('');
-    }
-  };
 
   return (
     <Paper withBorder radius="xl" p="xs">
