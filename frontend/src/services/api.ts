@@ -40,6 +40,14 @@ export const chatApi = {
     return axiosClient.delete(`/conversations/${conversationId}`);
   },
 
+  editMessage(messageId: string, content: string) {
+    return axiosClient.patch(`/messages/${messageId}`, { content });
+  },
+
+  deleteAllConversations() {
+    return axiosClient.delete('/conversations');
+  },
+
   sendMessage(conversationId: string, message: string) {
     return axiosClient.post('/messages', {
       conversationId,
@@ -47,3 +55,4 @@ export const chatApi = {
     });
   },
 };
+

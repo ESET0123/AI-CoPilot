@@ -5,13 +5,19 @@ import type { RootState } from '../../app/store';
 
 /* ================= TYPES ================= */
 
+// const delay = (ms: number) =>
+//   new Promise(resolve => setTimeout(resolve, ms));
+
+
 export type Message = {
+  id: string;
   role: 'user' | 'assistant';
   text: string;
   loading?: boolean;
 };
 
 type BackendMessage = {
+  id: string;
   role: 'user' | 'assistant';
   content: string;
 };
@@ -40,9 +46,6 @@ const initialState: ChatState = {
   activeConversationId: null,
   draftMessageMode: true,
 };
-
-// const delay = (ms: number) =>
-//   new Promise(resolve => setTimeout(resolve, ms));
 
 /* ================= THUNKS ================= */
 
@@ -115,8 +118,26 @@ export const deleteConversation = createAsyncThunk<
   return conversationId;
 });
 
+export const deleteAllConversations = createAsyncThunk<
+  void,
+  void,
+  { state: RootState }
+>('chat/deleteAllConversations', async (_, { getState, rejectWithValue }) => {
+  if (!getState().auth.token) {
+    return rejectWithValue('Not authenticated');
+  }
+
+  await chatApi.deleteAllConversations();
+});
+
+/* ================= SEND MESSAGE (FIXED) ================= */
+
 export const sendMessage = createAsyncThunk<
-  { conversationId: string; assistant: BackendMessage },
+  {
+    conversationId: string;
+    user: BackendMessage;
+    assistant: BackendMessage;
+  },
   { conversationId: string; message: string },
   { state: RootState }
 >('chat/sendMessage', async (payload, { getState, rejectWithValue }) => {
@@ -124,16 +145,17 @@ export const sendMessage = createAsyncThunk<
     return rejectWithValue('Not authenticated');
   }
 
-  // await delay(1200);
-
   const { data } = await chatApi.sendMessage(
     payload.conversationId,
     payload.message
   );
 
+  // delay(500); // artificial delay for better UX
+
   return {
     conversationId: payload.conversationId,
-    assistant: data,
+    user: data.user,
+    assistant: data.assistant,
   };
 });
 
@@ -162,6 +184,7 @@ const chatSlice = createSlice({
       if (!convo) return;
 
       convo.messages.push({
+        id: crypto.randomUUID(),
         role: 'user',
         text: action.payload,
       });
@@ -176,6 +199,7 @@ const chatSlice = createSlice({
       if (!convo) return;
 
       convo.messages.push({
+        id: crypto.randomUUID(),
         role: 'assistant',
         text: '',
         loading: true,
@@ -203,11 +227,7 @@ const chatSlice = createSlice({
         }
       })
 
-      .addCase(fetchConversations.rejected, (state) => {
-        state.conversations = [];
-        state.activeConversationId = null;
-        state.draftMessageMode = true;
-      })
+      .addCase(fetchConversations.rejected, () => initialState)
 
       /* ===== FETCH MESSAGES ===== */
       .addCase(fetchMessages.fulfilled, (state, action) => {
@@ -217,6 +237,7 @@ const chatSlice = createSlice({
         if (!convo) return;
 
         convo.messages = action.payload.messages.map(m => ({
+          id: m.id,
           role: m.role,
           text: m.content,
         }));
@@ -257,10 +278,42 @@ const chatSlice = createSlice({
         }
       })
 
-      /* ===== SEND MESSAGE ===== */
+      /* ===== DELETE ALL ===== */
+      .addCase(deleteAllConversations.fulfilled, () => initialState)
+
+      /* ===== SEND MESSAGE (FIXED) ===== */
       .addCase(sendMessage.fulfilled, (state, action) => {
         const convo = state.conversations.find(
           c => c.id === action.payload.conversationId
+        );
+        if (!convo) return;
+
+        // Remove loading bubble
+        convo.messages = convo.messages.filter(
+          m => !(m.role === 'assistant' && m.loading)
+        );
+
+        // Replace optimistic user message ID
+        const lastUser = [...convo.messages]
+          .reverse()
+          .find(m => m.role === 'user');
+
+        if (lastUser) {
+          lastUser.id = action.payload.user.id;
+        }
+
+        // Add assistant reply
+        convo.messages.push({
+          id: action.payload.assistant.id,
+          role: 'assistant',
+          text: action.payload.assistant.content,
+        });
+      })
+
+      /* ===== SEND MESSAGE FAIL SAFE ===== */
+      .addCase(sendMessage.rejected, (state) => {
+        const convo = state.conversations.find(
+          c => c.id === state.activeConversationId
         );
         if (!convo) return;
 
@@ -269,8 +322,9 @@ const chatSlice = createSlice({
         );
 
         convo.messages.push({
+          id: crypto.randomUUID(),
           role: 'assistant',
-          text: action.payload.assistant.content,
+          text: 'Something went wrong. Please try again.',
         });
       })
 

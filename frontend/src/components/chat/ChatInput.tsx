@@ -53,6 +53,7 @@ const handleSend = async () => {
 
   if (activeConversationId) {
     dispatch(addUserMessage(message));
+    dispatch(addAssistantLoading());
     dispatch(
       sendMessage({
         conversationId: activeConversationId,

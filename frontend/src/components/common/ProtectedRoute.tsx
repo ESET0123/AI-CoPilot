@@ -7,11 +7,11 @@ export default function ProtectedRoute({
 }: {
   children: ReactNode;
 }) {
-  const token = useAppSelector((s) => s.auth.token);
-  
-  if (!token) {
-    return <Navigate to="/" replace />;
+  const user = useAppSelector((s) => s.auth.user);
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
-  return <>{children}</>;
+  return children;
 }

@@ -15,6 +15,9 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout } from '../../features/auth/authSlice';
 import { toggleTheme } from '../../features/theme/themeSlice';
 import { useNavigate } from 'react-router-dom';
+import { IconTrash } from '@tabler/icons-react';
+import { deleteAllConversations } from '../../features/chat/chatSlice';
+
 
 type Props = {
   collapsed?: boolean;
@@ -79,11 +82,27 @@ export default function UserMenu({ collapsed = false }: Props) {
         </Menu.Item>
 
         <Menu.Item
+          // color="red"
+          leftSection={<IconTrash size={16} />}
+          onClick={() => {
+            const confirmed = window.confirm(
+              'This will permanently delete all your chats. This action cannot be undone. Continue?'
+            );
+
+            if (!confirmed) return;
+
+            dispatch(deleteAllConversations());
+          }}
+        >
+          Delete all chats
+        </Menu.Item>
+
+        <Menu.Item
           color="red"
           leftSection={<IconLogout size={16} />}
           onClick={() => {
             dispatch(logout());
-            navigate('/', { replace: true });
+            navigate('/login', { replace: true });
           }}
         >
           Logout

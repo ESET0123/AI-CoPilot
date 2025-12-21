@@ -20,7 +20,7 @@ export default function ChatWindow() {
     bottomRef.current?.scrollIntoView({
       behavior: 'smooth',
     });
-  }, [convo?.messages.length]);
+  }, [convo]);
 
   if (!convo) return null;
 

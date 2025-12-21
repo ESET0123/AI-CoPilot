@@ -2,8 +2,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { authApi } from '../../services/api';
 import type { User } from '../chat/types';
 
-/* ================= STATE ================= */
-
 type AuthState = {
   user: User | null;
   token: string | null;
@@ -15,7 +13,8 @@ const storedAuth = localStorage.getItem('auth');
 
 const initialState: AuthState = storedAuth
   ? {
-      ...JSON.parse(storedAuth),
+      user: JSON.parse(storedAuth).user,
+      token: JSON.parse(storedAuth).token,
       email: null,
       error: null,
     }
@@ -25,8 +24,6 @@ const initialState: AuthState = storedAuth
       email: null,
       error: null,
     };
-
-/* ================= THUNKS ================= */
 
 export const sendOtp = createAsyncThunk(
   'auth/sendOtp',
@@ -55,16 +52,12 @@ export const verifyOtp = createAsyncThunk(
           token: data.token,
         })
       );
-
-      return data as { user: User; token: string };
+      return data;
     } catch {
       return rejectWithValue('Invalid or expired OTP');
     }
   }
 );
-
-
-/* ================= SLICE ================= */
 
 const authSlice = createSlice({
   name: 'auth',
@@ -72,47 +65,25 @@ const authSlice = createSlice({
   reducers: {
     logout() {
       localStorage.removeItem('auth');
-      return initialState;
-    },
-
-    resetAuthStep(state) {
-      state.email = null;
-      state.error = null;
+      return {
+        user: null,
+        token: null,
+        email: null,
+        error: null,
+      };
     },
   },
-
   extraReducers: (builder) => {
     builder
-      /* ===== SEND OTP ===== */
       .addCase(sendOtp.fulfilled, (state, action) => {
         state.email = action.payload;
-        state.error = null;
       })
-      .addCase(sendOtp.rejected, (state, action) => {
-        state.error = action.payload as string;
-      })
-
-      /* ===== VERIFY OTP ===== */
       .addCase(verifyOtp.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.token;
-        state.error = null;
-
-        localStorage.setItem(
-          'auth',
-          JSON.stringify({
-            user: state.user,
-            token: state.token,
-          })
-        );
-      })
-      .addCase(verifyOtp.rejected, (state, action) => {
-        state.error = action.payload as string;
       });
   },
 });
 
-/* ================= EXPORTS ================= */
-
-export const { logout, resetAuthStep } = authSlice.actions;
+export const { logout } = authSlice.actions;
 export default authSlice.reducer;

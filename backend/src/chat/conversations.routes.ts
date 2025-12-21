@@ -75,3 +75,18 @@ router.delete('/:id', async (req, res) => {
 });
 
 export default router;
+
+/* ================= DELETE ALL CONVERSATIONS ================= */
+router.delete('/', async (req, res) => {
+  const userId = (req as any).userId;
+
+  await pool.query(
+    `
+    DELETE FROM conversations
+    WHERE user_id = $1
+    `,
+    [userId]
+  );
+
+  res.sendStatus(204);
+});

@@ -69,7 +69,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
       {/* ================= TOP ================= */}
       <Group justify={collapsed ? 'center' : 'space-between'}>
         {!collapsed && (
-          <img src="/ai_icon.png" alt="Logo" style={{ height: 28 }} />
+          <img src="/ai_icon.png" alt="Logo" style={{ height: 38 }} />
         )}
 
         <ActionIcon
