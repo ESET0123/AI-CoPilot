@@ -40,22 +40,27 @@ router.post('/', async (req, res) => {
   }
 
   try {
+    // 🔒 Ownership check
     await ChatService.assertConversationOwnership(
       conversationId,
       userId
     );
 
+    // 1️⃣ Store user message
     const userMsg = await ChatService.storeMessage(
       conversationId,
       'user',
       message.trim()
     );
 
+    // 2️⃣ Generate + store assistant reply (FIXED)
     const assistantMsg =
       await ChatService.generateAndStoreAssistantReply(
-        conversationId
+        conversationId,
+        message.trim() // 🔥 REQUIRED
       );
 
+    // 3️⃣ Respond
     res.json({
       user: userMsg,
       assistant: assistantMsg,
@@ -65,7 +70,7 @@ router.post('/', async (req, res) => {
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    console.error(err);
+    console.error('SEND MESSAGE ERROR:', err);
     res.status(500).json({ message: 'Failed to send message' });
   }
 });
@@ -103,7 +108,7 @@ router.patch('/:messageId', async (req, res) => {
           message: 'Only the latest message can be edited',
         });
       default:
-        console.error(err);
+        console.error('EDIT MESSAGE ERROR:', err);
         return res
           .status(500)
           .json({ message: 'Failed to edit message' });

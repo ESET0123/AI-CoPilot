@@ -1,5 +1,5 @@
 import { pool } from '../db/pool';
-import { generateAIReply, ChatMessage } from '../utils/ai';
+import { callAIService } from '../utils/aiClient';
 
 /* ================= TYPES ================= */
 
@@ -53,7 +53,7 @@ export class ChatService {
   static async fetchRecentMessages(
     conversationId: string,
     limit = 10
-  ): Promise<ChatMessage[]> {
+  ) {
     const result = await pool.query(
       `
       SELECT role, content
@@ -65,52 +65,34 @@ export class ChatService {
       [conversationId, limit]
     );
 
-    const messages: ChatMessage[] = [
-      {
-        role: 'system',
-        content:
-          'You are Esyasoft AI Copilot. Answer clearly, concisely, and helpfully.',
-      },
-    ];
-
-    let lastRole: ChatMessage['role'] = 'system';
-
-    for (const row of result.rows) {
-      if (
-        row.content ===
-        'Sorry, I could not generate a response right now.'
-      ) {
-        continue;
-      }
-
-      if (row.role === lastRole) {
-        messages[messages.length - 1].content +=
-          '\n' + row.content;
-      } else {
-        messages.push({
-          role: row.role,
-          content: row.content,
-        });
-        lastRole = row.role;
-      }
-    }
-
-    return messages;
+    return result.rows
+      .filter(
+        r =>
+          r.content !==
+          'Sorry, I could not generate a response right now.'
+      )
+      .map(r => ({
+        role: r.role,
+        content: r.content,
+      }));
   }
 
-  /* ===== AI PIPELINE ===== */
+  /* ===== AI PIPELINE (DECOUPLED) ===== */
   static async generateAndStoreAssistantReply(
-    conversationId: string
+    conversationId: string,
+    userMessage: string
   ): Promise<StoredMessage> {
-    const context = await this.fetchRecentMessages(conversationId);
-
     let reply =
       'Sorry, I could not generate a response right now.';
 
     try {
-      reply = await generateAIReply(context);
+      // 🔹 Call Python AI Service
+      reply = await callAIService({
+        conversationId,
+        message: userMessage,
+      });
     } catch (err) {
-      console.error('AI ERROR:', err);
+      console.error('AI SERVICE ERROR:', err);
     }
 
     return this.storeMessage(
@@ -126,7 +108,6 @@ export class ChatService {
     userId: string,
     content: string
   ): Promise<StoredMessage> {
-    // Ownership + role
     const msgResult = await pool.query(
       `
       SELECT m.id, m.role, m.conversation_id
@@ -147,7 +128,6 @@ export class ChatService {
       throw new Error('FORBIDDEN');
     }
 
-    // Ensure last message
     const lastResult = await pool.query(
       `
       SELECT id
