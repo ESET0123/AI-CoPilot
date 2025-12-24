@@ -12,7 +12,12 @@ const LayoutContext = createContext<LayoutContextType | null>(null);
 
 export const useLayout = () => {
   const context = useContext(LayoutContext);
-  if (!context) throw new Error('useLayout must be used within AppShellLayout');
+  if (!context) {
+    return {
+      mobileOpened: false,
+      toggleMobile: () => { },
+    };
+  }
   return context;
 };
 
