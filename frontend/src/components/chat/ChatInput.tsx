@@ -1,5 +1,5 @@
-import { Textarea, Group, ActionIcon, Paper } from '@mantine/core';
-import { IconSend } from '@tabler/icons-react';
+import { Textarea, Group, ActionIcon, Paper, Tooltip } from '@mantine/core';
+import { IconSend, IconPlayerStop } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
@@ -8,61 +8,81 @@ import {
   createConversation,
   addAssistantLoading,
   setActiveConversation,
+  stopMessage,
 } from '../../features/chat/chatSlice';
 
 export default function ChatInput() {
   const dispatch = useAppDispatch();
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const currentRequest = useRef<any>(null);
 
-  
   const {
     activeConversationId,
     draftMessageMode,
+    isSending,
   } = useAppSelector(s => s.chat);
-  
+
   useEffect(() => {
-    if (draftMessageMode) {
+    if (draftMessageMode && !isSending) {
       inputRef.current?.focus();
     }
-  }, [draftMessageMode]);
+  }, [draftMessageMode, isSending]);
 
-const handleSend = async () => {
-  const message = value.trim();
-  if (!message) return;
+  const handleStop = () => {
+    if (activeConversationId) {
+      dispatch(stopMessage(activeConversationId));
+    }
+    if (currentRequest.current) {
+      currentRequest.current.abort();
+      currentRequest.current = null;
+    }
+  };
 
-  if (draftMessageMode) {
-    const convo = await dispatch(
-      createConversation(message.slice(0, 40))
-    ).unwrap();
+  const handleSend = async () => {
+    if (isSending) {
+      handleStop();
+      return;
+    }
 
-    dispatch(setActiveConversation(convo.id));
-    dispatch(addUserMessage(message));
-    dispatch(addAssistantLoading());
-
-    dispatch(
-      sendMessage({
-        conversationId: convo.id,
-        message,
-      })
-    );
+    const message = value.trim();
+    if (!message) return;
 
     setValue('');
-    return;
-  }
 
-  if (activeConversationId) {
-    dispatch(addUserMessage(message));
-    dispatch(addAssistantLoading());
-    dispatch(
-      sendMessage({
-        conversationId: activeConversationId,
-        message,
-      })
-    );
-    setValue('');
-  }
-};
+    let targetConvoId = activeConversationId;
+
+    if (draftMessageMode) {
+      const convo = await dispatch(
+        createConversation(message.slice(0, 40))
+      ).unwrap();
+
+      dispatch(setActiveConversation(convo.id));
+      targetConvoId = convo.id;
+    }
+
+    if (targetConvoId) {
+      dispatch(addUserMessage(message));
+      dispatch(addAssistantLoading());
+
+      currentRequest.current = dispatch(
+        sendMessage({
+          conversationId: targetConvoId,
+          message,
+        })
+      );
+
+      try {
+        await currentRequest.current.unwrap();
+      } catch (err: any) {
+        if (err.name !== 'AbortError' && err.message !== 'Aborted') {
+          console.error('Failed to send message:', err);
+        }
+      } finally {
+        currentRequest.current = null;
+      }
+    }
+  };
 
 
   return (
@@ -78,11 +98,12 @@ const handleSend = async () => {
             ref={inputRef}
             value={value}
             onChange={(e) => setValue(e.currentTarget.value)}
-            placeholder="Message..."
+            placeholder={isSending ? "Waiting for response..." : "Message..."}
             autosize
             minRows={1}
             maxRows={5}
             radius="xl"
+            disabled={isSending}
             style={{ flex: 1 }}
             autoFocus
             onKeyDown={(e) => {
@@ -93,15 +114,18 @@ const handleSend = async () => {
             }}
           />
 
-          <ActionIcon
-            type="submit"
-            color="blue"
-            radius="xl"
-            size="lg"
-            disabled={!value.trim()}
-          >
-            <IconSend size={18} />
-          </ActionIcon>
+          <Tooltip label={isSending ? "Stop generating" : "Send message"}>
+            <ActionIcon
+              type="submit"
+              color={isSending ? "red" : "blue"}
+              radius="xl"
+              size="lg"
+              disabled={!isSending && !value.trim()}
+              loading={false} // We show the stop icon instead of a generic loader
+            >
+              {isSending ? <IconPlayerStop size={18} /> : <IconSend size={18} />}
+            </ActionIcon>
+          </Tooltip>
         </Group>
       </form>
     </Paper>

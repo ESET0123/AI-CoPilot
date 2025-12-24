@@ -48,11 +48,15 @@ export const chatApi = {
     return axiosClient.delete('/conversations');
   },
 
-  sendMessage(conversationId: string, message: string) {
+  sendMessage(conversationId: string, message: string, signal?: AbortSignal) {
     return axiosClient.post('/messages', {
       conversationId,
       message,
-    });
+    }, { signal });
+  },
+
+  stopMessage(conversationId: string) {
+    return axiosClient.post('/stop', { conversation_id: conversationId });
   },
 };
 

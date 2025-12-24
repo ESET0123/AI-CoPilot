@@ -48,18 +48,11 @@ export default function DashboardPage() {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
+          maxWidth: '1200px',
+          margin: '0 auto',
+          width: '100%',
         }}
       >
-        {/* ================= HEADER ================= */}
-        <Box
-          style={{
-            borderBottom: '1px solid var(--mantine-color-default-border)',
-            padding: '8px 16px',
-          }}
-        >
-          <HeaderBar />
-        </Box>
-
         {/* ================= CHAT AREA ================= */}
         <Box
           style={{
@@ -68,6 +61,7 @@ export default function DashboardPage() {
             padding: '16px',
             position: 'relative',
           }}
+          p={{ base: 'xs', sm: 'md' }}
         >
           {isEmpty && (
             <Center
@@ -78,7 +72,7 @@ export default function DashboardPage() {
               }}
             >
               <Stack align="center" maw={640} px="md">
-                <Text size="xl" fw={600}>
+                <Text size="xl" fw={600} ta="center">
                   How can I help you today?
                 </Text>
               </Stack>
@@ -89,7 +83,7 @@ export default function DashboardPage() {
         </Box>
 
         {/* ================= INPUT ================= */}
-        <Box style={{ padding: '16px' }}>
+        <Box p={{ base: 'xs', sm: 'md' }}>
           <ChatInput />
         </Box>
       </Box>

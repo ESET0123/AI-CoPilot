@@ -1,32 +1,50 @@
-import { AppShell } from '@mantine/core';
-import { useState } from 'react';
+import { AppShell, Burger, Group, Title } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import Sidebar from './Sidebar';
+import HeaderBar from './HeaderBar';
 
 export default function AppShellLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [opened, { toggle }] = useDisclosure();
 
   return (
     <AppShell
-      padding={0}
+      header={{ height: 60 }}
       navbar={{
-        width: collapsed ? 60 : 260,
+        width: 260,
         breakpoint: 'sm',
+        collapsed: { mobile: !opened },
       }}
-      styles={{
-        main: {
-          height: '100vh',
-        },
-      }}
+      padding="md"
     >
+      <AppShell.Header>
+        <Group h="100%" px="md">
+          <Burger
+            opened={opened}
+            onClick={toggle}
+            hiddenFrom="sm"
+            size="sm"
+          />
+          <HeaderBar />
+        </Group>
+      </AppShell.Header>
+
       <AppShell.Navbar>
-        <Sidebar collapsed={collapsed} onToggle={setCollapsed} />
+        <Sidebar collapsed={false} onToggle={() => { }} />
       </AppShell.Navbar>
 
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main
+        style={{
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {children}
+      </AppShell.Main>
     </AppShell>
   );
 }

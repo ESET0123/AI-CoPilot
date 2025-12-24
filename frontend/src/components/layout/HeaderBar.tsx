@@ -1,10 +1,9 @@
-import { Group, Title} from '@mantine/core';
+import { Title } from '@mantine/core';
 
 export default function HeaderBar() {
-
-    return (
-    <Group h="100%" px="md" justify="center">
-      <Title order={4}>Esyasoft AI CoPilot</Title>
-    </Group>
+  return (
+    <Title order={4} style={{ flex: 1 }}>
+      Esyasoft AI CoPilot
+    </Title>
   );
 }

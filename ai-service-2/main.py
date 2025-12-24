@@ -71,6 +71,22 @@ LLM_RUN_CMD = ["ollama", "run", LLM_MODEL]
 
 logging.info(f"🤖 Using LLM model: {LLM_MODEL}")
 
+# ───────────────── CANCELLATION TRACKING ───────────────── #
+# Maps conversation_id -> threading.Event()
+import threading
+cancellation_tokens = {}
+
+def get_cancel_event(convo_id: str) -> threading.Event:
+    if not convo_id:
+        return threading.Event() # dummy
+    if convo_id not in cancellation_tokens:
+        cancellation_tokens[convo_id] = threading.Event()
+    return cancellation_tokens[convo_id]
+
+def clear_cancel_event(convo_id: str):
+    if convo_id in cancellation_tokens:
+        cancellation_tokens[convo_id].clear()
+
 
 
 # ───────────────── RAG / EMBEDDINGS ───────────────── #
@@ -597,6 +613,16 @@ def startup_event():
 def ping():
     return {"message": "backend is running 🚀"}
 
+@app.post("/stop")
+def stop_fetching(payload: dict = Body(...)):
+    convo_id = payload.get("conversation_id")
+    if convo_id:
+        logging.info(f"🛑 Received STOP signal for conversation: {convo_id}")
+        event = get_cancel_event(convo_id)
+        event.set()
+        return {"message": "Stop signal registered"}
+    return {"error": "Missing conversation_id"}, 400
+
 
 @app.post("/login")
 def login(payload: dict = Body(...)):
@@ -1053,21 +1079,45 @@ If giving a text response, be brief and helpful.
 
 ### RESPONSE ###
 """
+    convo_id = payload.get("conversation_id")
+    cancel_event = get_cancel_event(convo_id)
 
-    # Run LLM
+    if cancel_event.is_set():
+        return {"error": "Request cancelled by user"}
+
     try:
-        proc = subprocess.run(
+        # Use Popen to allow killing the process if cancelled
+        proc = subprocess.Popen(
             LLM_RUN_CMD,
-            input=full_prompt.encode("utf-8"),
-            capture_output=True,
-            timeout=120
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            bufsize=0
         )
-    except subprocess.TimeoutExpired:
-        return {"error": "LLM call timed out"}
+        
+        # Send prompt and wait with timeout
+        try:
+            # We check for cancellation in a loop or just wait with timeout
+            # For simplicity, we'll use communicate with a timeout but check event
+            # A better way is a separate thread, but here we can just poll
+            
+            stdout, stderr = proc.communicate(input=full_prompt.encode("utf-8"), timeout=120)
+            
+            if cancel_event.is_set():
+                proc.kill()
+                return {"error": "Request cancelled by user"}
+                
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            return {"error": "LLM call timed out"}
+        except Exception as e:
+            proc.kill()
+            raise e
+
     except Exception as e:
         return {"error": f"LLM failed: {e}"}
 
-    raw = proc.stdout.decode("utf-8", errors="ignore").strip()
+    raw = stdout.decode("utf-8", errors="ignore").strip()
     logging.info("DeepSeek raw output (first 600 chars): " + raw[:600])
 
     if not raw:
@@ -1128,8 +1178,15 @@ def chat_endpoint(req: ChatRequest):
     """
     # 1. Get structured intent/result from /ask
     try:
+        # Reset cancellation event for this conversation at start
+        clear_cancel_event(req.conversation_id)
+        
         # Defaulting to admin role to allow full access for this demo
-        ask_res = ask(payload={"question": req.message, "role": "admin"}) 
+        ask_res = ask(payload={
+            "question": req.message, 
+            "role": "admin",
+            "conversation_id": req.conversation_id
+        }) 
     except Exception as e:
         return ChatResponse(content=f"Error processing request: {str(e)}")
 

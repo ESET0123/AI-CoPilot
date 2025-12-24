@@ -16,4 +16,8 @@ export async function callAIService(payload: {
 
   return data.content;
 }
-
+export async function stopAIService(conversationId: string): Promise<void> {
+  await aiClient.post('/stop', {
+    conversation_id: conversationId,
+  });
+}

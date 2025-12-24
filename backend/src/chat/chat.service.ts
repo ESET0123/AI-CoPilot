@@ -155,4 +155,14 @@ export class ChatService {
 
     return updated.rows[0];
   }
+
+  /* ===== STOP GENERATION ===== */
+  static async stopGeneration(conversationId: string) {
+    try {
+      const { stopAIService } = await import('../utils/aiClient');
+      await stopAIService(conversationId);
+    } catch (err) {
+      console.error('FAILED TO STOP AI SERVICE:', err);
+    }
+  }
 }

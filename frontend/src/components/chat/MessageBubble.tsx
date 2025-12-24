@@ -50,7 +50,7 @@ export default function MessageBubble({ role, text, loading }: Props) {
       withBorder
       style={{
         alignSelf: isUser ? 'flex-end' : 'flex-start',
-        maxWidth: isUser ? '75%' : '90%', // Give more width for charts
+        maxWidth: isUser ? '85%' : '100%', // Full width for assistant on mobile
         backgroundColor: isUser
           ? 'var(--mantine-color-blue-1)'
           : 'var(--mantine-color-body)',

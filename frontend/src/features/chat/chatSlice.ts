@@ -37,6 +37,7 @@ export type ChatState = {
   conversations: Conversation[];
   activeConversationId: string | null;
   draftMessageMode: boolean;
+  isSending: boolean;
 };
 
 /* ================= INITIAL STATE ================= */
@@ -45,6 +46,7 @@ const initialState: ChatState = {
   conversations: [],
   activeConversationId: null,
   draftMessageMode: true,
+  isSending: false,
 };
 
 /* ================= THUNKS ================= */
@@ -140,23 +142,45 @@ export const sendMessage = createAsyncThunk<
   },
   { conversationId: string; message: string },
   { state: RootState }
->('chat/sendMessage', async (payload, { getState, rejectWithValue }) => {
+>('chat/sendMessage', async (payload, { getState, rejectWithValue, signal }) => {
   if (!getState().auth.token) {
     return rejectWithValue('Not authenticated');
   }
 
-  const { data } = await chatApi.sendMessage(
-    payload.conversationId,
-    payload.message
-  );
+  try {
+    const { data } = await chatApi.sendMessage(
+      payload.conversationId,
+      payload.message,
+      signal
+    );
 
-  // delay(500); // artificial delay for better UX
+    return {
+      conversationId: payload.conversationId,
+      user: data.user,
+      assistant: data.assistant,
+    };
+  } catch (error: any) {
+    if (error.name === 'CanceledError' || error.name === 'AbortError') {
+      return rejectWithValue('Request cancelled');
+    }
+    throw error;
+  }
+});
 
-  return {
-    conversationId: payload.conversationId,
-    user: data.user,
-    assistant: data.assistant,
-  };
+export const stopMessage = createAsyncThunk<
+  void,
+  string,
+  { state: RootState }
+>('chat/stopMessage', async (conversationId, { getState, rejectWithValue }) => {
+  if (!getState().auth.token) {
+    return rejectWithValue('Not authenticated');
+  }
+
+  try {
+    await chatApi.stopMessage(conversationId);
+  } catch (error) {
+    console.error('Failed to notify backend about stop:', error);
+  }
 });
 
 /* ================= SLICE ================= */
@@ -211,6 +235,60 @@ const chatSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
+      /* ===== SEND MESSAGE ===== */
+      .addCase(sendMessage.pending, (state) => {
+        state.isSending = true;
+      })
+      .addCase(sendMessage.fulfilled, (state, action) => {
+        state.isSending = false;
+        const convo = state.conversations.find(
+          c => c.id === action.payload.conversationId
+        );
+        if (!convo) return;
+
+        // Remove loading bubble
+        convo.messages = convo.messages.filter(
+          m => !(m.role === 'assistant' && m.loading)
+        );
+
+        // Replace optimistic user message ID
+        const lastUser = [...convo.messages]
+          .reverse()
+          .find(m => m.role === 'user');
+
+        if (lastUser) {
+          lastUser.id = action.payload.user.id;
+        }
+
+        // Add assistant reply
+        convo.messages.push({
+          id: action.payload.assistant.id,
+          role: 'assistant',
+          text: action.payload.assistant.content,
+        });
+      })
+      .addCase(sendMessage.rejected, (state, action) => {
+        state.isSending = false;
+        const convo = state.conversations.find(
+          c => c.id === action.meta.arg.conversationId
+        );
+        if (!convo) return;
+
+        convo.messages = convo.messages.filter(
+          m => !(m.role === 'assistant' && m.loading)
+        );
+
+        // If it was cancelled by the user, don't show an error message
+        if (action.payload === 'Request cancelled') {
+          return;
+        }
+
+        convo.messages.push({
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          text: 'Something went wrong. Please try again.',
+        });
+      })
 
       /* ===== FETCH CONVERSATIONS ===== */
       .addCase(fetchConversations.fulfilled, (state, action) => {
@@ -236,7 +314,6 @@ const chatSlice = createSlice({
           localStorage.removeItem('activeConversationId');
         }
       })
-
       .addCase(fetchConversations.rejected, () => initialState)
 
       /* ===== FETCH MESSAGES ===== */
@@ -285,7 +362,6 @@ const chatSlice = createSlice({
           state.draftMessageMode = true;
           localStorage.removeItem('activeConversationId');
         } else if (wasActive) {
-          // Only switch if we deleted the active one
           state.activeConversationId = state.conversations[0].id;
           state.draftMessageMode = false;
           localStorage.setItem('activeConversationId', state.activeConversationId);
@@ -294,53 +370,6 @@ const chatSlice = createSlice({
 
       /* ===== DELETE ALL ===== */
       .addCase(deleteAllConversations.fulfilled, () => initialState)
-
-      /* ===== SEND MESSAGE (FIXED) ===== */
-      .addCase(sendMessage.fulfilled, (state, action) => {
-        const convo = state.conversations.find(
-          c => c.id === action.payload.conversationId
-        );
-        if (!convo) return;
-
-        // Remove loading bubble
-        convo.messages = convo.messages.filter(
-          m => !(m.role === 'assistant' && m.loading)
-        );
-
-        // Replace optimistic user message ID
-        const lastUser = [...convo.messages]
-          .reverse()
-          .find(m => m.role === 'user');
-
-        if (lastUser) {
-          lastUser.id = action.payload.user.id;
-        }
-
-        // Add assistant reply
-        convo.messages.push({
-          id: action.payload.assistant.id,
-          role: 'assistant',
-          text: action.payload.assistant.content,
-        });
-      })
-
-      /* ===== SEND MESSAGE FAIL SAFE ===== */
-      .addCase(sendMessage.rejected, (state, action) => {
-        const convo = state.conversations.find(
-          c => c.id === action.meta.arg.conversationId
-        );
-        if (!convo) return;
-
-        convo.messages = convo.messages.filter(
-          m => !(m.role === 'assistant' && m.loading)
-        );
-
-        convo.messages.push({
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          text: 'Something went wrong. Please try again.',
-        });
-      })
 
       /* ===== LOGOUT RESET ===== */
       .addCase(logout, () => {
