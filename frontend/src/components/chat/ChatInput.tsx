@@ -20,14 +20,16 @@ export default function ChatInput() {
   const {
     activeConversationId,
     draftMessageMode,
-    isSending,
+    sendingConversationIds,
   } = useAppSelector(s => s.chat);
 
+  const isCurrentSending = activeConversationId ? sendingConversationIds.includes(activeConversationId) : false;
+
   useEffect(() => {
-    if (draftMessageMode && !isSending) {
+    if (draftMessageMode && !isCurrentSending) {
       inputRef.current?.focus();
     }
-  }, [draftMessageMode, isSending]);
+  }, [draftMessageMode, isCurrentSending]);
 
   const handleStop = () => {
     if (activeConversationId) {
@@ -40,7 +42,7 @@ export default function ChatInput() {
   };
 
   const handleSend = async () => {
-    if (isSending) {
+    if (isCurrentSending) {
       handleStop();
       return;
     }
@@ -98,12 +100,12 @@ export default function ChatInput() {
             ref={inputRef}
             value={value}
             onChange={(e) => setValue(e.currentTarget.value)}
-            placeholder={isSending ? "Waiting for response..." : "Message..."}
+            placeholder={isCurrentSending ? "Waiting for response..." : "Message..."}
             autosize
             minRows={1}
             maxRows={5}
             radius="xl"
-            disabled={isSending}
+            disabled={isCurrentSending}
             style={{ flex: 1 }}
             autoFocus
             onKeyDown={(e) => {
@@ -114,16 +116,16 @@ export default function ChatInput() {
             }}
           />
 
-          <Tooltip label={isSending ? "Stop generating" : "Send message"}>
+          <Tooltip label={isCurrentSending ? "Stop generating" : "Send message"}>
             <ActionIcon
               type="submit"
-              color={isSending ? "red" : "blue"}
+              color={isCurrentSending ? "red" : "blue"}
               radius="xl"
               size="lg"
-              disabled={!isSending && !value.trim()}
+              disabled={!isCurrentSending && !value.trim()}
               loading={false} // We show the stop icon instead of a generic loader
             >
-              {isSending ? <IconPlayerStop size={18} /> : <IconSend size={18} />}
+              {isCurrentSending ? <IconPlayerStop size={18} /> : <IconSend size={18} />}
             </ActionIcon>
           </Tooltip>
         </Group>

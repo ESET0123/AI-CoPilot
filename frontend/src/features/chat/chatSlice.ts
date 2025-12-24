@@ -37,7 +37,7 @@ export type ChatState = {
   conversations: Conversation[];
   activeConversationId: string | null;
   draftMessageMode: boolean;
-  isSending: boolean;
+  sendingConversationIds: string[];
 };
 
 /* ================= INITIAL STATE ================= */
@@ -46,7 +46,7 @@ const initialState: ChatState = {
   conversations: [],
   activeConversationId: null,
   draftMessageMode: true,
-  isSending: false,
+  sendingConversationIds: [],
 };
 
 /* ================= THUNKS ================= */
@@ -236,11 +236,13 @@ const chatSlice = createSlice({
   extraReducers: (builder) => {
     builder
       /* ===== SEND MESSAGE ===== */
-      .addCase(sendMessage.pending, (state) => {
-        state.isSending = true;
+      .addCase(sendMessage.pending, (state, action) => {
+        state.sendingConversationIds.push(action.meta.arg.conversationId);
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
-        state.isSending = false;
+        state.sendingConversationIds = state.sendingConversationIds.filter(
+          id => id !== action.payload.conversationId
+        );
         const convo = state.conversations.find(
           c => c.id === action.payload.conversationId
         );
@@ -268,7 +270,9 @@ const chatSlice = createSlice({
         });
       })
       .addCase(sendMessage.rejected, (state, action) => {
-        state.isSending = false;
+        state.sendingConversationIds = state.sendingConversationIds.filter(
+          id => id !== action.meta.arg.conversationId
+        );
         const convo = state.conversations.find(
           c => c.id === action.meta.arg.conversationId
         );

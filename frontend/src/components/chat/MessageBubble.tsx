@@ -52,8 +52,8 @@ export default function MessageBubble({ role, text, loading }: Props) {
         alignSelf: isUser ? 'flex-end' : 'flex-start',
         maxWidth: isUser ? '85%' : '100%', // Full width for assistant on mobile
         backgroundColor: isUser
-          ? 'var(--mantine-color-blue-1)'
-          : 'var(--mantine-color-body)',
+          ? 'var(--mantine-color-blue-light)'
+          : 'var(--mantine-color-default)',
       }}
     >
       <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
