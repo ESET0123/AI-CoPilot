@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Group,
   Text,
@@ -17,6 +18,8 @@ import { toggleTheme } from '../../features/theme/themeSlice';
 import { useNavigate } from 'react-router-dom';
 import { IconTrash } from '@tabler/icons-react';
 import { deleteAllConversations } from '../../features/chat/chatSlice';
+import { useDisclosure } from '@mantine/hooks';
+import DeleteAllConversationsModal from '../modals/DeleteAllConversationsModal';
 
 
 type Props = {
@@ -29,6 +32,21 @@ export default function UserMenu({ collapsed = false }: Props) {
 
   const user = useAppSelector((s) => s.auth.user);
   const scheme = useAppSelector((s) => s.theme.colorScheme);
+
+  const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteAll = async () => {
+    setIsDeleting(true);
+    try {
+      await dispatch(deleteAllConversations()).unwrap();
+      closeDeleteModal();
+    } catch (err) {
+      console.error('Failed to delete all chats:', err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <Menu
@@ -84,15 +102,7 @@ export default function UserMenu({ collapsed = false }: Props) {
         <Menu.Item
           // color="red"
           leftSection={<IconTrash size={16} />}
-          onClick={() => {
-            const confirmed = window.confirm(
-              'This will permanently delete all your chats. This action cannot be undone. Continue?'
-            );
-
-            if (!confirmed) return;
-
-            dispatch(deleteAllConversations());
-          }}
+          onClick={openDeleteModal}
         >
           Delete all chats
         </Menu.Item>
@@ -108,6 +118,13 @@ export default function UserMenu({ collapsed = false }: Props) {
           Logout
         </Menu.Item>
       </Menu.Dropdown>
+
+      <DeleteAllConversationsModal
+        opened={deleteModalOpened}
+        onClose={closeDeleteModal}
+        onConfirm={handleDeleteAll}
+        loading={isDeleting}
+      />
     </Menu>
   );
 }
