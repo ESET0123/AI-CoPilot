@@ -32,8 +32,11 @@ export default function DashboardPage() {
     dispatch(fetchConversations())
       .unwrap()
       .then((conversations) => {
-        if (conversations.length > 0) {
-          dispatch(fetchMessages(conversations[0].id));
+        const savedId = localStorage.getItem('activeConversationId');
+        const targetId = conversations.find((c) => c.id === savedId)?.id || conversations[0]?.id;
+
+        if (targetId) {
+          dispatch(fetchMessages(targetId));
         }
       });
   }, [user, dispatch]);

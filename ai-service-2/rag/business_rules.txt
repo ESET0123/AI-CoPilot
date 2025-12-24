@@ -1,0 +1,164 @@
+Business rules for the utility load forecasting and analytics system.
+
+1) Time resolution:
+   - Meter readings are stored every 15 minutes.
+   - Forecasting models also predict in 15 minute steps.
+
+2) Time phrases:
+   - "yesterday" means DATE(ts) = DATE('now','-1 day').
+   - "last 24 hours" means ts >= DATETIME('now','-24 hours').
+   - "last 7 days" means ts >= DATETIME('now','-7 days').
+   - "this month" means strftime('%Y-%m', ts) = strftime('%Y-%m','now').
+
+3) Tariff rules:
+   - Tariffs are defined per zone and time range inside a day.
+   - The cost at a timestamp ts is load_kw * rate_per_kwh for the matching tariff row where time(ts) is between start_time and end_time.
+   - Peak hours are usually in the evening, for example between 17:00 and 23:00 depending on tariff configuration.
+
+4) Analytics concepts:
+   - Correlation between load and temperature uses Pearson correlation.
+   - Seasonal pattern is computed as average load per month.
+   - Anomalies are meters whose load pattern is significantly different from the typical pattern (for example high z-score).
+   - Peak cause analysis focuses on high load periods (top 10 percent of load values).
+
+5) Meter hierarchy:
+   - Meters belong to feeders.
+   - Feeders belong to zones.
+   - Zone based queries must always use the chain:
+     meter_readings -> meters -> feeders -> zones.
+
+6) When user does not specify a time window:
+   - Assume last 30 days for correlation and billing.
+   - Assume last 7 days for anomaly detection and peak cause analysis.
+
+7) When user does not specify zone or meter:
+   - For meter level queries, assume the meter mentioned in question.
+   - For zone wide analytics, run across all zones or use the zone name if it is present in the question.
+
+
+SECTION A — WEATHER → LOAD IMPACT RULES
+
+1. Higher temperatures typically increase residential and commercial electricity consumption.
+2. Humidity tends to amplify cooling load, especially in coastal or tropical areas.
+3. Extremely low temperatures increase heating loads where electric heating is used.
+4. Solar irradiance reduces daytime grid load in regions with rooftop solar.
+5. When humidity crosses 70%, evening consumption often rises.
+6. High-temperature days (above 32°C) often produce sustained late-evening peaks.
+7. Cloud cover patterns can cause mid-day spikes due to reduced solar generation.
+8. On rainy days, residential load usually increases while commercial load stabilizes.
+9. Heatwaves correlate strongly with multi-day peak load events.
+10. High humidity and high temperature combined create the strongest correlation with load.
+
+
+SECTION B — TIME-OF-DAY PATTERNS (DAILY LOAD SHAPE)
+
+11. Residential load peaks after 6 PM due to lighting, cooking, and AC usage.
+12. Industrial meters peak between 10 AM and 5 PM.
+13. Commercial meters show a double hump: morning opening + late afternoon.
+14. Nighttime load (00:00–05:00) is typically the lowest for residential customers.
+15. Morning ramp-up starts around 6–8 AM.
+16. Evening peak is usually sharper than the morning peak.
+17. Late-night spikes (after midnight) often indicate anomalies or HVAC faults.
+18. Billing cycle start/end often influences consumption in industrial customers.
+19. Sudden load drops at sharp hour marks may indicate equipment shutdowns.
+20. Meters with EV chargers show late-night spikes due to slow charging patterns.
+
+
+SECTION C — SEASONALITY RULES
+
+21. Summer months generally produce the highest consumption for residential customers.
+22. Winter heating loads may dominate in colder regions.
+23. Monsoon months reduce solar contribution → higher grid dependency.
+24. Industrial activity is usually lower in holiday seasons.
+25. Seasonal festivals often create temporary consumption surges.
+26. The highest correlation between load and temperature is usually found in summer season.
+27. Seasonal transitions (Mar–Apr, Sep–Oct) often show unstable load patterns.
+28. Monsoon humidity increases evening cooling load significantly.
+29. Cloudy winters produce longer morning ramp-up.
+30. Weekend vs weekday patterns amplify seasonality differences.
+
+
+SECTION D — TARIFF & BILLING RULES
+
+31. Peak tariff hours typically cause users to shift consumption to off-peak periods.
+32. Higher tariffs discourage industrial usage during peak blocks.
+33. Time-of-day tariffs produce distinctive dips during expensive hours.
+34. The cost estimation should consider time-based tariff slots.
+35. Residential customers are less sensitive to tariff changes compared to industries.
+36. Meters with high sensitivity to tariff changes show load drops exactly at start of peak hours.
+37. Consistently high weekend usage increases estimated monthly bills.
+38. Sudden reduction in load during peak tariff may indicate automated DR (Demand Response).
+39. Tariff-based anomalies must compare only within same tariff region.
+40. Billing estimation improves when combined with seasonal trend data.
+
+
+SECTION E — CONSUMER TYPE BEHAVIOR RULES
+
+41. Residential customers: strong evening peaks, weather-sensitive.
+42. Commercial customers: stable daytime load, low nighttime load.
+43. Industrial customers: predictable working-hour patterns, less weather-sensitive.
+44. Agricultural users: often show nighttime usage peaks due to pump operations.
+45. Government buildings show strong weekday peaks but weekend drops.
+46. EV charging meters produce high-variance patterns.
+47. Data centers show extremely stable and high base load.
+48. Street lighting load ramps up at sunset and shuts at sunrise.
+49. Hospitals show almost flat load profiles with rare anomalies.
+50. Educational institutions show dips during holidays.
+
+
+SECTION F — ANOMALY RULES (ENGINEERING + STATISTICS)
+
+51. A load spike >2.5 standard deviations from mean is likely anomalous.
+52. Abrupt drop to zero load often indicates meter failure or outage.
+53. Continuous high load during midnight hours suggests abnormal HVAC or leakage.
+54. A meter with inconsistent daily shape might have wiring or phase issue.
+55. Weather mismatches (high temp but low load) may indicate sensor error.
+56. Peak load without corresponding temperature rise → industrial cause.
+57. Sudden load oscillations may indicate equipment cycling faults.
+58. Outliers are more meaningful when compared within same zone.
+59. Repeated anomalies at same time daily may indicate faulty timers.
+60. Renewable-heavy zones have more volatile load patterns.
+
+
+SECTION G — PEAK LOAD CAUSE RULES
+
+61. If temperature and humidity both spike → weather-driven peak.
+62. If solar irradiance drops suddenly → solar farms underperform → grid peak.
+63. Industrial shifts cause peaks even without weather change.
+64. Evening residential peak is mainly driven by cooling & lighting.
+65. Morning peaks are often due to heating or water pumps.
+66. High wind speed reduces temperature → may reduce load.
+67. Late-night peaks usually correlate with EV charging clusters.
+68. Peaks during cloudy afternoons suggest AC load + solar drop.
+69. If only few meters peak → meter-specific or equipment-related cause.
+70. If entire zone peaks simultaneously → weather-driven.
+
+
+SECTION H — FORECASTING SANITY CHECK RULES
+
+71. Forecast should not drop below 50% of recent average unless seasonal transition.
+72. Forecast should not exceed 150% of previous peak without anomaly flag.
+73. Trend continuation assumption holds for short horizons (<48 hours).
+74. Long-term forecasts must incorporate seasonal cycle.
+75. Forecast error increases when weather correlation is strong but forecast lacks weather inputs.
+76. Sudden forecast spikes imply insufficient historical smoothing.
+77. Missing data interpolation should not exceed 3 consecutive hours.
+78. Load forecast for industrial meters must align with working hours.
+79. Residential forecasts must respect evening peak structure.
+80. Forecast should adjust for weekends separately.
+
+
+SECTION I — ZONE-LEVEL GRID OPERATIONS RULES
+
+81. North & East zones often show higher weather sensitivity.
+82. South zone industrial clusters produce stable baseload.
+83. West zone may show solar-driven afternoon dips.
+84. Zone-level anomalies impact billing more than meter-level ones.
+85. Grid overload risk increases when >85% feeders hit peak simultaneously.
+86. Zones with renewable plants experience both sharper peaks and deeper troughs.
+87. If zone load diverges from weather trend → industrial event likely.
+88. Peak demand planning must treat residential & industrial clusters differently.
+89. Zones should be compared by normalized load, not raw load.
+90. Zone forecasting should prioritize temperature-based correlation.
+
+

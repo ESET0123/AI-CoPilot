@@ -1,0 +1,62 @@
+This file describes the database schema for the utility load forecasting system.
+
+Tables:
+
+1) zones
+   - zone_id (INTEGER, primary key)
+   - zone_name (TEXT)
+
+2) feeders
+   - feeder_id (INTEGER, primary key)
+   - feeder_name (TEXT)
+   - zone_id (INTEGER, foreign key to zones.zone_id)
+
+3) meters
+   - meter_id (TEXT, primary key)
+   - feeder_id (INTEGER, foreign key to feeders.feeder_id)
+   - customer_type (TEXT), examples: Residential, Commercial, Industrial
+   - location (TEXT)
+
+4) meter_readings
+   - meter_id (TEXT, foreign key to meters.meter_id)
+   - ts (TEXT timestamp in format YYYY-MM-DD HH:MM:SS)
+   - load_kw (REAL, active power in kW)
+
+5) weather
+   - zone_id (INTEGER, foreign key to zones.zone_id)
+   - ts (TEXT timestamp in format YYYY-MM-DD HH:MM:SS)
+   - temperature_c (REAL)
+   - humidity_pct (REAL)
+   - solar_irradiance (REAL)
+
+6) tariffs
+   - zone_id (INTEGER, foreign key to zones.zone_id)
+   - start_time (TEXT, time of day as HH:MM)
+   - end_time (TEXT, time of day as HH:MM)
+   - rate_per_kwh (REAL)
+   - label (TEXT, for example: Off-peak, Normal, Peak)
+
+Relationships:
+
+- A zone has many feeders.
+- A feeder belongs to one zone.
+- A feeder has many meters.
+- A meter belongs to one feeder.
+- A meter has many meter_readings.
+- Weather is stored per zone and timestamp.
+- Tariffs are stored per zone and time range within a day.
+
+Important join chains:
+
+- For zone based queries on readings:
+  meter_readings r
+  JOIN meters m ON r.meter_id = m.meter_id
+  JOIN feeders f ON m.feeder_id = f.feeder_id
+  JOIN zones z ON f.zone_id = z.zone_id
+
+- To include weather:
+  JOIN weather w ON z.zone_id = w.zone_id AND r.ts = w.ts
+
+- To include tariffs:
+  JOIN tariffs t ON z.zone_id = t.zone_id
+  AND time(r.ts) BETWEEN t.start_time AND t.end_time

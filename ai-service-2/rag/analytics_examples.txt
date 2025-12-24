@@ -1,0 +1,302 @@
+This file contains examples of analytics style questions and how they should be mapped to JSON tasks.
+
+Examples:
+
+Question: Is temperature affecting load in North zone?
+Task: {"task": "correlation_weather_load", "zone": "North", "days": 30}
+
+Question: Does humidity influence consumption in South zone?
+Task: {"task": "correlation_humidity_load", "zone": "South", "days": 30}
+
+Question: Show seasonal pattern for meter MTR003
+Task: {"task": "seasonal_pattern", "meter_id": "MTR003", "days": 365}
+
+Question: Predict next month bill for meter MTR005
+Task: {"task": "billing_estimation", "meter_id": "MTR005", "days": 30}
+
+Question: Detect abnormal meters this week
+Task: {"task": "anomaly_detection", "zone": "", "days": 7}
+
+Question: What caused peak load in West zone last week?
+Task: {"task": "peak_cause_analysis", "zone": "West", "days": 7}
+
+
+🔥 Correlation-Based Analytics (paraphrased)
+
+Is load increasing when temperature rises in North zone?
+
+How strongly does humidity affect consumption in South zone?
+
+Do hot days correlate with higher evening peaks?
+
+Show correlation of temperature with load for the last 14 days.
+
+Does solar irradiance influence daytime consumption?
+
+Is the load pattern sensitive to changes in humidity?
+
+How much does weather impact load in coastal zones?
+
+🔥 Seasonal / Trend Analytics
+
+Do we observe monthly consumption cycles for meter MTR010?
+
+Show seasonal trend for zone East.
+
+Does the load rise every summer?
+
+Identify seasonal peaks for residential customers.
+
+Compare winter vs summer usage patterns.
+
+🔥 Billing & Cost Estimation Analytics
+
+Estimate the next month’s bill for MTR012 using tariff rates.
+
+Predict how much the South zone will spend next month.
+
+Compute expected billing for industrial meters.
+
+How will next month’s cost change if usage rises by 10%?
+
+🔥 Anomaly Detection Analytics
+
+Detect unusual consumption spikes in West zone.
+
+Which meters behaved abnormally this week?
+
+Identify sudden drops in load across feeders.
+
+Did any meter show abnormal night usage?
+
+Which customers show unexpected load deviation?
+
+🔥 Peak Cause Analysis (Weather + Load)
+
+What caused yesterday’s peak load in North zone?
+
+Was high humidity responsible for last week’s peak?
+
+Identify weather drivers behind the highest recorded load.
+
+Is temperature the reason for afternoon peaks?
+
+What factor influenced the peak usage in the last 48 hours?
+
+🔥 Missing Data / Quality Issues Detection
+
+Which meters show missing readings?
+
+Detect sensors with intermittent data.
+
+Identify meters that drop readings frequently.
+
+🔥 Behavior & Segmentation Analytics
+
+Cluster meters by usage pattern (high-load vs low-load).
+
+Identify feeders with similar consumption profiles.
+
+Which customers behave like industrial even though tagged residential?
+
+
+SECTION A — CORRELATION ANALYSIS (Weather ↔ Load)
+
+Q: Does temperature affect electricity usage in North zone?
+A: {"task":"correlation_weather_load","zone":"North","days":30}
+
+Q: Is humidity influencing load patterns in East?
+A: {"task":"correlation_humidity_load","zone":"East","days":30}
+
+Q: Find correlation between temperature and load for South zone last 2 weeks.
+A: {"task":"correlation_weather_load","zone":"South","days":14}
+
+Q: Is there any relation between load and humidity in West zone?
+A: {"task":"correlation_humidity_load","zone":"West","days":30}
+
+Q: How strongly is weather impacting the load in Central zone?
+A: {"task":"correlation_weather_load","zone":"Central","days":30}
+
+Q: Check if high temperatures increase consumption in MTR002 area.
+A: {"task":"correlation_weather_load","meter_id":"MTR002","days":30}
+
+Q: Does humid weather cause higher usage for household customers?
+A: {"task":"correlation_humidity_load","days":30}
+
+Q: What is the correlation between load and solar radiation for North?
+A: {"task":"correlation_weather_load","zone":"North","days":30}
+
+Q: Are extreme temperatures affecting evening load?
+A: {"task":"correlation_weather_load","days":7}
+
+Q: How does humidity correlate with peak hours in South?
+A: {"task":"correlation_humidity_load","zone":"South","days":30}
+
+
+SECTION B — SEASONALITY & LONG-TERM TRENDS
+
+Q: Show monthly trend for meter MTR001.
+A: {"task":"seasonal_pattern","meter_id":"MTR001","days":365}
+
+Q: Does MTR002 show seasonal variations?
+A: {"task":"seasonal_pattern","meter_id":"MTR002","days":365}
+
+Q: What is the month-wise average load for North zone?
+A: {"task":"seasonal_pattern","zone":"North","days":365}
+
+Q: Identify seasonal behaviour for residential customers.
+A: {"task":"seasonal_pattern","days":365}
+
+Q: Do we observe seasonal shift in load for South zone?
+A: {"task":"seasonal_pattern","zone":"South","days":365}
+
+Q: Compare month-by-month load trend for MTR005.
+A: {"task":"seasonal_pattern","meter_id":"MTR005","days":365}
+
+Q: Which months have higher energy usage in East?
+A: {"task":"seasonal_pattern","zone":"East","days":365}
+
+Q: How does summer consumption compare to winter for MTR003?
+A: {"task":"seasonal_pattern","meter_id":"MTR003","days":365}
+
+Q: Show long-term load trend for entire system.
+A: {"task":"seasonal_pattern","days":365}
+
+Q: Are there strong seasonal cycles in industrial customers?
+A: {"task":"seasonal_pattern","days":365}
+
+
+SECTION C — BILLING ESTIMATION (Tariff-aware cost analysis)
+
+Q: Estimate next month's electricity bill for MTR001.
+A: {"task":"billing_estimation","meter_id":"MTR001","days":30}
+
+Q: Predict billing cost for MTR002 for next cycle.
+A: {"task":"billing_estimation","meter_id":"MTR002","days":30}
+
+Q: Estimate zone-level billing for South.
+A: {"task":"billing_estimation","zone":"South","days":30}
+
+Q: How much will residential customers pay next month?
+A: {"task":"billing_estimation","days":30}
+
+Q: Estimate total bill for West zone.
+A: {"task":"billing_estimation","zone":"West","days":30}
+
+Q: Derive likely bill for MTR010 based on recent usage.
+A: {"task":"billing_estimation","meter_id":"MTR010","days":30}
+
+Q: Predict the electricity cost trend for the next billing period.
+A: {"task":"billing_estimation","days":30}
+
+Q: Estimate energy charges for commercial customers.
+A: {"task":"billing_estimation","days":30}
+
+Q: What is the projected bill for meter MTR015?
+A: {"task":"billing_estimation","meter_id":"MTR015","days":30}
+
+Q: Calculate bill for last 4 weeks of usage.
+A: {"task":"billing_estimation","days":28}
+
+
+SECTION D — ANOMALY DETECTION (Z-score / Outlier detection)
+
+Q: Detect abnormal spikes in North zone last week.
+A: {"task":"anomaly_detection","zone":"North","days":7}
+
+Q: Are there any unusual load events for MTR001?
+A: {"task":"anomaly_detection","meter_id":"MTR001","days":30}
+
+Q: Find abnormal consumption patterns in South.
+A: {"task":"anomaly_detection","zone":"South","days":30}
+
+Q: Which meters show anomalies this month?
+A: {"task":"anomaly_detection","days":30}
+
+Q: Identify sudden spikes across commercial meters.
+A: {"task":"anomaly_detection","days":30}
+
+Q: What are the high deviation points in East zone?
+A: {"task":"anomaly_detection","zone":"East","days":30}
+
+Q: Any suspicious load drops yesterday?
+A: {"task":"anomaly_detection","days":1}
+
+Q: Highlight meters with inconsistent patterns.
+A: {"task":"anomaly_detection","days":14}
+
+Q: Are there outliers in MTR010 data?
+A: {"task":"anomaly_detection","meter_id":"MTR010","days":30}
+
+Q: Show anomaly report for entire city.
+A: {"task":"anomaly_detection","days":30}
+
+
+
+SECTION E — PEAK CAUSE ANALYSIS (weather ↔ peak load)
+
+Q: What caused yesterday’s peak in North zone?
+A: {"task":"peak_cause_analysis","zone":"North","days":1}
+
+Q: Why did South zone hit maximum load this week?
+A: {"task":"peak_cause_analysis","zone":"South","days":7}
+
+Q: Identify cause of peak load for MTR002.
+A: {"task":"peak_cause_analysis","meter_id":"MTR002","days":7}
+
+Q: What weather factors drove peak load in East?
+A: {"task":"peak_cause_analysis","zone":"East","days":30}
+
+Q: Explain peak load behaviour last weekend.
+A: {"task":"peak_cause_analysis","days":7}
+
+Q: Which factor (temperature/humidity/solar) influenced yesterday’s peak?
+A: {"task":"peak_cause_analysis","days":1}
+
+Q: Find top meters during peak periods in West.
+A: {"task":"peak_cause_analysis","zone":"West","days":30}
+
+Q: Identify dominant cause of peak consumption across the system.
+A: {"task":"peak_cause_analysis","days":30}
+
+Q: Why was Wednesday’s load extremely high?
+A: {"task":"peak_cause_analysis","days":3}
+
+Q: Peak surge explanation for commercial meters.
+A: {"task":"peak_cause_analysis","days":7}
+
+
+SECTION F — ANALYTICS + FORECAST Hybrid Reasoning
+
+Q: Will next week’s temperature increase cause higher load?
+A: {"task":"correlation_weather_load","days":30}
+
+Q: Predict next week's high-load risk factors.
+A: {"task":"peak_cause_analysis","days":7}
+
+Q: Estimate next-month bill assuming same trend continues.
+A: {"task":"billing_estimation","days":30}
+
+Q: Does historical trend suggest rising load in North?
+A: {"task":"seasonal_pattern","zone":"North","days":365}
+
+Q: What variables correlate most with rising load?
+A: {"task":"correlation_weather_load","days":30}
+
+Q: Based on trend, will MTR001 exceed normal next month?
+A: {"task":"seasonal_pattern","meter_id":"MTR001","days":365}
+
+Q: Which meter is likely to hit peak next week?
+A: {"task":"anomaly_detection","days":14}
+
+Q: How do weather forecasts affect load?
+A: {"task":"correlation_weather_load","days":30}
+
+Q: Predict key drivers for next peak event.
+A: {"task":"peak_cause_analysis","days":7}
+
+Q: Does rising humidity signal upcoming spikes?
+A: {"task":"correlation_humidity_load","days":30}
+
+
+

@@ -168,11 +168,13 @@ const chatSlice = createSlice({
     startNewChat(state) {
       state.activeConversationId = null;
       state.draftMessageMode = true;
+      localStorage.removeItem('activeConversationId');
     },
 
     setActiveConversation(state, action) {
       state.activeConversationId = action.payload;
       state.draftMessageMode = false;
+      localStorage.setItem('activeConversationId', action.payload);
     },
 
     addUserMessage(state, action) {
@@ -218,12 +220,20 @@ const chatSlice = createSlice({
           messages: [],
         }));
 
-        if (state.conversations.length > 0) {
+        const savedId = localStorage.getItem('activeConversationId');
+        const savedConvo = state.conversations.find(c => c.id === savedId);
+
+        if (savedConvo) {
+          state.activeConversationId = savedConvo.id;
+          state.draftMessageMode = false;
+        } else if (state.conversations.length > 0) {
           state.activeConversationId = state.conversations[0].id;
           state.draftMessageMode = false;
+          localStorage.setItem('activeConversationId', state.activeConversationId);
         } else {
           state.activeConversationId = null;
           state.draftMessageMode = true;
+          localStorage.removeItem('activeConversationId');
         }
       })
 
@@ -265,6 +275,7 @@ const chatSlice = createSlice({
 
       /* ===== DELETE ===== */
       .addCase(deleteConversation.fulfilled, (state, action) => {
+        const wasActive = state.activeConversationId === action.payload;
         state.conversations = state.conversations.filter(
           c => c.id !== action.payload
         );
@@ -272,9 +283,12 @@ const chatSlice = createSlice({
         if (state.conversations.length === 0) {
           state.activeConversationId = null;
           state.draftMessageMode = true;
-        } else {
+          localStorage.removeItem('activeConversationId');
+        } else if (wasActive) {
+          // Only switch if we deleted the active one
           state.activeConversationId = state.conversations[0].id;
           state.draftMessageMode = false;
+          localStorage.setItem('activeConversationId', state.activeConversationId);
         }
       })
 
@@ -311,9 +325,9 @@ const chatSlice = createSlice({
       })
 
       /* ===== SEND MESSAGE FAIL SAFE ===== */
-      .addCase(sendMessage.rejected, (state) => {
+      .addCase(sendMessage.rejected, (state, action) => {
         const convo = state.conversations.find(
-          c => c.id === state.activeConversationId
+          c => c.id === action.meta.arg.conversationId
         );
         if (!convo) return;
 
@@ -329,7 +343,10 @@ const chatSlice = createSlice({
       })
 
       /* ===== LOGOUT RESET ===== */
-      .addCase(logout, () => initialState);
+      .addCase(logout, () => {
+        localStorage.removeItem('activeConversationId');
+        return initialState;
+      });
   },
 });
 

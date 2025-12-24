@@ -1,0 +1,9 @@
+feeder_id,feeder_name,zone_id
+1,Feeder A North,1
+2,Feeder B North,1
+3,Feeder A South,2
+4,Feeder B South,2
+5,Feeder A East,3
+6,Feeder B East,3
+7,Feeder A West,4
+8,Feeder B West,4

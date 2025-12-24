@@ -1,0 +1,184 @@
+==========================
+REVENUE DATA (2010–2018)
+==========================
+
+Historical revenue values (in Crore INR):
+
+2010: 11.5
+2011: 12.4
+2012: 13.1
+2013: 14.0
+2014: 14.9
+2015: 16.2
+2016: 17.8
+2017: 19.3
+2018: 20.1
+
+Key Observations:
+- Revenue shows a consistent upward trend from 2010 to 2018.
+- Average YoY growth from 2010–2018 ≈ 7.5% to 8.3%.
+- 2018 is the highest value (20.1 Cr).
+- 2010 is the lowest (11.5 Cr).
+- No negative revenue exists in the dataset.
+- No year shows a decline; growth is monotonic.
+
+================================================================================
+ANALYSIS — YEAR OVER YEAR (YOY) GROWTH
+================================================================================
+
+YOY Growth Formula:
+YOY Growth (%) = ((Revenue(current year) - Revenue(previous year)) / Revenue(previous year)) * 100
+
+Computed YOY growths:
+2011: +7.82%
+2012: +5.64%
+2013: +6.87%
+2014: +6.43%
+2015: +8.72%
+2016: +9.88%
+2017: +8.43%
+2018: +4.15%
+
+Insights:
+- Peak growth occurred in 2016.
+- Slowest growth occurred in 2018.
+- Revenue growth stabilizes within 5–10% yearly.
+- This dataset is ideal for linear or polynomial forecasting.
+
+================================================================================
+CAGR ANALYSIS (2010 → 2018)
+================================================================================
+CAGR (Compound Annual Growth Rate) Formula:
+CAGR = (EndingValue / BeginningValue)^(1 / NumberOfYears) - 1
+
+Using:
+BeginningValue = 11.5 (2010)
+EndingValue = 20.1 (2018)
+Years = 8
+
+CAGR ≈ 7.8%
+
+Meaning:
+If revenues grow at a constant 7.8% every year, the company reaches 20.1 Cr by 2018.
+
+================================================================================
+EXPECTED FUTURE REVENUE (2019 → 2030) — BASED ON HISTORICAL TREND
+================================================================================
+Expected future growth scenarios:
+
+Scenario A — conservative (6% YOY)
+Scenario B — moderate (8% YOY)
+Scenario C — aggressive (10% YOY)
+
+General future revenue estimation logic:
+
+Future Revenue(year) = LastKnownRevenue * (1 + growth_rate)^(YearsAfter2018)
+
+This helps the LLM when user asks:
+- "Forecast revenue for 2030"
+- "Estimate income next year"
+- "Projected sales in 2027"
+- "Expected revenue for the coming year"
+
+Example projected values at 8% growth:
+
+2019: 21.7 Cr  
+2020: 23.4 Cr  
+2021: 25.3 Cr  
+2022: 27.3 Cr  
+2023: 29.5 Cr  
+2024: 31.9 Cr  
+2025: 34.5 Cr  
+2026: 37.3 Cr  
+2027: 40.3 Cr  
+2028: 43.6 Cr  
+2029: 47.1 Cr  
+2030: 50.9 Cr  
+
+These are ESTIMATES — not actual historical values.
+
+================================================================================
+COMMON USER QUESTIONS AND HOW THEY SHOULD BE ANSWERED
+================================================================================
+
+User may ask:
+1. "What was revenue in 2016?"
+→ Answer using historical data: 17.8 Cr.
+
+2. "Which year had highest revenue?"
+→ 2018 had highest (20.1 Cr).
+
+3. "Did revenue ever decline?"
+→ No decline observed from 2010–2018.
+
+4. "What is the average revenue for the period?"
+→ Mean ≈ 15.4 Cr.
+
+5. "Predict revenue for 2030."
+→ Use growth-based projection or ML model output.
+
+6. "Revenue next year?"
+→ Next year = current_year + 1 (use forecast logic).
+
+7. "What is CAGR?"
+→ ~7.8%.
+
+8. "Revenue trend summary?"
+→ Continuous increase, stable 6–9% annual growth.
+
+================================================================================
+CORNER CASES — WHAT THE MODEL MUST HANDLE
+================================================================================
+
+CASE A — Query for years NOT in dataset:
+Example: “Revenue in 2045?”
+→ Since data doesn't exist, LLM must estimate via trend.
+
+CASE B — Ambiguous wording:
+“Income”, “Sales”, “Earnings”, “Topline”, “Turnover”
+→ All treated as revenue during semantics.
+
+CASE C — Missing year:
+“What is the expected revenue?”
+→ LLM must ask or infer (e.g., next year).
+
+CASE D — Wrong range:
+“Revenue between 2050–2100”
+→ No data; only trend-based extrapolation possible.
+
+CASE E — Multi-part queries:
+“Show revenue for 2015 and also predict for 2027.”
+→ Use 2015 actual + forecasting logic for 2027.
+
+CASE F — Decline or loss:
+“Was revenue ever negative?”
+→ Answer: No, dataset contains only positive revenues.
+
+CASE G — Asking for partial periods:
+“Revenue in Q2 2016”
+→ Dataset is annual only → cannot provide quarterly.
+
+================================================================================
+BUSINESS GLOSSARY — TO AVOID CONFUSION
+================================================================================
+
+Revenue = Total income  
+Income = Revenue  
+Sales = Revenue  
+Earnings = Revenue  
+Turnover = Revenue  
+Topline = Revenue  
+Profit ≠ Revenue (do NOT hallucinate profit)  
+Growth = YoY or CAGR depending on context  
+
+================================================================================
+CONCLUSION / GUIDELINES FOR LLM
+================================================================================
+
+- ALWAYS answer historical-year queries using the actual dataset (2010–2018).
+- ALWAYS answer future-year queries using trend-based forecasting.
+- If year missing → assume “next year” unless user clarifies.
+- Never invent revenue values for years 2010–2018.
+- Never confuse revenue with profit.
+- Use the glossary to understand synonyms.
+- Use the monotonic growth pattern to handle unexpected questions.
