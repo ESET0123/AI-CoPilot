@@ -1,7 +1,20 @@
-import { AppShell, Burger, Group, Title } from '@mantine/core';
+import { AppShell } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { useState, createContext, useContext } from 'react';
 import Sidebar from './Sidebar';
-import HeaderBar from './HeaderBar';
+
+type LayoutContextType = {
+  mobileOpened: boolean;
+  toggleMobile: () => void;
+};
+
+const LayoutContext = createContext<LayoutContextType | null>(null);
+
+export const useLayout = () => {
+  const context = useContext(LayoutContext);
+  if (!context) throw new Error('useLayout must be used within AppShellLayout');
+  return context;
+};
 
 export default function AppShellLayout({
   children,
@@ -9,42 +22,32 @@ export default function AppShellLayout({
   children: React.ReactNode;
 }) {
   const [opened, { toggle }] = useDisclosure();
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <AppShell
-      header={{ height: 60 }}
-      navbar={{
-        width: 260,
-        breakpoint: 'sm',
-        collapsed: { mobile: !opened },
-      }}
-      padding="md"
-    >
-      <AppShell.Header>
-        <Group h="100%" px="md">
-          <Burger
-            opened={opened}
-            onClick={toggle}
-            hiddenFrom="sm"
-            size="sm"
-          />
-          <HeaderBar />
-        </Group>
-      </AppShell.Header>
-
-      <AppShell.Navbar>
-        <Sidebar collapsed={false} onToggle={() => { }} />
-      </AppShell.Navbar>
-
-      <AppShell.Main
-        style={{
-          height: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
+    <LayoutContext.Provider value={{ mobileOpened: opened, toggleMobile: toggle }}>
+      <AppShell
+        navbar={{
+          width: collapsed ? 60 : 260,
+          breakpoint: 'sm',
+          collapsed: { mobile: !opened },
         }}
+        padding={0}
       >
-        {children}
-      </AppShell.Main>
-    </AppShell>
+        <AppShell.Navbar>
+          <Sidebar collapsed={collapsed} onToggle={setCollapsed} />
+        </AppShell.Navbar>
+
+        <AppShell.Main
+          style={{
+            height: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {children}
+        </AppShell.Main>
+      </AppShell>
+    </LayoutContext.Provider>
   );
 }

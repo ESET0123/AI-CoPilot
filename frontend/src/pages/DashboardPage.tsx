@@ -48,11 +48,22 @@ export default function DashboardPage() {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          maxWidth: '1200px',
-          margin: '0 auto',
           width: '100%',
         }}
       >
+        {/* ================= HEADER ================= */}
+        <Box
+          style={{
+            borderBottom: '1px solid var(--mantine-color-default-border)',
+            padding: '8px 16px',
+            height: '60px',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <HeaderBar />
+        </Box>
+
         {/* ================= CHAT AREA ================= */}
         <Box
           style={{
