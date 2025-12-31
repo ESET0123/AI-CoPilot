@@ -108,7 +108,7 @@ This platform enables users to interact with their data through natural language
 ### AI Service
 - **Framework:** FastAPI
 - **ML/Analytics:** TensorFlow, Keras, Pandas, NumPy
-- **NLP:** GROQ API integration
+- **NLP:** Local LLM (Ollama)
 - **Speech-to-Text:** Faster-Whisper
 - **Visualization:** Plotly
 - **Database Driver:** psycopg2
@@ -342,9 +342,6 @@ SMTP_PASS=your_app_password
 
 # AI Service
 AI_SERVICE_URL=http://localhost:8001
-
-# GROQ API (for NLP)
-GROQ_API_KEY=your_groq_api_key_here
 
 # CORS
 CORS_ORIGIN=http://localhost:5173

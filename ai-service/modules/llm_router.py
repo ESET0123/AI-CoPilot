@@ -16,26 +16,19 @@ OLLAMA_API = "http://localhost:11434/api/generate"
 # Make sure you have pulled this model in terminal: ollama pull gemma3:12b
 LOCAL_MODEL = "gemma3:12b"  
 
-# 2. CLOUD CONFIG (Groq)
-GROQ_API_KEY = os.getenv("GROQ_API_KEY") 
-CLOUD_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-CLOUD_MODEL = "moonshotai/kimi-k2-instruct-0905"
 
 # --- ROUTER FUNCTIONS ---
 
 def call_llm(prompt, model_type="local", cancel_event=None):
     """
-    Routes the request to either Local (Ollama) or Cloud (Groq).
+    Routes the request to Local (Ollama) ONLY.
     
     Args:
         prompt: The prompt to send to the LLM
-        model_type: "local" or "cloud"
+        model_type: Ignored (kept for compatibility)
         cancel_event: Optional threading.Event for cancellation support
     """
-    if model_type == "cloud":
-        return call_cloud_api(prompt, cancel_event)
-    else:
-        return call_local_api(prompt, cancel_event)
+    return call_local_api(prompt, cancel_event)
 
 def call_local_api(prompt, cancel_event=None):
     """
@@ -64,43 +57,9 @@ def call_local_api(prompt, cancel_event=None):
         
         return r.json().get('response', 'Error: No response from Ollama')
     except Exception as e:
-        return f"Local Connection Error: {e}"
-
-def call_cloud_api(prompt, cancel_event=None):
-    """
-    Calls Groq API (Cloud).
-    
-    Args:
-        prompt: The prompt to send
-        cancel_event: Optional threading.Event for cancellation
-    """
-    # Check if cancelled before making request
-    if cancel_event and cancel_event.is_set():
-        return "Request cancelled by user"
-    
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {GROQ_API_KEY}"
-    }
-    payload = {
-        "model": CLOUD_MODEL,
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.1,
-        "max_tokens": 1024
-    }
-    try:
-        r = requests.post(CLOUD_API_URL, headers=headers, json=payload, timeout=30)
-        
-        # Check if cancelled after request
-        if cancel_event and cancel_event.is_set():
-            return "Request cancelled by user"
-        
-        r.raise_for_status()
-        return r.json()['choices'][0]['message']['content']
-    except requests.exceptions.HTTPError as e:
-        return f"Cloud API Error ({r.status_code}): {r.text}"
-    except Exception as e:
-        return f"Cloud Connection Error: {e}"
+        # Fallback/Dummy response if local AI is down
+        print(f"Local AI Error: {e}")
+        return "Local AI is currently unavailable. Please ensure Ollama is running."
 
 # --- APP LOGIC FUNCTIONS ---
 
