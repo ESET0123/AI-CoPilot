@@ -160,9 +160,14 @@ export const sendMessage = createAsyncThunk<
       assistant: data.assistant,
     };
   } catch (error: any) {
-    if (error.name === 'CanceledError' || error.name === 'AbortError') {
+    if (
+      error?.name === 'CanceledError' ||
+      error?.name === 'AbortError' ||
+      error?.code === 'ERR_CANCELED'
+    ) {
       return rejectWithValue('Request cancelled');
     }
+
     throw error;
   }
 });
@@ -269,24 +274,80 @@ const chatSlice = createSlice({
           text: action.payload.assistant.content,
         });
       })
+      // .addCase(sendMessage.rejected, (state, action) => {
+      //   state.sendingConversationIds = state.sendingConversationIds.filter(
+      //     id => id !== action.meta.arg.conversationId
+      //   );
+      //   const convo = state.conversations.find(
+      //     c => c.id === action.meta.arg.conversationId
+      //   );
+      //   if (!convo) return;
+
+      //   convo.messages = convo.messages.filter(
+      //     m => !(m.role === 'assistant' && m.loading)
+      //   );
+
+      //   // If it was cancelled by the user, don't show an error message
+      //   if (action.payload === 'Request cancelled') {
+      //     return;
+      //   }
+
+      //   convo.messages.push({
+      //     id: crypto.randomUUID(),
+      //     role: 'assistant',
+      //     text: 'Something went wrong. Please try again.',
+      //   });
+      // })
+      // .addCase(sendMessage.rejected, (state, action) => {
+      //   state.sendingConversationIds = state.sendingConversationIds.filter(
+      //     id => id !== action.meta.arg.conversationId
+      //   );
+
+      //   const convo = state.conversations.find(
+      //     c => c.id === action.meta.arg.conversationId
+      //   );
+      //   if (!convo) return;
+
+      //   // Remove loading bubble
+      //   convo.messages = convo.messages.filter(
+      //     m => !(m.role === 'assistant' && m.loading)
+      //   );
+
+      //   // 🚫 DO NOTHING if user cancelled
+      //   if (action.payload === 'Request cancelled') return;
+
+      //   convo.messages.push({
+      //     id: crypto.randomUUID(),
+      //     role: 'assistant',
+      //     text: 'Something went wrong. Please try again.',
+      //   });
+      // })
       .addCase(sendMessage.rejected, (state, action) => {
+        const convoId = action.meta.arg.conversationId;
+
         state.sendingConversationIds = state.sendingConversationIds.filter(
-          id => id !== action.meta.arg.conversationId
+          id => id !== convoId
         );
-        const convo = state.conversations.find(
-          c => c.id === action.meta.arg.conversationId
-        );
+
+        const convo = state.conversations.find(c => c.id === convoId);
         if (!convo) return;
 
+        // Remove loading bubble
         convo.messages = convo.messages.filter(
           m => !(m.role === 'assistant' && m.loading)
         );
 
-        // If it was cancelled by the user, don't show an error message
-        if (action.payload === 'Request cancelled') {
+        // 🔥 USER STOPPED GENERATION
+        if (action.payload === 'Request cancelled' || action.error.name === 'AbortError' || action.meta.aborted) {
+          convo.messages.push({
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            text: 'Response generation stopped.',
+          });
           return;
         }
 
+        // ❌ Real error
         convo.messages.push({
           id: crypto.randomUUID(),
           role: 'assistant',
@@ -303,15 +364,11 @@ const chatSlice = createSlice({
         }));
 
         const savedId = localStorage.getItem('activeConversationId');
-        const savedConvo = state.conversations.find(c => c.id === savedId);
+        const savedConvo = state.conversations.find((c) => c.id === savedId);
 
         if (savedConvo) {
           state.activeConversationId = savedConvo.id;
           state.draftMessageMode = false;
-        } else if (state.conversations.length > 0) {
-          state.activeConversationId = state.conversations[0].id;
-          state.draftMessageMode = false;
-          localStorage.setItem('activeConversationId', state.activeConversationId);
         } else {
           state.activeConversationId = null;
           state.draftMessageMode = true;

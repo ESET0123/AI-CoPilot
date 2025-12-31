@@ -1,5 +1,5 @@
 import { pool } from '../db/pool';
-import { callAIService } from '../utils/aiClient';
+import { callAIService, stopAIService } from '../utils/aiClient';
 
 /* ================= TYPES ================= */
 
@@ -9,9 +9,12 @@ export type StoredMessage = {
   content: string;
 };
 
+const activeGenerations = new Map<string, AbortController>();
+
 /* ================= SERVICE ================= */
 
 export class ChatService {
+  
   /* ===== OWNERSHIP CHECK ===== */
   static async assertConversationOwnership(
     conversationId: string,
@@ -78,29 +81,64 @@ export class ChatService {
   }
 
   /* ===== AI PIPELINE (DECOUPLED) ===== */
+  // static async generateAndStoreAssistantReply(
+  //   conversationId: string,
+  //   userMessage: string
+  // ): Promise<StoredMessage> {
+  //   let reply =
+  //     'Sorry, I could not generate a response right now.';
+
+  //   try {
+  //     // 🔹 Call Python AI Service
+  //     reply = await callAIService({
+  //       conversationId,
+  //       message: userMessage,
+  //     });
+  //   } catch (err) {
+  //     console.error('AI SERVICE ERROR:', err);
+  //   }
+
+  //   return this.storeMessage(
+  //     conversationId,
+  //     'assistant',
+  //     reply
+  //   );
+  // }
   static async generateAndStoreAssistantReply(
     conversationId: string,
     userMessage: string
   ): Promise<StoredMessage> {
-    let reply =
-      'Sorry, I could not generate a response right now.';
+    const controller = new AbortController();
+    activeGenerations.set(conversationId, controller);
 
     try {
-      // 🔹 Call Python AI Service
-      reply = await callAIService({
-        conversationId,
-        message: userMessage,
-      });
-    } catch (err) {
-      console.error('AI SERVICE ERROR:', err);
-    }
+      const reply = await callAIService(
+        {
+          conversationId,
+          message: userMessage,
+        },
+        controller.signal
+      );
 
-    return this.storeMessage(
-      conversationId,
-      'assistant',
-      reply
-    );
+      return await this.storeMessage(
+        conversationId,
+        'assistant',
+        reply
+      );
+    } catch (err: any) {
+      if (controller.signal.aborted) {
+        console.log(`Generation aborted: ${conversationId}`);
+        throw new Error('ABORTED');
+      }
+
+      console.error('AI SERVICE ERROR:', err);
+      throw err;
+    } finally {
+      activeGenerations.delete(conversationId);
+    }
   }
+
+
 
   /* ===== EDIT MESSAGE ===== */
   static async editLastUserMessage(
@@ -157,12 +195,27 @@ export class ChatService {
   }
 
   /* ===== STOP GENERATION ===== */
+  // static async stopGeneration(conversationId: string) {
+  //   try {
+  //     const { stopAIService } = await import('../utils/aiClient');
+  //     await stopAIService(conversationId);
+  //   } catch (err) {
+  //     console.error('FAILED TO STOP AI SERVICE:', err);
+  //   }
+  // }
   static async stopGeneration(conversationId: string) {
+    const controller = activeGenerations.get(conversationId);
+
+    if (controller) {
+      controller.abort();
+      activeGenerations.delete(conversationId);
+    }
+
     try {
-      const { stopAIService } = await import('../utils/aiClient');
       await stopAIService(conversationId);
     } catch (err) {
       console.error('FAILED TO STOP AI SERVICE:', err);
     }
   }
+
 }

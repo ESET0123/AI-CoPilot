@@ -5,6 +5,7 @@ import healthRoutes from './routes/health';
 import authRoutes from './auth/auth.routes';
 import conversationsRoutes from './chat/conversations.routes';
 import messagesRoutes from './chat/messages.routes';
+import transcribeRoutes from './routes/transcribe.routes';
 import { requireAuth } from './middleware/auth';
 
 const app = express();
@@ -21,6 +22,7 @@ app.use('/health', healthRoutes);
 app.use('/auth', authRoutes);
 app.use('/conversations', conversationsRoutes);
 app.use('/messages', messagesRoutes);
+app.use('/api/transcribe', transcribeRoutes);
 
 app.post('/stop', requireAuth, async (req, res) => {
   const { conversation_id } = req.body;

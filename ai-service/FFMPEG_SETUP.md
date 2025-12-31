@@ -17,7 +17,7 @@ FFmpeg is required for the speech-to-text functionality (when you install `faste
    - Navigate to the `bin` folder inside the extracted directory
    - You'll find: `ffmpeg.exe`, `ffprobe.exe`, `ffplay.exe`
 
-3. **Copy to ai-services-3 root**:
+3. **Copy to ai-service root**:
    ```
    Copy these files to: c:\Users\RishavShah\Desktop\Projects\chatbot\ai-services-3\
    

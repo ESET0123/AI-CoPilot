@@ -1,182 +1,852 @@
-# Esyasoft AI CoPilot ⚡
+# 🚀 AI-Powered Conversational Analytics Platform
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
-
-
-Esyasoft AI CoPilot is a comprehensive, AI-driven platform designed for modern electrical grid operations. It empowers operators with natural language data exploration, automated visualizations, and intelligent predictive forecasting.
+A full-stack enterprise-grade conversational analytics system that combines natural language processing, SQL generation, data visualization, and revenue forecasting into a seamless chat interface.
 
 ---
 
-## 🚀 Key Features
+## 📋 Table of Contents
 
-### 🧠 Intelligent Data Exploration
-- **Natural Language to SQL**: Query complex grid data using plain English.
-- **Intent-Based Routing**: Automatically distinguishes between database queries, forecasts, and general assistance.
-- **Automated Insights**: AI-generated summaries and trend analysis for every data result.
-
-### � Advanced Analytics
-- **Revenue Forecasting**: High-precision predictions using Keras-based deep learning models.
-- **Historical Load Analysis**: Deep dives into meter loads and user consumption patterns.
-- **Interactive Visualizations**: Dynamic Plotly charts (Line, Bar) that render automatically based on data context.
-
-### 🛡️ Enterprise-Grade Security
-- **Role-Based Access Control (RBAC)**: Distinct permissions for Admins and Employees.
-- **Secure Authentication**: OTP-based login verified via email.
-- **Session Integrity**: Hardened JWT-based session management and route protection.
-
-### 🎤 Ease of Use
-- **Voice-to-Query**: Integrated Faster-Whisper for hands-free grid management.
-- **Premium UI**: State-of-the-art dark/light mode interface built with Mantine UI.
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [System Requirements](#system-requirements)
+- [Installation & Setup](#installation--setup)
+- [Environment Configuration](#environment-configuration)
+- [API Documentation](#api-documentation)
+- [Security](#security)
+- [Usage](#usage)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
 
 ---
 
-## 🏗️ System Architecture
+## 🎯 Overview
 
-The platform operates as a distributed system of three specialized modules communicating via RESTful APIs.
+This platform enables users to interact with their data through natural language conversations. The AI understands queries, generates SQL, executes analytics, creates visualizations, and provides forecasting insights—all through a conversational interface.
 
-```mermaid
-graph TD
-    User((Operator)) <--> Frontend["<b>Frontend</b><br/>React + Vite"]
-    Frontend <--> Backend["<b>Backend</b><br/>Node.js / Express"]
-    Backend <--> Postgres[("<b>PostgreSQL</b><br/>Primary Storage")]
-    Backend <--> AIService["<b>AI Service</b><br/>Python / FastAPI"]
-    AIService <--> Postgres
-    
-    subgraph "Intelligence Layer"
-    AIService -- "SQL Generation" --> Postgres
-    AIService -- "Forecasting" --> Keras["Keras Models"]
-    AIService -- "STT" --> Whisper["Whisper AI"]
-    end
+**Key Capabilities:**
+- Natural language to SQL query generation
+- Real-time data visualization (charts & tables)
+- Revenue forecasting with ML models
+- Voice input via speech-to-text (Whisper)
+- Role-based authentication with OTP
+- Persistent chat history and conversation management
+- Multi-intent understanding and context awareness
+
+---
+
+## 🏗 Architecture
+```
+┌─────────────────────────────────────────────────────────────┐
+│                         User Interface                      │
+│                    (React + TypeScript)                     │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      Backend API Layer                      │
+│                   (Node.js + Express)                       │
+│  ┌─────────────┬──────────────┬─────────────┬─────────────┐ │
+│  │    Auth     │     Chat     │   Session   │   Storage   │ │
+│  │   Service   │ Orchestrator │  Management │   Service   │ │
+│  └─────────────┴──────────────┴─────────────┴─────────────┘ │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                       AI Service Layer                      │
+│                     (Python + FastAPI)                      │
+│  ┌─────────────┬──────────────┬─────────────┬─────────────┐ │
+│  │    NLP      │     SQL      │ Forecasting │   Whisper   │ │
+│  │  Engine     │  Generator   │   Models    │   STT       │ │
+│  └─────────────┴──────────────┴─────────────┴─────────────┘ │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Data & Storage Layer                     │
+│                    PostgreSQL Database                      │
+│  ┌──────────────────┬──────────────────┬─────────────────┐  │
+│  │   User Data      │  Conversations   │  Analytics Data │  │
+│  └──────────────────┴──────────────────┴─────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Data Flow:**
+1. User sends message (text/voice) → Frontend
+2. Frontend → Backend (JWT authenticated)
+3. Backend → AI Service (processes request)
+4. AI Service → PostgreSQL (queries/stores data)
+5. AI Service → Backend (structured response)
+6. Backend → Frontend (formatted response)
+7. Frontend renders (charts, tables, text)
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+- **Framework:** React 18 + TypeScript
+- **UI Library:** Mantine UI
+- **State Management:** Redux Toolkit
+- **HTTP Client:** Axios
+- **Charting:** Chart.js
+- **Build Tool:** Vite
+- **Styling:** CSS Modules + Mantine Theme
+
+### Backend
+- **Runtime:** Node.js ≥ 18
+- **Framework:** Express.js
+- **Database:** PostgreSQL ≥ 13
+- **Authentication:** JWT + OTP
+- **Email:** Nodemailer
+- **API Integration:** Axios
+- **Environment:** dotenv
+
+### AI Service
+- **Framework:** FastAPI
+- **ML/Analytics:** TensorFlow, Keras, Pandas, NumPy
+- **NLP:** GROQ API integration
+- **Speech-to-Text:** Faster-Whisper
+- **Visualization:** Plotly
+- **Database Driver:** psycopg2
+- **Server:** Uvicorn
+
+### Database
+- **RDBMS:** PostgreSQL 13+
+- **Schema:** Users, Conversations, Messages, Analytics
+
+---
+
+## ✨ Features
+
+### 🤖 Conversational AI
+- Natural language understanding with intent classification
+- Context-aware multi-turn conversations
+- Support for complex queries with multiple intents
+- Real-time streaming responses
+- Ability to cancel ongoing AI generation
+
+### 📊 Data Analytics
+- Natural language to SQL query generation
+- Automatic data visualization (bar charts, line charts, pie charts)
+- Tabular data rendering
+- Data sanitization and validation
+- Revenue forecasting with ML models
+
+### 🎤 Voice Interaction
+- Speech-to-text using Whisper model
+- Real-time audio transcription
+- Multi-language support
+
+### 🔐 Authentication & Security
+- OTP-based passwordless authentication
+- JWT token-based sessions
+- Automatic token refresh
+- Secure API endpoints
+- Protected routes
+
+### 💬 Chat Management
+- Create, rename, and delete conversations
+- Persistent chat history
+- Message search and filtering
+- Export conversation data
+
+### 🎨 User Experience
+- Dark/light theme toggle
+- Responsive mobile-first design
+- Loading states and error handling
+- Toast notifications
+- Smooth animations
+
+---
+
+## 📂 Project Structure
+```
+project-root/
+├── ai-service/               # AI/ML Service (Python)
+│   ├── main.py              # FastAPI entry point
+│   ├── requirements.txt     # Python dependencies
+│   ├── .env                 # Environment variables
+│   ├── models/              # ML models directory
+│   ├── utils/               # Helper functions
+│   └── README.md
+│
+├── backend/                 # Backend API (Node.js)
+│   ├── server.js            # Express server
+│   ├── package.json         # Node dependencies
+│   ├── .env                 # Environment variables
+│   ├── routes/              # API route handlers
+│   │   ├── auth.js          # Authentication routes
+│   │   ├── conversations.js # Chat management
+│   │   └── messages.js      # Message handling
+│   ├── middleware/          # Auth & validation
+│   ├── config/              # DB & app config
+│   └── README.md
+│
+├── frontend/                # Frontend App (React)
+│   ├── src/
+│   │   ├── components/      # React components
+│   │   ├── pages/           # Page components
+│   │   ├── store/           # Redux store
+│   │   ├── services/        # API services
+│   │   ├── utils/           # Utility functions
+│   │   ├── App.tsx          # Root component
+│   │   └── main.tsx         # Entry point
+│   ├── package.json         # Frontend dependencies
+│   ├── .env                 # Environment variables
+│   ├── vite.config.ts       # Vite configuration
+│   └── README.md
+│
+├── .gitignore
+└── README.md                # This file
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## 💻 System Requirements
 
-| Component | Technology | Usage |
-| :--- | :--- | :--- |
-| **Frontend** | React 18, TypeScript, Vite | User Interface & Visualizations |
-| | Mantine UI, Plotly.js | Design System & Automated Charts |
-| | Redux Toolkit | Global State Management |
-| **Backend** | Node.js, Express, TypeScript | API Orchestration & Security |
-| | PostgreSQL, Nodemailer | Persistence & Auth Workflow |
-| **AI Service** | Python 3.10+, FastAPI | LLM Routing & Analytical Logic |
-| | TensorFlow/Keras, Pandas | Deep Learning & Data Processing |
-| | Faster-Whisper | Speech-to-Text Transcription |
+### Minimum Requirements
+- **Node.js:** v18.0.0 or higher
+- **Python:** v3.10 or higher
+- **PostgreSQL:** v13.0 or higher
+- **RAM:** 4GB minimum, 8GB recommended
+- **Storage:** 2GB free space
+- **OS:** Windows 10+, macOS 10.15+, Ubuntu 20.04+
+
+### Optional
+- **CUDA:** For GPU-accelerated ML models
+- **Docker:** For containerized deployment
+- **Redis:** For caching (future enhancement)
 
 ---
 
----
+## 🚀 Installation & Setup
 
-## ⚙️ Installation & Setup
+### 1️⃣ Clone Repository
+```bash
+git clone <repository-url>
+cd project-root
+```
 
-### I. Core Modules Setup
+### 2️⃣ Database Setup
+```bash
+# Install PostgreSQL (if not installed)
+# Create database
+psql -U postgres
+CREATE DATABASE chatdb;
+\q
+```
 
-#### 1. Database Setup
-Create a PostgreSQL database (e.g., `chatbot_db`) and ensure it is accessible. Run the migration scripts if available to initialize the schema.
-
-#### 2. AI Service Configuration (Python)
+### 3️⃣ AI Service Setup
 ```bash
 cd ai-service
-# Create and activate virtual environment
+
+# Create virtual environment
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+# Activate virtual environment
+# On Windows:
+.venv\Scripts\activate
+# On macOS/Linux:
+source .venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Configure Environment
-cp .env.example .env
-```
-**Required Variables in `ai-service/.env`:**
-```ini
-DB_TYPE=postgresql
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_DB=chatbot_db
-POSTGRES_USER=your_user
-POSTGRES_PASSWORD=your_password
+# Create .env file (see Environment Configuration below)
+# Start service
+python main.py
 ```
 
-#### 3. Backend Configuration (Node.js)
+**AI Service runs at:** `http://localhost:8001`
+
+### 4️⃣ Backend Setup
 ```bash
-cd ../backend
+cd backend
+
+# Install dependencies
 npm install
+
+# Create .env file (see Environment Configuration below)
+
+# Run database migrations (if any)
+npm run migrate
+
+# Start development server
+npm run dev
 ```
-**Required Variables in `backend/.env`:**
-```ini
+
+**Backend runs at:** `http://localhost:5000`
+
+### 5️⃣ Frontend Setup
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Create .env file (see Environment Configuration below)
+
+# Start development server
+npm run dev
+```
+
+**Frontend runs at:** `http://localhost:5173`
+
+---
+
+## ⚙️ Environment Configuration
+
+### AI Service `.env`
+```env
+# Database Configuration
+POSTGRES_URL=postgresql://postgres:password@localhost:5432/chatdb
+
+# API Configuration
+HOST=0.0.0.0
+PORT=8001
+
+# ML Model Paths (optional)
+MODEL_PATH=./models
+
+# Logging
+LOG_LEVEL=INFO
+```
+
+### Backend `.env`
+```env
+# Server Configuration
 PORT=5000
+NODE_ENV=development
+
+# Database Configuration
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=chatbot_db
-DB_USER=your_user
+DB_NAME=chatdb
+DB_USER=postgres
 DB_PASSWORD=your_password
-JWT_SECRET=your_secret_key
-GROQ_API_KEY=your_groq_key
+
+# JWT Configuration
+JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
+JWT_EXPIRES_IN=7d
+
+# Email Configuration (for OTP)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+
+# AI Service
+AI_SERVICE_URL=http://localhost:8001
+
+# GROQ API (for NLP)
+GROQ_API_KEY=your_groq_api_key_here
+
+# CORS
+CORS_ORIGIN=http://localhost:5173
 ```
 
-#### 4. Frontend Configuration (React)
+### Frontend `.env`
+```env
+# API Configuration
+VITE_API_URL=http://localhost:5000
+
+# App Configuration
+VITE_APP_NAME=AI Analytics Platform
+VITE_APP_VERSION=1.0.0
+
+# Feature Flags (optional)
+VITE_ENABLE_VOICE=true
+VITE_ENABLE_CHARTS=true
+```
+
+---
+
+## 📡 API Documentation
+
+### Authentication Endpoints
+
+#### Send OTP
+```http
+POST /auth/send-otp
+Content-Type: application/json
+
+{
+  "email": "user@example.com"
+}
+
+Response: 200 OK
+{
+  "message": "OTP sent successfully"
+}
+```
+
+#### Verify OTP
+```http
+POST /auth/verify-otp
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "otp": "123456"
+}
+
+Response: 200 OK
+{
+  "token": "jwt_token_here",
+  "user": {
+    "id": 1,
+    "email": "user@example.com",
+    "name": "User Name"
+  }
+}
+```
+
+### Conversation Endpoints
+
+#### Get All Conversations
+```http
+GET /conversations
+Authorization: Bearer <token>
+
+Response: 200 OK
+[
+  {
+    "id": 1,
+    "title": "Revenue Analysis",
+    "created_at": "2025-01-15T10:30:00Z",
+    "updated_at": "2025-01-15T11:00:00Z"
+  }
+]
+```
+
+#### Create Conversation
+```http
+POST /conversations
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "title": "New Conversation"
+}
+
+Response: 201 Created
+{
+  "id": 2,
+  "title": "New Conversation",
+  "created_at": "2025-01-15T12:00:00Z"
+}
+```
+
+#### Update Conversation
+```http
+PATCH /conversations/:id
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "title": "Updated Title"
+}
+
+Response: 200 OK
+{
+  "id": 1,
+  "title": "Updated Title"
+}
+```
+
+#### Delete Conversation
+```http
+DELETE /conversations/:id
+Authorization: Bearer <token>
+
+Response: 204 No Content
+```
+
+### Message Endpoints
+
+#### Get Messages
+```http
+GET /messages/:conversationId
+Authorization: Bearer <token>
+
+Response: 200 OK
+[
+  {
+    "id": 1,
+    "conversation_id": 1,
+    "role": "user",
+    "content": "Show me revenue trends",
+    "created_at": "2025-01-15T10:30:00Z"
+  },
+  {
+    "id": 2,
+    "conversation_id": 1,
+    "role": "assistant",
+    "content": "Here's the revenue analysis...",
+    "metadata": {
+      "chart": {...},
+      "sql": "SELECT ..."
+    },
+    "created_at": "2025-01-15T10:30:15Z"
+  }
+]
+```
+
+#### Send Message
+```http
+POST /messages
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "conversation_id": 1,
+  "content": "What's the total revenue?"
+}
+
+Response: 200 OK
+{
+  "id": 3,
+  "role": "assistant",
+  "content": "The total revenue is $1.2M",
+  "metadata": {
+    "chart": {...},
+    "data": [...]
+  }
+}
+```
+
+### AI Service Endpoints
+
+#### Chat
+```http
+POST /api/chat
+Content-Type: application/json
+
+{
+  "message": "Show revenue by product",
+  "conversation_id": 1,
+  "user_id": 1
+}
+
+Response: 200 OK
+{
+  "response": "Here's the revenue breakdown...",
+  "chart": {...},
+  "data": [...],
+  "sql": "SELECT product, SUM(revenue)..."
+}
+```
+
+#### Transcribe Audio
+```http
+POST /api/transcribe
+Content-Type: multipart/form-data
+
+file: <audio_file>
+
+Response: 200 OK
+{
+  "transcription": "Show me the revenue trends"
+}
+```
+
+#### Health Check
+```http
+GET /api/health
+
+Response: 200 OK
+{
+  "status": "healthy",
+  "timestamp": "2025-01-15T12:00:00Z"
+}
+```
+
+#### Stop Generation
+```http
+POST /stop
+
+Response: 200 OK
+{
+  "message": "Generation stopped"
+}
+```
+
+---
+
+## 🔒 Security
+
+### Authentication Flow
+1. User requests OTP via email
+2. OTP sent to user's email (6-digit code)
+3. User submits OTP for verification
+4. Backend validates OTP and generates JWT
+5. JWT stored in frontend (localStorage)
+6. JWT included in all subsequent API requests
+7. Backend validates JWT on protected routes
+8. Token auto-refreshes before expiration
+
+### Security Best Practices
+- ✅ JWT tokens with expiration
+- ✅ HTTP-only cookies option available
+- ✅ CORS configured for specific origins
+- ✅ SQL injection prevention
+- ✅ Input validation and sanitization
+- ✅ Rate limiting (recommended to add)
+- ✅ HTTPS in production (recommended)
+- ✅ Environment variables for secrets
+- ✅ Password hashing (if using passwords)
+
+---
+
+## 📖 Usage
+
+### Starting the Application
+
+1. **Start all services in order:**
 ```bash
-cd ../frontend
-npm install
+   # Terminal 1: AI Service
+   cd ai-service && source .venv/bin/activate && python main.py
+   
+   # Terminal 2: Backend
+   cd backend && npm run dev
+   
+   # Terminal 3: Frontend
+   cd frontend && npm run dev
 ```
-**Required Variables in `frontend/.env`:**
-```ini
-VITE_API_URL=http://localhost:5000/api
+
+2. **Access the application:**
+   - Open browser: `http://localhost:5173`
+   - Login with email and OTP
+   - Start chatting!
+
+### Example Queries
+
+**Data Analysis:**
+- "Show me total revenue by product"
+- "What are the top 5 customers by sales?"
+- "Display monthly revenue trends"
+
+**Forecasting:**
+- "Forecast revenue for next quarter"
+- "Predict sales for next 6 months"
+
+**Visualization:**
+- "Create a bar chart of revenue by region"
+- "Show a pie chart of product distribution"
+
+**Voice Input:**
+- Click microphone icon
+- Speak your query
+- AI transcribes and processes
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Issue: AI Service won't start**
+```bash
+# Check Python version
+python --version  # Should be 3.10+
+
+# Reinstall dependencies
+pip install -r requirements.txt --force-reinstall
+
+# Check PostgreSQL connection
+psql -U postgres -d chatdb
+```
+
+**Issue: Backend connection refused**
+```bash
+# Check if port 5000 is in use
+lsof -i :5000  # macOS/Linux
+netstat -ano | findstr :5000  # Windows
+
+# Verify .env file exists and is correct
+cat backend/.env
+
+# Check database connection
+npm run db:test
+```
+
+**Issue: Frontend won't connect to backend**
+```bash
+# Verify API URL in .env
+cat frontend/.env
+
+# Check CORS settings in backend
+# Ensure CORS_ORIGIN matches frontend URL
+
+# Clear browser cache and restart
+```
+
+**Issue: Database connection errors**
+```sql
+-- Check PostgreSQL is running
+sudo service postgresql status
+
+-- Verify database exists
+psql -U postgres -l
+
+-- Test connection
+psql -U postgres -d chatdb -c "SELECT 1;"
+```
+
+**Issue: JWT token expired**
+- Logout and login again
+- Check JWT_EXPIRES_IN in backend .env
+- Verify system clock is correct
+
+**Issue: OTP not received**
+- Check SMTP credentials in .env
+- Verify email isn't in spam
+- Check backend logs for email errors
+- Test SMTP connection separately
+
+---
+
+## 🔧 Development
+
+### Running Tests
+```bash
+# Backend tests
+cd backend
+npm test
+
+# Frontend tests
+cd frontend
+npm test
+
+# AI Service tests
+cd ai-service
+pytest
+```
+
+### Building for Production
+```bash
+# Frontend
+cd frontend
+npm run build
+# Output in dist/
+
+# Backend
+cd backend
+npm run build  # If using TypeScript
+
+# AI Service
+cd ai-service
+pip install -r requirements.txt
+# Use gunicorn or similar for production
+```
+
+### Database Migrations
+```bash
+cd backend
+npm run migrate:create -- migration_name
+npm run migrate:up
+npm run migrate:down
 ```
 
 ---
 
-### II. Extra Services Setup
+## 🚀 Deployment
 
-#### 📧 Mail Service (OTP Authentication)
-The platform uses SMTP for sending login OTPs. This is managed by the Backend.
+### Docker Deployment (Recommended)
+```bash
+# Build and run all services
+docker-compose up -d
 
-**Step-by-Step Setup:**
-1.  Obtain SMTP credentials (e.g., from Gmail App Passwords or SendGrid).
-2.  Add the following to your `backend/.env`:
-    ```ini
-    SMTP_HOST=your_host (e.g., smtp.gmail.com)
-    SMTP_PORT=587
-    SMTP_USER=your_email@example.com
-    SMTP_PASS=your_app_password
-    MAIL_FROM=no-reply@Esyasoft.ai
-    ```
+# View logs
+docker-compose logs -f
 
-#### 🎥 Multimedia (Speech-to-Text)
-The AI Service supports voice-to-query via FFmpeg and Faster-Whisper.
+# Stop services
+docker-compose down
+```
 
-**Step-by-Step Setup:**
-1.  **Install FFmpeg**:
-    -   Download from [gyan.dev](https://www.gyan.dev/ffmpeg/builds/).
-    -   Extract `ffmpeg.exe` to the `ai-service/` root directory (the script will automatically find it there).
-2.  **Enable STT in Python**:
-    -   Activate the `ai-service` virtual environment.
-    -   Install the engine: `pip install faster-whisper`.
-3.  **Restart AI Service**: The Whisper model (base.en) will load on the next startup.
+### Manual Deployment
+
+1. Set up PostgreSQL on server
+2. Configure environment variables for production
+3. Build frontend: `npm run build`
+4. Deploy frontend to CDN/static hosting
+5. Deploy backend to Node.js hosting (PM2, etc.)
+6. Deploy AI service with Gunicorn/Uvicorn
+7. Set up reverse proxy (Nginx)
+8. Configure SSL certificates
+9. Set up monitoring and logging
 
 ---
 
-## 🏃 Running the Application
+## 📈 Future Enhancements
 
-For full functionality, start the modules in this specific order:
+### Planned Features
+- [ ] WebSocket streaming for real-time responses
+- [ ] Redis caching layer
+- [ ] Multi-tenant support
+- [ ] Advanced RBAC (Role-Based Access Control)
+- [ ] Export conversations to PDF
+- [ ] Scheduled reports
+- [ ] Custom dashboard builder
+- [ ] API rate limiting
+- [ ] Audit logging
+- [ ] Advanced analytics (A/B testing, user behavior)
 
-1.  **AI Service**: 
-    ```bash
-    cd ai-service && python main.py
-    ```
-2.  **Backend**: 
-    ```bash
-    cd backend && npm run dev
-    ```
-3.  **Frontend**: 
-    ```bash
-    cd frontend && npm run dev
-    ```
-    Access the UI at `http://localhost:5173`.
+### Optional Integrations
+- [ ] Slack/Teams integration
+- [ ] Google Sheets connector
+- [ ] REST API for third-party apps
+- [ ] Mobile app (React Native)
+- [ ] Browser extension
 
 ---
 
-## 📜 Project Ownership & License
-Esyasoft AI CoPilot is an internal tool for advanced grid monitoring.
-License: **ISC**
+## 🤝 Contributing
+
+This is an internal project. For contributions:
+
+1. Create a feature branch
+2. Make changes with clear commit messages
+3. Test thoroughly
+4. Submit pull request
+5. Wait for code review
+
+---
+
+## 👨‍💻 Maintainer
+
+**Rishav Shah**  
+Full-Stack & AI Engineer  
+
+For questions or support, contact the development team.
+
+---
+
+## 📄 License
+
+**Internal / Proprietary**
+
+This software is proprietary and confidential. Unauthorized copying, distribution, or use is strictly prohibited.
+
+Copyright © 2025. All rights reserved.
+
+---
+
+## 📚 Additional Resources
+
+- [FastAPI Documentation](https://fastapi.tiangolo.com/)
+- [Express.js Guide](https://expressjs.com/)
+- [React Documentation](https://react.dev/)
+- [Mantine UI](https://mantine.dev/)
+- [PostgreSQL Manual](https://www.postgresql.org/docs/)
+
+---
+
+**Last Updated:** December 30, 2025  
+**Version:** 1.0.0  
+**Status:** Production Ready

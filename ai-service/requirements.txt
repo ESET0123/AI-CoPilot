@@ -28,5 +28,5 @@ python-multipart
 starlette
 
 # Optional: For audio/STT (can be installed later)
-# faster-whisper
-# ffmpeg-python
+faster-whisper
+ffmpeg-python

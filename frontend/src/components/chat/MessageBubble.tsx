@@ -1,4 +1,5 @@
-import { Paper, Text, Loader, Box } from '@mantine/core';
+import { Paper, Text, Loader, Box, Alert } from '@mantine/core';
+import { IconAlertCircle } from '@tabler/icons-react';
 import { useMemo } from 'react';
 import ChartWidget from './ChartWidget';
 import TableWidget from './TableWidget';
@@ -16,15 +17,25 @@ export default function MessageBubble({ role, text, loading }: Props) {
   const content = useMemo(() => {
     if (isUser || !text) return { text, type: 'text', data: null, extras: {} };
 
+    // Try to parse as JSON
     try {
-      // Try to parse as JSON
       const parsed = JSON.parse(text);
-      if (parsed && parsed.text && parsed.type) {
-        return parsed;
+
+      // Validate structure
+      if (parsed && typeof parsed === 'object' && parsed.text && parsed.type) {
+        return {
+          text: parsed.text,
+          type: parsed.type,
+          data: parsed.data || null,
+          extras: parsed.extras || {},
+        };
       }
     } catch (e) {
       // Not JSON, fall back to plain text
+      console.log('Message is not JSON, rendering as plain text. Error:', e);
     }
+
+    // Return as plain text
     return { text, type: 'text', data: null, extras: {} };
   }, [text, isUser]);
 
@@ -42,6 +53,9 @@ export default function MessageBubble({ role, text, loading }: Props) {
     );
   }
 
+  // Handle error messages
+  const isError = content.type === 'error' || content.text.toLowerCase().includes('error');
+
   return (
     <Paper
       shadow="xs"
@@ -50,18 +64,34 @@ export default function MessageBubble({ role, text, loading }: Props) {
       withBorder
       style={{
         alignSelf: isUser ? 'flex-end' : 'flex-start',
-        maxWidth: isUser ? '85%' : '100%', // Full width for assistant on mobile
+        maxWidth: isUser ? '85%' : '100%',
         backgroundColor: isUser
-          ? 'var(--mantine-color-blue-light)'
-          : 'var(--mantine-color-default)',
+          ? 'var(--mantine-color-blue-filled)'
+          : isError
+            ? 'var(--mantine-color-red-light)'
+            : 'var(--mantine-color-default)',
+        color: isUser ? 'var(--mantine-color-white)' : 'inherit',
       }}
     >
-      <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
-        {content.text}
-      </Text>
+      {isError && !isUser ? (
+        <Alert
+          icon={<IconAlertCircle size={16} />}
+          color="red"
+          variant="light"
+          styles={{ root: { padding: '8px 12px' } }}
+        >
+          <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
+            {content.text}
+          </Text>
+        </Alert>
+      ) : (
+        <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
+          {content.text}
+        </Text>
+      )}
 
       {/* RENDER WIDGETS */}
-      {content.type === 'chart' && content.data && (
+      {content.type === 'chart' && content.data && Array.isArray(content.data) && (
         <ChartWidget
           data={content.data}
           xKey={content.extras?.xKey || 'ts'}
@@ -71,10 +101,11 @@ export default function MessageBubble({ role, text, loading }: Props) {
       )}
 
       {/* RENDER TABLE FOR SQL/TABLE/CHART TYPES */}
-      {['sql', 'table', 'chart'].includes(content.type) && content.data && (
-        <TableWidget data={content.data} />
-      )}
+      {['sql', 'table', 'chart'].includes(content.type) &&
+        content.data &&
+        Array.isArray(content.data) && (
+          <TableWidget data={content.data} />
+        )}
     </Paper>
   );
 }
-

@@ -1,6 +1,7 @@
 import { Textarea, Group, ActionIcon, Paper, Tooltip } from '@mantine/core';
-import { IconSend, IconPlayerStop } from '@tabler/icons-react';
+import { IconSend, IconPlayerStop, IconMicrophone } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
+import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   sendMessage,
@@ -14,16 +15,21 @@ import {
 export default function ChatInput() {
   const dispatch = useAppDispatch();
   const [value, setValue] = useState('');
-  const inputRef = useRef<HTMLTextAreaElement | null>(null);
-  const currentRequest = useRef<any>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const pendingThunkRef = useRef<any>(null);
 
-  const {
-    activeConversationId,
-    draftMessageMode,
-    sendingConversationIds,
-  } = useAppSelector(s => s.chat);
+  const { activeConversationId, draftMessageMode, sendingConversationIds } =
+    useAppSelector((s) => s.chat);
 
-  const isCurrentSending = activeConversationId ? sendingConversationIds.includes(activeConversationId) : false;
+  const isCurrentSending = activeConversationId
+    ? sendingConversationIds.includes(activeConversationId)
+    : false;
+
+  const { isRecording, isLoading: isTranscribing, startRecording, stopRecording } =
+    useVoiceRecorder((text) => {
+      setValue((prev) => (prev ? prev + ' ' + text : text));
+      inputRef.current?.focus();
+    });
 
   useEffect(() => {
     if (draftMessageMode && !isCurrentSending) {
@@ -32,16 +38,20 @@ export default function ChatInput() {
   }, [draftMessageMode, isCurrentSending]);
 
   const handleStop = () => {
+    if (!isCurrentSending) return;
+
+    if (pendingThunkRef.current) {
+      pendingThunkRef.current.abort();
+      pendingThunkRef.current = null;
+    }
+
     if (activeConversationId) {
       dispatch(stopMessage(activeConversationId));
-    }
-    if (currentRequest.current) {
-      currentRequest.current.abort();
-      currentRequest.current = null;
     }
   };
 
   const handleSend = async () => {
+    // If already sending, stop instead
     if (isCurrentSending) {
       handleStop();
       return;
@@ -52,55 +62,63 @@ export default function ChatInput() {
 
     setValue('');
 
-    let targetConvoId = activeConversationId;
+    try {
+      let targetConvoId = activeConversationId;
 
-    if (draftMessageMode) {
-      const convo = await dispatch(
-        createConversation(message.slice(0, 40))
-      ).unwrap();
-
-      dispatch(setActiveConversation(convo.id));
-      targetConvoId = convo.id;
-    }
-
-    if (targetConvoId) {
-      dispatch(addUserMessage(message));
-      dispatch(addAssistantLoading());
-
-      currentRequest.current = dispatch(
-        sendMessage({
-          conversationId: targetConvoId,
-          message,
-        })
-      );
-
-      try {
-        await currentRequest.current.unwrap();
-      } catch (err: any) {
-        if (err.name !== 'AbortError' && err.message !== 'Aborted') {
-          console.error('Failed to send message:', err);
-        }
-      } finally {
-        currentRequest.current = null;
+      if (draftMessageMode) {
+        const convo = await dispatch(
+          createConversation(message.slice(0, 40))
+        ).unwrap();
+        dispatch(setActiveConversation(convo.id));
+        targetConvoId = convo.id;
       }
+
+      if (targetConvoId) {
+        dispatch(addUserMessage(message));
+        dispatch(addAssistantLoading());
+
+        const promise = dispatch(
+          sendMessage({
+            conversationId: targetConvoId,
+            message,
+          })
+        );
+        pendingThunkRef.current = promise;
+        await promise.unwrap();
+      }
+    } catch (err: unknown) {
+      const error = err as any;
+      if (error?.name !== 'AbortError' && error?.message !== 'Aborted' && error?.message !== 'Request cancelled') {
+        console.error('Failed to send message:', err);
+      }
+    } finally {
+      pendingThunkRef.current = null;
     }
   };
 
-
   return (
-    <Paper withBorder radius="xl" p="xs">
+    <Paper
+      shadow="sm"
+      p="xs"
+      radius="xl"
+      style={{
+        maxWidth: 768,
+        margin: '0 auto',
+        width: '100%',
+      }}
+    >
       <form
         onSubmit={(e) => {
           e.preventDefault();
           handleSend();
         }}
       >
-        <Group wrap="nowrap">
+        <Group align="flex-end" gap="xs" wrap="nowrap">
           <Textarea
             ref={inputRef}
             value={value}
             onChange={(e) => setValue(e.currentTarget.value)}
-            placeholder={isCurrentSending ? "Waiting for response..." : "Message..."}
+            placeholder={isCurrentSending ? 'Waiting for response...' : 'Message...'}
             autosize
             minRows={1}
             maxRows={5}
@@ -116,18 +134,37 @@ export default function ChatInput() {
             }}
           />
 
-          <Tooltip label={isCurrentSending ? "Stop generating" : "Send message"}>
-            <ActionIcon
-              type="submit"
-              color={isCurrentSending ? "red" : "blue"}
-              radius="xl"
-              size="lg"
-              disabled={!isCurrentSending && !value.trim()}
-              loading={false} // We show the stop icon instead of a generic loader
-            >
-              {isCurrentSending ? <IconPlayerStop size={18} /> : <IconSend size={18} />}
-            </ActionIcon>
-          </Tooltip>
+          <Group gap="xs">
+            <Tooltip label={isRecording ? 'Stop recording' : 'Record voice'}>
+              <ActionIcon
+                onClick={isRecording ? stopRecording : startRecording}
+                color={isRecording ? 'red' : 'gray'}
+                variant={isRecording ? 'filled' : 'subtle'}
+                radius="xl"
+                size="lg"
+                disabled={isCurrentSending || isTranscribing}
+                loading={isTranscribing}
+              >
+                <IconMicrophone size={18} />
+              </ActionIcon>
+            </Tooltip>
+
+            <Tooltip label={isCurrentSending ? 'Stop generating' : 'Send message'}>
+              <ActionIcon
+                type="submit"
+                color={isCurrentSending ? 'red' : 'blue'}
+                radius="xl"
+                size="lg"
+                disabled={!isCurrentSending && !value.trim()}
+              >
+                {isCurrentSending ? (
+                  <IconPlayerStop size={18} />
+                ) : (
+                  <IconSend size={18} />
+                )}
+              </ActionIcon>
+            </Tooltip>
+          </Group>
         </Group>
       </form>
     </Paper>

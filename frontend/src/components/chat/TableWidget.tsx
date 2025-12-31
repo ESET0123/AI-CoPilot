@@ -2,7 +2,7 @@ import { Table, Box, Button, Collapse } from '@mantine/core';
 import { useState } from 'react';
 
 type TableWidgetProps = {
-    data: any[];
+    data: Record<string, string | number | boolean | object>[];
 };
 
 export default function TableWidget({ data }: TableWidgetProps) {

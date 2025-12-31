@@ -29,51 +29,112 @@ router.get('/:conversationId', async (req, res) => {
 
 /* ================= SEND MESSAGE ================= */
 
-router.post('/', async (req, res) => {
-  const { conversationId, message } = req.body;
-  const userId = req.userId!;
+// router.post('/', async (req, res) => {
+//   const { conversationId, message } = req.body;
+//   const userId = req.userId!;
 
-  if (!conversationId || !message?.trim()) {
-    return res
-      .status(400)
-      .json({ message: 'Conversation and message required' });
-  }
+//   if (!conversationId || !message?.trim()) {
+//     return res
+//       .status(400)
+//       .json({ message: 'Conversation and message required' });
+//   }
 
-  try {
-    // 🔒 Ownership check
-    await ChatService.assertConversationOwnership(
-      conversationId,
-      userId
-    );
+//   // try {
+//   //   // 🔒 Ownership check
+//   //   await ChatService.assertConversationOwnership(
+//   //     conversationId,
+//   //     userId
+//   //   );
 
-    // 1️⃣ Store user message
-    const userMsg = await ChatService.storeMessage(
-      conversationId,
-      'user',
-      message.trim()
-    );
+//   //   // 1️⃣ Store user message
+//   //   const userMsg = await ChatService.storeMessage(
+//   //     conversationId,
+//   //     'user',
+//   //     message.trim()
+//   //   );
 
-    // 2️⃣ Generate + store assistant reply (FIXED)
-    const assistantMsg =
-      await ChatService.generateAndStoreAssistantReply(
+//   //   // 2️⃣ Generate + store assistant reply (FIXED)
+//   //   const assistantMsg =
+//   //     await ChatService.generateAndStoreAssistantReply(
+//   //       conversationId,
+//   //       message.trim() // 🔥 REQUIRED
+//   //     );
+
+//   //   // 3️⃣ Respond
+//   //   res.json({
+//   //     user: userMsg,
+//   //     assistant: assistantMsg,
+//   //   });
+//   // } catch (err: any) {
+//   //   if (err.message === 'ACCESS_DENIED') {
+//   //     return res.status(403).json({ message: 'Access denied' });
+//   //   }
+
+//   //   console.error('SEND MESSAGE ERROR:', err);
+//   //   res.status(500).json({ message: 'Failed to send message' });
+//   // }
+//   try {
+//   await ChatService.assertConversationOwnership(conversationId, userId);
+
+//   const userMsg = await ChatService.storeMessage(
+//     conversationId,
+//     'user',
+//     message.trim()
+//   );
+
+//   const assistantMsg =
+//     await ChatService.generateAndStoreAssistantReply(
+//       conversationId,
+//       message.trim()
+//     );
+
+//   res.json({
+//     user: userMsg,
+//     assistant: assistantMsg,
+//   });
+// } catch (err: any) {
+//   if (err.message === 'ABORTED') {
+//     return res.status(204).end(); // ✅ no assistant message
+//   }
+
+//   console.error('SEND MESSAGE ERROR:', err);
+//   res.status(500).json({ message: 'Failed to send message' });
+// }
+
+// });
+
+  router.post('/', async (req, res) => {
+    const { conversationId, message } = req.body;
+    const userId = req.userId!;
+
+    try {
+      await ChatService.assertConversationOwnership(conversationId, userId);
+
+      const userMsg = await ChatService.storeMessage(
         conversationId,
-        message.trim() // 🔥 REQUIRED
+        'user',
+        message.trim()
       );
 
-    // 3️⃣ Respond
-    res.json({
-      user: userMsg,
-      assistant: assistantMsg,
-    });
-  } catch (err: any) {
-    if (err.message === 'ACCESS_DENIED') {
-      return res.status(403).json({ message: 'Access denied' });
-    }
+      const assistantMsg =
+        await ChatService.generateAndStoreAssistantReply(
+          conversationId,
+          message.trim()
+        );
 
-    console.error('SEND MESSAGE ERROR:', err);
-    res.status(500).json({ message: 'Failed to send message' });
-  }
-});
+      res.json({
+        user: userMsg,
+        assistant: assistantMsg,
+      });
+    } catch (err: any) {
+      if (err.message === 'ABORTED') {
+        return res.status(204).end(); // 🔥 clean cancel
+      }
+
+      console.error('SEND MESSAGE ERROR:', err);
+      res.status(500).json({ message: 'Failed to send message' });
+    }
+  });
 
 /* ================= EDIT MESSAGE ================= */
 

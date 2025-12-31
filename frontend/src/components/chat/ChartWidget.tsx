@@ -25,8 +25,10 @@ ChartJS.register(
     TimeScale
 );
 
+type DataPoint = Record<string, string | number | Date>;
+
 type ChartWidgetProps = {
-    data: any[];
+    data: DataPoint[];
     xKey: string;
     yKey: string;
     label?: string;
