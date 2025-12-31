@@ -13,6 +13,16 @@ from datetime import datetime
 current_dir = os.path.dirname(os.path.abspath(__file__))
 os.environ["PATH"] += os.pathsep + current_dir
 
+# --- LOGGING SETUP ---
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger("AI_SERVICE")
+logger.info("Initializing AI Service...")
+
 # --- IMPORTS ---
 from fastapi import FastAPI, HTTPException, UploadFile, File, Body
 from fastapi.middleware.cors import CORSMiddleware
@@ -234,12 +244,12 @@ async def chat_handler(request: ChatRequest):
                     intent=intent
                 )
 
-            # No graph for single point forecast
+            # Enable visualization for single point forecast
             insight = {
                 "summary": msg,
-                "visualization_type": "none",
-                "x_column": None,
-                "y_column": None
+                "visualization_type": "bar",
+                "x_column": "date",
+                "y_column": "predicted_revenue"
             }
         else:
             # SQL_QUERY
@@ -359,11 +369,21 @@ async def legacy_chat_endpoint(request: LegacyChatRequest):
 
             # Prepare data for response
             data_rows = sanitize_dataframe_for_json(df)
+            
+            # Create chart metadata
+            insight = {
+                "summary": msg,
+                "visualization_type": "bar",
+                "x_column": "date",
+                "y_column": "predicted_revenue"
+            }
+
             return LegacyChatResponse(
                 **LegacyResponseFormatter.convert_to_legacy_format(
                     content=msg,
                     intent=intent,
                     data=data_rows,
+                    insight=insight,
                     response_type="data"
                 )
             )

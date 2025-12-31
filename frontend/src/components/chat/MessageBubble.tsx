@@ -2,7 +2,8 @@ import { Paper, Text, Loader, Box, Alert } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useMemo } from 'react';
 import ChartWidget from './ChartWidget';
-import TableWidget from './TableWidget';
+
+import { parseMessageContent } from '../../utils/contentParser';
 
 type Props = {
   role: 'user' | 'assistant';
@@ -15,28 +16,9 @@ export default function MessageBubble({ role, text, loading }: Props) {
 
   // Parse structured data if assistant
   const content = useMemo(() => {
-    if (isUser || !text) return { text, type: 'text', data: null, extras: {} };
-
-    // Try to parse as JSON
-    try {
-      const parsed = JSON.parse(text);
-
-      // Validate structure
-      if (parsed && typeof parsed === 'object' && parsed.text && parsed.type) {
-        return {
-          text: parsed.text,
-          type: parsed.type,
-          data: parsed.data || null,
-          extras: parsed.extras || {},
-        };
-      }
-    } catch (e) {
-      // Not JSON, fall back to plain text
-      console.log('Message is not JSON, rendering as plain text. Error:', e);
-    }
-
-    // Return as plain text
-    return { text, type: 'text', data: null, extras: {} };
+    const p = parseMessageContent(text, isUser);
+    // if (!isUser) console.log('[MessageBubble] Parsed Content:', p);
+    return p;
   }, [text, isUser]);
 
   if (loading) {
@@ -100,12 +82,25 @@ export default function MessageBubble({ role, text, loading }: Props) {
         />
       )}
 
-      {/* RENDER TABLE FOR SQL/TABLE/CHART TYPES */}
-      {['sql', 'table', 'chart'].includes(content.type) &&
-        content.data &&
-        Array.isArray(content.data) && (
-          <TableWidget data={content.data} />
-        )}
+
+
+      {/* VIEW DETAILS BUTTON */}
+      {['sql', 'table', 'chart'].includes(content.type) && content.data && (
+        <Box mt="xs">
+          <Text
+            size="xs"
+            c="dimmed"
+            style={{ cursor: 'pointer', textDecoration: 'underline' }}
+            onClick={() => {
+              // Dispatch event to open panel
+              window.dispatchEvent(new CustomEvent('OPEN_DATA_PANEL'));
+            }}
+          >
+            View details in Data Panel
+          </Text>
+        </Box>
+      )}
+
     </Paper>
   );
 }

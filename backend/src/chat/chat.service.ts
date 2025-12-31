@@ -14,7 +14,7 @@ const activeGenerations = new Map<string, AbortController>();
 /* ================= SERVICE ================= */
 
 export class ChatService {
-  
+
   /* ===== OWNERSHIP CHECK ===== */
   static async assertConversationOwnership(
     conversationId: string,
@@ -111,6 +111,8 @@ export class ChatService {
     const controller = new AbortController();
     activeGenerations.set(conversationId, controller);
 
+    console.log(`[${new Date().toISOString()}] [ChatService] Generating reply for conversation ${conversationId}`);
+
     try {
       const reply = await callAIService(
         {
@@ -120,6 +122,8 @@ export class ChatService {
         controller.signal
       );
 
+      console.log(`[${new Date().toISOString()}] [ChatService] Generation successful`);
+
       return await this.storeMessage(
         conversationId,
         'assistant',
@@ -127,11 +131,11 @@ export class ChatService {
       );
     } catch (err: any) {
       if (controller.signal.aborted) {
-        console.log(`Generation aborted: ${conversationId}`);
+        console.log(`[${new Date().toISOString()}] [ChatService] Generation aborted: ${conversationId}`);
         throw new Error('ABORTED');
       }
 
-      console.error('AI SERVICE ERROR:', err);
+      console.error(`[${new Date().toISOString()}] [ChatService] AI Error:`, err);
       throw err;
     } finally {
       activeGenerations.delete(conversationId);

@@ -90,6 +90,19 @@ export const createConversation = createAsyncThunk<
   return data;
 });
 
+export const stopGeneration = createAsyncThunk(
+  'chat/stopGeneration',
+  async (conversationId: string, { rejectWithValue }) => {
+    try {
+      console.info(`[Redux] Stopping generation for conversation ${conversationId}...`);
+      await chatApi.stopMessage(conversationId);
+      console.info(`[Redux] Stop signal sent.`);
+    } catch (error: any) {
+      console.error(`[Redux] Failed to stop generation:`, error);
+      return rejectWithValue(error.response?.data?.message || 'Failed to stop generation');
+    }
+  }
+);
 export const renameConversation = createAsyncThunk<
   BackendConversation,
   { conversationId: string; title: string },

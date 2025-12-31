@@ -53,20 +53,13 @@ class LegacyResponseFormatter:
             Dict with single "content" key containing JSON string
         """
         # Determine the response type
+        # Determine the response type
         if response_type == "error":
             response_payload = {
                 "text": content,
                 "type": "error",
                 "data": None,
                 "extras": {}
-            }
-        elif sql:
-            # SQL query response
-            response_payload = {
-                "text": content if content else f"Executed SQL: {sql}",
-                "type": "sql",
-                "data": data if data else [],
-                "extras": {"sql": sql}
             }
         elif intent == "REVENUE_FORECAST" and data:
             # Revenue forecast with chart
@@ -78,14 +71,35 @@ class LegacyResponseFormatter:
                     "chartType": "line",
                     "xKey": "date",
                     "yKey": "predicted_revenue",
-                    "yLabel": "Revenue ($)"
+                    "yLabel": "Revenue ($)",
+                    "sql": sql # Preserve SQL if available
                 }
             }
-        elif insight and insight.get("visualization_type") in ["line", "bar"]:
-            # Chart visualization
+        elif insight and insight.get("visualization_type", "").lower() in ["line", "bar"]:
+            # Chart visualization (Prioritize over SQL)
             x_col = insight.get("x_column", "ts")
             y_col = insight.get("y_column", "value")
             chart_type = insight.get("visualization_type", "line")
+            
+            # --- SMART COLUMN RESOLUTION ---
+            # Verify if x_col/y_col actually exist in the data. If not, auto-detect.
+            if data and len(data) > 0:
+                first_row = data[0]
+                keys = list(first_row.keys())
+                
+                # Check X Column
+                if x_col not in keys:
+                    # Look for date/time columns
+                    candidates = [k for k in keys if any(x in k.lower() for x in ['date', 'time', 'ts', 'day', 'hour'])]
+                    if candidates:
+                        x_col = candidates[0]
+                
+                # Check Y Column
+                if y_col not in keys:
+                    # Look for numeric columns that are NOT the x_col and NOT IDs
+                    candidates = [k for k in keys if k != x_col and isinstance(first_row[k], (int, float)) and 'id' not in k.lower()]
+                    if candidates:
+                        y_col = candidates[0]
             
             response_payload = {
                 "text": content,
@@ -95,8 +109,17 @@ class LegacyResponseFormatter:
                     "chartType": chart_type,
                     "xKey": x_col,
                     "yKey": y_col,
-                    "yLabel": y_col.replace("_", " ").title()
+                    "yLabel": y_col.replace("_", " ").title(),
+                    "sql": sql # Preserve SQL if available
                 }
+            }
+        elif sql:
+            # SQL query response
+            response_payload = {
+                "text": content if content else f"Executed SQL: {sql}",
+                "type": "sql",
+                "data": data if data else [],
+                "extras": {"sql": sql}
             }
         elif data and len(data) > 0:
             # Table data

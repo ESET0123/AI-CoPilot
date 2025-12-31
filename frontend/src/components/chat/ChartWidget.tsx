@@ -1,15 +1,4 @@
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-    TimeScale,
-    ChartOptions,
-} from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale, ChartOptions } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-luxon';
 import { Box } from '@mantine/core';
@@ -42,9 +31,12 @@ export default function ChartWidget({
     label,
     color = '#2563EB',
 }: ChartWidgetProps) {
+    // User requested log
+    // if (data) console.log('[ChartWidget] Received data:', data);
+
     if (!data || data.length === 0) return null;
 
-    const isTimeScale = xKey === 'ts' || xKey === 'date' || xKey === 'timestamp';
+    const isTimeScale = xKey === 'ts' || xKey === 'date' || xKey === 'timestamp' || xKey === 'date_time';
 
     const chartData = {
         datasets: [

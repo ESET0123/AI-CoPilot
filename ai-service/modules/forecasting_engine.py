@@ -13,6 +13,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "revenue_model.keras")
 SCALER_PATH = os.path.join(BASE_DIR, "models", "scaler.pkl")
 
+import logging
+logger = logging.getLogger("AI_SERVICE")
+
+
 # Dependencies from modules
 from modules import db_manager
 
@@ -96,6 +100,7 @@ def predict_revenue_for_date(user_query):
         
         df = pd.DataFrame({'date': [date_str], 'predicted_revenue': [round(revenue, 2)]})
         msg = f"Revenue Forecast for {date_str}: ${round(revenue, 2)}"
+        logger.info(f"Forecast Prediction: {msg}")
         return df, msg
     except Exception as e:
         return pd.DataFrame(), f"Prediction Engine Error: {str(e)}"

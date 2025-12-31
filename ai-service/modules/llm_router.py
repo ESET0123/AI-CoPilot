@@ -9,6 +9,9 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+import logging
+logger = logging.getLogger("AI_SERVICE")
+
 # --- CONFIGURATION ---
 
 # 1. LOCAL CONFIG (Ollama)
@@ -115,6 +118,13 @@ def generate_sql(query, model_type="local"):
     - meter_loads (meter_id INTEGER, date_time TIMESTAMPTZ, forecasted_load DOUBLE PRECISION)
     Context: Today is {current_time} ({current_day}).
     Task: Convert to PostgreSQL SQL. Return ONLY the raw SQL code.
+    
+    CRITICAL RULES:
+    1. If the query asks for "load", "power", or "usage" WITHOUT specifying a meter_id or username, you MUST aggregate.
+       - Use: `SELECT date_time, SUM(forecasted_load) as total_load FROM meter_loads GROUP BY date_time ORDER BY date_time`
+    2. Do NOT select `meter_id` unless explicitly asked using "meter 1001" or "my meter".
+    3. Always order by date_time.
+    
     Query: {query}
     """
     
@@ -142,6 +152,8 @@ def generate_sql(query, model_type="local"):
     
     # 3. Final cleanup of whitespace and trailing semicolons inside text
     sql = sql.strip()
+    
+    logger.info(f"Generated SQL: {sql}")
         
     return sql, resp
 
@@ -162,7 +174,9 @@ def analyze_data(df, query, model_type="local"):
     Task: Analyze this data snippet and the user's query.
     Return a JSON object with:
     1. "summary": A 1-sentence insight about the data.
-    2. "visualization_type": "line", "bar", or "table" (Line/Bar prefer date/time or categorical data).
+    2. "visualization_type": "line", "bar", or "table".
+       - USE "line" if data has a DATE/TIME column and a NUMERIC column.
+       - USE "bar" if data has a CATEGORY column and a NUMERIC column.
     3. "x_column": The best column for X-axis (must be an existing column name).
     4. "y_column": The best column for Y-axis (must be an existing column name).
     
@@ -181,7 +195,42 @@ def analyze_data(df, query, model_type="local"):
     
     try:
         match = re.search(r"\{.*\}", resp, re.DOTALL).group(0)
-        return json.loads(match)
+        result = json.loads(match)
+        
+        # --- HEURISTIC OVERRIDE ---
+        # If LLM does NOT suggest a chart, but we have time-series data, force "line"
+        vt = result.get("visualization_type", "").lower()
+        if vt not in ["line", "bar"]:
+            cols = [c.lower() for c in df.columns]
+            # Check for time columns
+            time_cols = [c for c in cols if any(x in c for x in ['date', 'time', 'ts', 'day', 'hour', 'month'])]
+            # Check for numeric columns
+            numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+            
+            if time_cols and numeric_cols:
+                result["visualization_type"] = "line"
+                result["x_column"] = time_cols[0] # Best guess
+                result["y_column"] = numeric_cols[0] # Best guess
+                
+                logger.info(f"Heuristic applied: Forced visualization to 'line' using {result['x_column']} vs {result['y_column']}")
+                
+        logger.info(f"Analysis Result: {result}")
+        return result
+        
     except:
+        # Fallback if parsing fails but we have data
+        # Check if we can auto-detect simple time-series
+        numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+        cols = [c.lower() for c in df.columns]
+        time_cols = [c for c in cols if any(x in c for x in ['date', 'time', 'ts'])]
+        
+        if time_cols and numeric_cols:
+             return {
+                 "summary": "Here is the data trend.",
+                 "visualization_type": "line",
+                 "x_column": time_cols[0],
+                 "y_column": numeric_cols[0]
+             }
+             
         # Include the raw data in case of parsing failure for debugging
         return {"summary": "Analysis failed or raw text returned.", "visualization_type": "table", "raw": resp}

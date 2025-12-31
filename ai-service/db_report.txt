@@ -1,0 +1,25 @@
+--- DB DIAGNOSTIC ---
+
+1. Schema of meter_loads:
+       column_name                    data_type
+0         meter_id                      integer
+1        date_time  timestamp without time zone
+2  forecasted_load                         real
+
+2. Data Range:
+             min_date            max_date  count
+0 2023-12-25 13:25:15 2026-02-07 13:25:15  93005
+
+3. Future Data Check:
+   meter_id           date_time  forecasted_load
+0      1001 2025-12-31 11:25:15             6.67
+1      1002 2025-12-31 11:25:15             8.55
+2      1003 2025-12-31 11:25:15             6.99
+3      1004 2025-12-31 11:25:15             9.92
+4      1005 2025-12-31 11:25:15             8.00
+
+4. Sample Data Types (Pandas):
+meter_id                    int64
+date_time          datetime64[ns]
+forecasted_load           float64
+dtype: object

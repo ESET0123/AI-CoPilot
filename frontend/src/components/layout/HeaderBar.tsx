@@ -1,7 +1,13 @@
-import { Group, Title, Burger } from '@mantine/core';
+import { Group, Title, Burger, ActionIcon, Tooltip } from '@mantine/core';
 import { useLayout } from './AppShellLayout';
+import { IconLayoutSidebarRightCollapse, IconLayoutSidebarRightExpand } from '@tabler/icons-react';
 
-export default function HeaderBar() {
+type Props = {
+  onToggleDataPanel?: () => void;
+  showDataPanel?: boolean;
+};
+
+export default function HeaderBar({ onToggleDataPanel, showDataPanel }: Props) {
   const { mobileOpened, toggleMobile } = useLayout();
 
   return (
@@ -15,6 +21,23 @@ export default function HeaderBar() {
         />
         <Title order={4}>Esyasoft AI CoPilot</Title>
       </Group>
+
+      {onToggleDataPanel && (
+        <Tooltip label={showDataPanel ? 'Hide Data Panel' : 'Show Data Panel'}>
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            onClick={onToggleDataPanel}
+            size="lg"
+          >
+            {showDataPanel ? (
+              <IconLayoutSidebarRightExpand stroke={1.5} />
+            ) : (
+              <IconLayoutSidebarRightCollapse stroke={1.5} />
+            )}
+          </ActionIcon>
+        </Tooltip>
+      )}
     </Group>
   );
 }
