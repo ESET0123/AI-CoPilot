@@ -17,12 +17,20 @@ import { parseMessageContent } from '../utils/contentParser';
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
   const [showDataPanel, setShowDataPanel] = useState(true);
+  const [selectedData, setSelectedData] = useState<any | null>(null);
 
   // LISTENER FOR 'OPEN_DATA_PANEL'
   useEffect(() => {
-    const handleOpen = () => {
+    const handleOpen = (event: Event) => {
       console.log('[Dashboard] Opening Data Panel via event');
       setShowDataPanel(true);
+
+      // Check if event has data payload (CustomEvent)
+      const customEvent = event as CustomEvent;
+      if (customEvent.detail) {
+        console.log('[Dashboard] Setting selected data from event');
+        setSelectedData(customEvent.detail);
+      }
     };
     window.addEventListener('OPEN_DATA_PANEL', handleOpen);
     return () => window.removeEventListener('OPEN_DATA_PANEL', handleOpen);
@@ -37,6 +45,11 @@ export default function DashboardPage() {
 
   const isEmpty =
     !activeConversation || activeConversation.messages.length === 0;
+
+  // Reset selected data when switching conversations
+  useEffect(() => {
+    setSelectedData(null);
+  }, [chatState.activeConversationId]);
 
   // DERIVE LATEST DATA CONTENT
   const latestDataContent = useMemo(() => {
@@ -161,7 +174,7 @@ export default function DashboardPage() {
                 backgroundColor: 'var(--mantine-color-body)',
               }}
             >
-              <DataPanel content={latestDataContent} />
+              <DataPanel content={selectedData || latestDataContent} />
             </Box>
           </Collapse>
         </Box>

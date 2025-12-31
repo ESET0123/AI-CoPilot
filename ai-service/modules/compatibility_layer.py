@@ -9,7 +9,7 @@ import json
 from typing import Dict, Any, List, Optional
 import pandas as pd
 import numpy as np
-from datetime import datetime
+from datetime import datetime, date
 
 
 class LegacyResponseFormatter:
@@ -153,7 +153,7 @@ class NumpyEncoder(json.JSONEncoder):
             return obj.item()
         if isinstance(obj, np.ndarray):
             return obj.tolist()
-        if isinstance(obj, (pd.Timestamp, datetime)):
+        if isinstance(obj, (pd.Timestamp, datetime, date)):
             return obj.isoformat()
         if pd.isna(obj):
             return None

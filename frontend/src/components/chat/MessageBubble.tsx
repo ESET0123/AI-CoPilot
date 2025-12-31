@@ -92,8 +92,8 @@ export default function MessageBubble({ role, text, loading }: Props) {
             c="dimmed"
             style={{ cursor: 'pointer', textDecoration: 'underline' }}
             onClick={() => {
-              // Dispatch event to open panel
-              window.dispatchEvent(new CustomEvent('OPEN_DATA_PANEL'));
+              // Dispatch event to open panel with specific content
+              window.dispatchEvent(new CustomEvent('OPEN_DATA_PANEL', { detail: content }));
             }}
           >
             View details in Data Panel
