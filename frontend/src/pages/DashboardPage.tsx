@@ -8,10 +8,7 @@ import ChatInput from '../components/chat/ChatInput';
 import DataPanel from '../components/chat/DataPanel';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import {
-  fetchConversations,
-  fetchMessages,
-} from '../features/chat/chatSlice';
+import { fetchConversations, fetchMessages, } from '../features/chat/chatSlice';
 import { parseMessageContent } from '../utils/contentParser';
 
 export default function DashboardPage() {
