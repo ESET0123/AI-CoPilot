@@ -1,4 +1,4 @@
-import { Paper, Text, Loader, Box, Alert } from '@mantine/core';
+import { Paper, Text, Loader, Box, Alert, useMantineTheme, useMantineColorScheme } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useMemo } from 'react';
 import ChartWidget from './ChartWidget';
@@ -37,6 +37,8 @@ export default function MessageBubble({ role, text, loading }: Props) {
 
   // Handle error messages
   const isError = content.type === 'error' || content.text.toLowerCase().includes('error');
+  const { colorScheme } = useMantineColorScheme();
+  const isDark = colorScheme === 'dark';
 
   return (
     <Paper
@@ -51,8 +53,9 @@ export default function MessageBubble({ role, text, loading }: Props) {
           ? 'var(--mantine-color-blue-filled)'
           : isError
             ? 'var(--mantine-color-red-light)'
-            : 'var(--mantine-color-default)',
+            : isDark ? 'var(--mantine-color-dark-6)' : 'var(--mantine-color-default)',
         color: isUser ? 'var(--mantine-color-white)' : 'inherit',
+        borderColor: isDark && !isUser ? 'var(--mantine-color-dark-4)' : undefined
       }}
     >
       {isError && !isUser ? (

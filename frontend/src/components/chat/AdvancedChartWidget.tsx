@@ -14,7 +14,7 @@ import {
 } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
 import 'chartjs-adapter-luxon';
-import { Box, Paper, Text, SegmentedControl, Group, useMantineTheme } from '@mantine/core';
+import { Box, Paper, Text, SegmentedControl, Group, useMantineTheme, useMantineColorScheme } from '@mantine/core';
 import { useState, useMemo } from 'react';
 
 ChartJS.register(
@@ -91,6 +91,13 @@ export default function AdvancedChartWidget({
         );
     }
 
+    // 4. Dynamic Theme Colors
+    const { colorScheme } = useMantineColorScheme();
+    const isDark = colorScheme === 'dark';
+    const textColor = isDark ? theme.colors.gray[3] : theme.colors.gray[7];
+    const gridColor = isDark ? theme.colors.dark[4] : theme.colors.gray[2];
+    const bgColor = isDark ? theme.colors.dark[7] : theme.white;
+
     // 2. Prepare Data
     const chartData: ChartData<'line' | 'bar'> = {
         labels: isTimeScale ? undefined : data.map(d => String(d[xKey])), // Only needed for category scale
@@ -112,7 +119,7 @@ export default function AdvancedChartWidget({
                     return yVal; // For category scale, just return Y. Labels handle X.
                 }) as (number | { x: number; y: number })[],
                 borderColor: theme.colors.blue[6],
-                backgroundColor: chartType === 'bar' ? theme.colors.blue[2] : theme.colors.blue[6],
+                backgroundColor: chartType === 'bar' ? (isDark ? theme.colors.blue[8] : theme.colors.blue[2]) : theme.colors.blue[6],
                 borderWidth: 2,
                 pointRadius: chartType === 'line' ? 2 : 0,
                 pointHoverRadius: 6,
@@ -129,12 +136,18 @@ export default function AdvancedChartWidget({
         plugins: {
             legend: {
                 position: 'top',
-                labels: { usePointStyle: true, boxWidth: 8 }
+                labels: {
+                    usePointStyle: true,
+                    boxWidth: 8,
+                    color: textColor
+                }
             },
             tooltip: {
                 mode: 'index',
                 intersect: false,
-                backgroundColor: theme.colors.gray[9],
+                backgroundColor: isDark ? theme.colors.dark[6] : theme.colors.gray[9],
+                titleColor: isDark ? theme.colors.gray[0] : theme.white,
+                bodyColor: isDark ? theme.colors.gray[1] : theme.white,
                 padding: 12,
             }
         },
@@ -142,6 +155,7 @@ export default function AdvancedChartWidget({
             x: {
                 type: isTimeScale ? 'time' : 'category',
                 grid: { display: false },
+                ticks: { color: textColor },
                 ...(isTimeScale ? {
                     time: {
                         unit: 'hour', // Auto-scaling works fairly well, but unit: 'auto' is not standard ChartJS. Let adapter handle most.
@@ -155,7 +169,8 @@ export default function AdvancedChartWidget({
             },
             y: {
                 beginAtZero: false,
-                grid: { color: theme.colors.gray[1] },
+                grid: { color: gridColor },
+                ticks: { color: textColor },
             }
         },
         interaction: {
@@ -167,14 +182,14 @@ export default function AdvancedChartWidget({
 
     return (
         <Paper p="md" shadow="sm" radius="md" withBorder style={{
-            backgroundColor: theme.white,
+            backgroundColor: bgColor,
             transition: 'all 0.2s ease',
             height: '100%',
             display: 'flex',
             flexDirection: 'column'
         }}>
             <Group justify="space-between" mb="md">
-                <Text fw={600} size="sm" c="dimmed">
+                <Text fw={600} size="sm" c={isDark ? "dimmed" : "dimmed"}>
                     {title || 'Analysis Visualization'}
                 </Text>
 
