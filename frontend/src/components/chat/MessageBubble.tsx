@@ -21,6 +21,10 @@ export default function MessageBubble({ role, text, loading }: Props) {
     return p;
   }, [text, isUser]);
 
+
+  const { colorScheme } = useMantineColorScheme();
+  const isDark = colorScheme === 'dark';
+
   if (loading) {
     return (
       <Box
@@ -37,8 +41,7 @@ export default function MessageBubble({ role, text, loading }: Props) {
 
   // Handle error messages
   const isError = content.type === 'error' || content.text.toLowerCase().includes('error');
-  const { colorScheme } = useMantineColorScheme();
-  const isDark = colorScheme === 'dark';
+
 
   return (
     <Paper

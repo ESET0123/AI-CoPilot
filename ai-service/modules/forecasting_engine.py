@@ -22,7 +22,7 @@ from modules import db_manager
 
 # LLM Config
 OLLAMA_API = "http://localhost:11434/api/generate"
-MODEL = "qwen2.5-coder"
+MODEL = "gemma3:12b"
 
 def get_forecasted_load_from_db(target_date_str):
     """Queries the DB for the SUM of all forecasted loads for a specific future date."""
