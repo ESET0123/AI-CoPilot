@@ -3,6 +3,7 @@ import { IconChartBar, IconDatabase } from '@tabler/icons-react';
 import AdvancedChartWidget from './AdvancedChartWidget';
 import TableWidget from './TableWidget';
 import { ParsedContent } from '../../utils/contentParser';
+import { designTokens } from '../../styles/designTokens';
 
 type Props = {
     content: ParsedContent | null;
@@ -22,9 +23,9 @@ export default function DataPanel({ content }: Props) {
 
     return (
         <Paper
-            shadow="xs"
-            p="md"
-            radius="md"
+            shadow="md"
+            p="lg"
+            radius="lg"
             withBorder
             style={{
                 height: '100%',
@@ -32,22 +33,35 @@ export default function DataPanel({ content }: Props) {
                 flexDirection: 'column',
                 backgroundColor: 'var(--mantine-color-body)',
                 overflowY: 'auto',
+                borderColor: 'rgba(79, 172, 254, 0.15)',
+                transition: designTokens.transitions.normal,
             }}
         >
-            <Stack gap="sm" style={{ height: '100%' }}>
-                <Box style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <IconChartBar size={20} color="var(--mantine-primary-color-filled)" />
-                    <Text fw={600} size="lg">Data Analysis</Text>
+            <Stack gap="md" style={{ height: '100%' }}>
+                <Box style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    paddingBottom: 8,
+                    borderBottom: '2px solid rgba(79, 172, 254, 0.2)',
+                }}>
+                    <IconChartBar size={24} style={{ color: '#4facfe' }} />
+                    <Text fw={700} size="xl" style={{
+                        background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                    }}>Data Analysis</Text>
                 </Box>
 
-                <Text size="sm" c="dimmed">
+                <Text size="sm" c="dimmed" style={{ marginTop: -4 }}>
                     Generated from your latest query.
                 </Text>
 
-                <Box mt="md" style={{ flex: 1 }}>
-                    <Stack gap="lg">
+                <Box mt="sm" style={{ flex: 1 }}>
+                    <Stack gap="xl">
                         {/* Always Render Chart */}
-                        <Box >
+                        <Box style={{ animation: 'fadeIn 0.4s ease-out' }}>
                             <AdvancedChartWidget
                                 data={data}
                                 xKey={extras?.xKey} /* Let internal auto-detect handle fallbacks */
@@ -58,10 +72,10 @@ export default function DataPanel({ content }: Props) {
                         </Box>
 
                         {/* Always Render Table */}
-                        <Box>
-                            <Box mb="xs" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <IconDatabase size={16} color="gray" />
-                                <Text fw={600} size="sm" c="dimmed">Source Data</Text>
+                        <Box style={{ animation: 'fadeIn 0.5s ease-out' }}>
+                            <Box mb="sm" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <IconDatabase size={18} style={{ color: '#4facfe' }} />
+                                <Text fw={600} size="md" c="dimmed">Source Data</Text>
                             </Box>
                             <TableWidget data={data} />
                         </Box>

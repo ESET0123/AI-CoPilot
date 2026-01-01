@@ -16,6 +16,7 @@ import { Line, Bar } from 'react-chartjs-2';
 import 'chartjs-adapter-luxon';
 import { Box, Paper, Text, SegmentedControl, Group, useMantineTheme, useMantineColorScheme } from '@mantine/core';
 import { useState, useMemo } from 'react';
+import { designTokens } from '../../styles/designTokens';
 
 ChartJS.register(
     CategoryScale,
@@ -50,6 +51,9 @@ export default function AdvancedChartWidget({
     const [chartType, setChartType] = useState<'line' | 'bar'>('line');
 
     // 1. Smart Key Detection
+    // 4. Dynamic Theme Colors
+    const { colorScheme } = useMantineColorScheme();
+
     const { xKey, yKey, isTimeScale } = useMemo(() => {
         if (!data || data.length === 0) return { xKey: '', yKey: '', isTimeScale: false };
 
@@ -90,15 +94,12 @@ export default function AdvancedChartWidget({
             </Paper>
         );
     }
-
-    // 4. Dynamic Theme Colors
-    const { colorScheme } = useMantineColorScheme();
     const isDark = colorScheme === 'dark';
     const textColor = isDark ? theme.colors.gray[3] : theme.colors.gray[7];
     const gridColor = isDark ? theme.colors.dark[4] : theme.colors.gray[2];
     const bgColor = isDark ? theme.colors.dark[7] : theme.white;
 
-    // 2. Prepare Data
+    // 2. Prepare Data with Enhanced Styling
     const chartData: ChartData<'line' | 'bar'> = {
         labels: isTimeScale ? undefined : data.map(d => String(d[xKey])), // Only needed for category scale
         datasets: [
@@ -118,13 +119,21 @@ export default function AdvancedChartWidget({
                     }
                     return yVal; // For category scale, just return Y. Labels handle X.
                 }) as (number | { x: number; y: number })[],
-                borderColor: theme.colors.blue[6],
-                backgroundColor: chartType === 'bar' ? (isDark ? theme.colors.blue[8] : theme.colors.blue[2]) : theme.colors.blue[6],
-                borderWidth: 2,
-                pointRadius: chartType === 'line' ? 2 : 0,
-                pointHoverRadius: 6,
-                tension: 0.3, // Smooth curves
-                fill: chartType === 'bar',
+                borderColor: isDark ? theme.colors.blue[4] : theme.colors.blue[6],
+                backgroundColor: chartType === 'bar'
+                    ? (isDark ? theme.colors.blue[9] : theme.colors.blue[1])
+                    : isDark ? 'rgba(79, 172, 254, 0.1)' : 'rgba(79, 172, 254, 0.05)',
+                borderWidth: 3,
+                pointRadius: chartType === 'line' ? 4 : 0,
+                pointHoverRadius: 8,
+                pointBackgroundColor: isDark ? theme.colors.blue[4] : theme.colors.blue[6],
+                pointBorderColor: isDark ? theme.colors.dark[7] : theme.white,
+                pointBorderWidth: 2,
+                pointHoverBackgroundColor: theme.colors.blue[5],
+                pointHoverBorderColor: theme.white,
+                pointHoverBorderWidth: 3,
+                tension: 0.4, // Smoother curves
+                fill: true,
             },
         ],
     };
@@ -181,15 +190,33 @@ export default function AdvancedChartWidget({
     };
 
     return (
-        <Paper p="md" shadow="sm" radius="md" withBorder style={{
-            backgroundColor: bgColor,
-            transition: 'all 0.2s ease',
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column'
-        }}>
+        <Paper
+            p="lg"
+            shadow="md"
+            radius="lg"
+            withBorder
+            style={{
+                backgroundColor: bgColor,
+                transition: designTokens.transitions.normal,
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                borderColor: isDark ? 'rgba(79, 172, 254, 0.2)' : 'rgba(79, 172, 254, 0.15)',
+                boxShadow: isDark
+                    ? '0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(79, 172, 254, 0.1)'
+                    : '0 4px 12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(79, 172, 254, 0.1)',
+            }}
+        >
             <Group justify="space-between" mb="md">
-                <Text fw={600} size="sm" c={isDark ? "dimmed" : "dimmed"}>
+                <Text
+                    fw={600}
+                    size="md"
+                    c={isDark ? theme.colors.blue[3] : theme.colors.blue[7]}
+                    style={{
+                        letterSpacing: '-0.01em',
+                        transition: designTokens.transitions.fast,
+                    }}
+                >
                     {title || 'Analysis Visualization'}
                 </Text>
 
@@ -201,10 +228,21 @@ export default function AdvancedChartWidget({
                         { label: 'Line', value: 'line' },
                         { label: 'Bar', value: 'bar' }
                     ]}
+                    styles={{
+                        root: {
+                            backgroundColor: isDark ? theme.colors.dark[5] : theme.colors.gray[1],
+                            transition: designTokens.transitions.fast,
+                        },
+                    }}
                 />
             </Group>
 
-            <Box style={{ flex: 1, minHeight: 250, width: '100%' }}>
+            <Box style={{
+                flex: 1,
+                minHeight: 250,
+                width: '100%',
+                animation: 'fadeIn 0.4s ease-in-out',
+            }}>
                 {chartType === 'line' ? (
                     <Line data={chartData as ChartData<'line'>} options={options as ChartOptions<'line'>} />
                 ) : (

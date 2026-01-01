@@ -22,6 +22,7 @@ import {
   IconCheck,
 } from '@tabler/icons-react';
 import { useState } from 'react';
+import { designTokens } from '../../styles/designTokens';
 
 import UserMenu from './UserMenu';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
@@ -102,7 +103,19 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
               type="button"
               leftSection={<IconPlus size={16} />}
               radius="xl"
+              variant="gradient"
+              gradient={{ from: 'blue', to: 'cyan', deg: 135 }}
               onClick={() => dispatch(startNewChat())}
+              styles={{
+                root: {
+                  transition: designTokens.transitions.normal,
+                  boxShadow: '0 4px 12px rgba(79, 172, 254, 0.3)',
+                  '&:hover': {
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 6px 16px rgba(79, 172, 254, 0.4)',
+                  },
+                },
+              }}
             >
               New chat
             </Button>
@@ -149,12 +162,25 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                         wrap="nowrap"
                         align="center"
                         px="xs"
-                        py={4}
+                        py={6}
                         style={{
-                          borderRadius: 20,
-                          backgroundColor: isActive
-                            ? 'var(--mantine-color-blue-light)'
+                          borderRadius: 12,
+                          background: isActive
+                            ? 'linear-gradient(135deg, rgba(79, 172, 254, 0.15) 0%, rgba(0, 242, 254, 0.15) 100%)'
                             : 'transparent',
+                          border: isActive ? '1px solid rgba(79, 172, 254, 0.3)' : '1px solid transparent',
+                          transition: designTokens.transitions.normal,
+                          cursor: 'pointer',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isActive) {
+                            e.currentTarget.style.backgroundColor = 'var(--mantine-color-default-hover)';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isActive) {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                          }
                         }}
                       >
                         {/* ================= TITLE / INPUT ================= */}

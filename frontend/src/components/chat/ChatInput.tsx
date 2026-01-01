@@ -2,6 +2,7 @@ import { Textarea, Group, ActionIcon, Paper, Tooltip } from '@mantine/core';
 import { IconSend, IconPlayerStop, IconMicrophone } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
+import { designTokens } from '../../styles/designTokens';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   sendMessage,
@@ -98,13 +99,15 @@ export default function ChatInput() {
 
   return (
     <Paper
-      shadow="sm"
-      p="xs"
+      shadow="md"
+      p="sm"
       radius="xl"
       style={{
         maxWidth: 768,
         margin: '0 auto',
         width: '100%',
+        transition: designTokens.transitions.normal,
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(79, 172, 254, 0.1)',
       }}
     >
       <form
@@ -125,6 +128,14 @@ export default function ChatInput() {
             radius="xl"
             disabled={isCurrentSending}
             style={{ flex: 1 }}
+            styles={{
+              input: {
+                transition: designTokens.transitions.fast,
+                '&:focus': {
+                  boxShadow: '0 0 0 2px rgba(79, 172, 254, 0.2)',
+                },
+              },
+            }}
             autoFocus
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
@@ -144,6 +155,10 @@ export default function ChatInput() {
                 size="lg"
                 disabled={isCurrentSending || isTranscribing}
                 loading={isTranscribing}
+                style={{
+                  transition: designTokens.transitions.normal,
+                  transform: isRecording ? 'scale(1.1)' : 'scale(1)',
+                }}
               >
                 <IconMicrophone size={18} />
               </ActionIcon>
@@ -153,9 +168,25 @@ export default function ChatInput() {
               <ActionIcon
                 type="submit"
                 color={isCurrentSending ? 'red' : 'blue'}
+                variant="filled"
                 radius="xl"
                 size="lg"
                 disabled={!isCurrentSending && !value.trim()}
+                style={{
+                  transition: designTokens.transitions.normal,
+                  boxShadow: !isCurrentSending && value.trim()
+                    ? '0 4px 12px rgba(79, 172, 254, 0.4)'
+                    : 'none',
+                  transform: 'scale(1)',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isCurrentSending && value.trim()) {
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
               >
                 {isCurrentSending ? (
                   <IconPlayerStop size={18} />

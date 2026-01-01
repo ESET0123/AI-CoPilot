@@ -1,7 +1,8 @@
-import { Paper, Text, Loader, Box, Alert, useMantineTheme, useMantineColorScheme } from '@mantine/core';
+import { Paper, Text, Loader, Box, Alert, useMantineColorScheme } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useMemo } from 'react';
-import ChartWidget from './ChartWidget';
+// import ChartWidget from './ChartWidget';
+import { designTokens } from '../../styles/designTokens';
 
 import { parseMessageContent } from '../../utils/contentParser';
 
@@ -45,20 +46,34 @@ export default function MessageBubble({ role, text, loading }: Props) {
 
   return (
     <Paper
-      shadow="xs"
-      p="sm"
-      radius="md"
+      shadow="sm"
+      p="md"
+      radius="lg"
       withBorder
       style={{
         alignSelf: isUser ? 'flex-end' : 'flex-start',
         maxWidth: isUser ? '85%' : '100%',
-        backgroundColor: isUser
-          ? 'var(--mantine-color-blue-filled)'
+        background: isUser
+          ? 'linear-gradient(135deg, #4facfe 0%, #0e7c81ff 100%)'
           : isError
             ? 'var(--mantine-color-red-light)'
-            : isDark ? 'var(--mantine-color-dark-6)' : 'var(--mantine-color-default)',
-        color: isUser ? 'var(--mantine-color-white)' : 'inherit',
-        borderColor: isDark && !isUser ? 'var(--mantine-color-dark-4)' : undefined
+            : isDark
+              ? 'var(--mantine-color-dark-6)'
+              : 'var(--mantine-color-default)',
+        color: isUser ? 'white' : 'inherit',
+        borderColor: isUser
+          ? 'transparent'
+          : isDark && !isError
+            ? 'var(--mantine-color-dark-4)'
+            : undefined,
+        transition: designTokens.transitions.normal,
+        boxShadow: isUser
+          ? '0 4px 12px rgba(79, 172, 254, 0.3)'
+          : isDark
+            ? '0 2px 8px rgba(0, 0, 0, 0.3)'
+            : '0 2px 8px rgba(0, 0, 0, 0.08)',
+        animation: 'slideUp 0.3s ease-out',
+        transform: 'translateZ(0)', // GPU acceleration
       }}
     >
       {isError && !isUser ? (
@@ -73,36 +88,55 @@ export default function MessageBubble({ role, text, loading }: Props) {
           </Text>
         </Alert>
       ) : (
-        <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
+        <Text
+          size="sm"
+          style={{
+            whiteSpace: 'pre-wrap',
+            lineHeight: 1.6,
+          }}
+        >
           {content.text}
         </Text>
       )}
 
       {/* RENDER WIDGETS */}
-      {content.type === 'chart' && content.data && Array.isArray(content.data) && (
-        <ChartWidget
-          data={content.data}
-          xKey={content.extras?.xKey || 'ts'}
-          yKey={content.extras?.yKey || 'value'}
-          label={content.extras?.yLabel}
-        />
-      )}
+      {/* {content.type === 'chart' && content.data && Array.isArray(content.data) && (
+        <Box mt="md">
+          <ChartWidget
+            data={content.data}
+            xKey={content.extras?.xKey || 'ts'}
+            yKey={content.extras?.yKey || 'value'}
+            label={content.extras?.yLabel}
+          />
+        </Box>
+      )} */}
 
 
 
       {/* VIEW DETAILS BUTTON */}
       {['sql', 'table', 'chart'].includes(content.type) && content.data && (
-        <Box mt="xs">
+        <Box mt="sm">
           <Text
             size="xs"
-            c="dimmed"
-            style={{ cursor: 'pointer', textDecoration: 'underline' }}
+            c={isUser ? 'rgba(255, 255, 255, 0.9)' : 'dimmed'}
+            style={{
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              transition: designTokens.transitions.fast,
+              display: 'inline-block',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateX(2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateX(0)';
+            }}
             onClick={() => {
               // Dispatch event to open panel with specific content
               window.dispatchEvent(new CustomEvent('OPEN_DATA_PANEL', { detail: content }));
             }}
           >
-            View details in Data Panel
+            View details in Data Panel →
           </Text>
         </Box>
       )}
