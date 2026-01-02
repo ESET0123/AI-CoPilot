@@ -19,6 +19,10 @@ npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
 tsconfig.tsbuildinfo
+.pnpm-store/
+.next/
+.docusaurus/
+.turbo/
 
 # ======================
 # Python / Backend
@@ -46,6 +50,13 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.pytype/
+cython_debug/
 
 # ======================
 # Database / Local data
@@ -75,6 +86,17 @@ Thumbs.db
 *.sln
 *.swp
 *.swo
+*.tmp
+*.bak
+*~
+.DS_Store
+Desktop.ini
+[Tt]humbs.db
+
+# ======================
+# Temporary Artifacts & Tests
+# ======================
+test/
 
 # ======================
 # Docker

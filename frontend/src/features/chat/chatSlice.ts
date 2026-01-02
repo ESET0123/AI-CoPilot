@@ -38,6 +38,8 @@ export type ChatState = {
   activeConversationId: string | null;
   draftMessageMode: boolean;
   sendingConversationIds: string[];
+  dataPanelOpen: boolean;
+  selectedData: any | null;
 };
 
 /* ================= INITIAL STATE ================= */
@@ -47,6 +49,8 @@ const initialState: ChatState = {
   activeConversationId: null,
   draftMessageMode: true,
   sendingConversationIds: [],
+  dataPanelOpen: false,
+  selectedData: null,
 };
 
 /* ================= THUNKS ================= */
@@ -248,6 +252,15 @@ const chatSlice = createSlice({
         text: '',
         loading: true,
       });
+    },
+
+    setDataPanelOpen(state, action: { payload: boolean }) {
+      state.dataPanelOpen = action.payload;
+    },
+
+    setSelectedData(state, action: { payload: any }) {
+      state.selectedData = action.payload;
+      state.dataPanelOpen = true; // Auto-open when data is selected
     },
   },
 
@@ -460,6 +473,8 @@ export const {
   setActiveConversation,
   addUserMessage,
   addAssistantLoading,
+  setDataPanelOpen,
+  setSelectedData,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

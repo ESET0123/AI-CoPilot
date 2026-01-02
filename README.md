@@ -49,19 +49,19 @@ This platform enables users to interact with their data through natural language
 │                      Backend API Layer                      │
 │                   (Node.js + Express)                       │
 │  ┌─────────────┬──────────────┬─────────────┬─────────────┐ │
-│  │    Auth     │     Chat     │   Session   │   Storage   │ │
-│  │   Service   │ Orchestrator │  Management │   Service   │ │
+│  │ Repository  │   Service    │  Controller │   Express   │ │
+│  │    Layer    │    Layer     │    Layer    │   Routes    │ │
 │  └─────────────┴──────────────┴─────────────┴─────────────┘ │
 └────────────────────────┬────────────────────────────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                       AI Service Layer                      │
-│                     (Python + FastAPI)                      │
-│  ┌─────────────┬──────────────┬─────────────┬─────────────┐ │
-│  │    NLP      │     SQL      │ Forecasting │   Whisper   │ │
-│  │  Engine     │  Generator   │   Models    │   STT       │ │
-│  └─────────────┴──────────────┴─────────────┴─────────────┘ │
+│                (Python + FastAPI Modular)                   │
+│  ┌────────────┬─────────────┬─────────────┬──────────────┐  │
+│  │  Routers   │  Services   │   Models    │     Core     │  │
+│  │ (API Endpt)│ (Biz Logic) │ (Pydantic)  │ (Config/Log) │  │
+│  └────────────┴─────────────┴─────────────┴──────────────┘  │
 └────────────────────────┬────────────────────────────────────┘
                          │
                          ▼
@@ -167,41 +167,34 @@ This platform enables users to interact with their data through natural language
 ```
 project-root/
 ├── ai-service/               # AI/ML Service (Python)
-│   ├── main.py              # FastAPI entry point
-│   ├── requirements.txt     # Python dependencies
-│   ├── .env                 # Environment variables
-│   ├── models/              # ML models directory
-│   ├── utils/               # Helper functions
-│   └── README.md
+│   ├── app/                  # Modular Application Core
+│   │   ├── core/             # Config & Logging
+│   │   ├── models/           # API Schemas (Pydantic)
+│   │   ├── routers/          # FastAPI Route Handlers
+│   │   └── services/         # Business & AI Logic
+│   ├── modules/              # Underlying ML & Analytics Modules
+│   ├── main.py               # Entry point (Shim)
+│   ├── requirements.txt      # Python dependencies
+│   └── ...
 │
-├── backend/                 # Backend API (Node.js)
-│   ├── server.js            # Express server
-│   ├── package.json         # Node dependencies
-│   ├── .env                 # Environment variables
-│   ├── routes/              # API route handlers
-│   │   ├── auth.js          # Authentication routes
-│   │   ├── conversations.js # Chat management
-│   │   └── messages.js      # Message handling
-│   ├── middleware/          # Auth & validation
-│   ├── config/              # DB & app config
-│   └── README.md
-│
-├── frontend/                # Frontend App (React)
+├── backend/                  # Backend API (TypeScript)
 │   ├── src/
-│   │   ├── components/      # React components
-│   │   ├── pages/           # Page components
-│   │   ├── store/           # Redux store
-│   │   ├── services/        # API services
-│   │   ├── utils/           # Utility functions
-│   │   ├── App.tsx          # Root component
-│   │   └── main.tsx         # Entry point
-│   ├── package.json         # Frontend dependencies
-│   ├── .env                 # Environment variables
-│   ├── vite.config.ts       # Vite configuration
-│   └── README.md
+│   │   ├── controllers/      # Request/Response Handling
+│   │   ├── services/         # Business Logic Orchestration
+│   │   ├── repositories/     # Data Access Layer (SQL)
+│   │   ├── routes/           # Slim Route Definitions
+│   │   ├── types/            # TypeScript Declarations
+│   │   └── index.ts          # Main App Entry
+│   ├── package.json          # Node dependencies
+│   └── ...
 │
-├── .gitignore
-└── README.md                # This file
+├── frontend/                 # Frontend App (React)
+│   ├── src/
+│   │   ├── components/       # UI Components
+│   │   ├── features/         # Redux Slices & Logic
+│   │   ├── pages/            # Page-level Views (Redux State)
+│   │   └── ...
+│   └── ...
 ```
 
 ---

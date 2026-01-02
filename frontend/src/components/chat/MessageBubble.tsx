@@ -3,6 +3,8 @@ import { IconAlertCircle } from '@tabler/icons-react';
 import { useMemo } from 'react';
 // import ChartWidget from './ChartWidget';
 import { designTokens } from '../../styles/designTokens';
+import { useAppDispatch } from '../../app/hooks';
+import { setSelectedData } from '../../features/chat/chatSlice';
 
 import { parseMessageContent } from '../../utils/contentParser';
 
@@ -13,6 +15,7 @@ type Props = {
 };
 
 export default function MessageBubble({ role, text, loading }: Props) {
+  const dispatch = useAppDispatch();
   const isUser = role === 'user';
 
   // Parse structured data if assistant
@@ -132,8 +135,8 @@ export default function MessageBubble({ role, text, loading }: Props) {
               e.currentTarget.style.transform = 'translateX(0)';
             }}
             onClick={() => {
-              // Dispatch event to open panel with specific content
-              window.dispatchEvent(new CustomEvent('OPEN_DATA_PANEL', { detail: content }));
+              // Set selected data in Redux (which also opens the panel)
+              dispatch(setSelectedData(content));
             }}
           >
             View details in Data Panel →

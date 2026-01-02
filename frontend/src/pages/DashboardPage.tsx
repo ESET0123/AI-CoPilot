@@ -1,5 +1,5 @@
 import { Box, Center, Stack, Text, Collapse } from '@mantine/core';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import AppShellLayout from '../components/layout/AppShellLayout';
 import HeaderBar from '../components/layout/HeaderBar';
@@ -8,51 +8,27 @@ import ChatInput from '../components/chat/ChatInput';
 import DataPanel from '../components/chat/DataPanel';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { fetchConversations, fetchMessages, } from '../features/chat/chatSlice';
+import {
+  fetchConversations,
+  fetchMessages,
+  setDataPanelOpen,
+  setSelectedData as setSelectedDataAction
+} from '../features/chat/chatSlice';
 import { parseMessageContent } from '../utils/contentParser';
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
-  const [showDataPanel, setShowDataPanel] = useState(true);
-  const [selectedData, setSelectedData] = useState<any | null>(null);
-
-  // LISTENER FOR 'OPEN_DATA_PANEL'
-  useEffect(() => {
-    const handleOpen = (event: Event) => {
-      console.log('[Dashboard] Opening Data Panel via event');
-      setShowDataPanel(true);
-
-      // Check if event has data payload (CustomEvent)
-      const customEvent = event as CustomEvent;
-      if (customEvent.detail) {
-        console.log('[Dashboard] Setting selected data from event');
-        setSelectedData(customEvent.detail);
-      }
-    };
-    window.addEventListener('OPEN_DATA_PANEL', handleOpen);
-    return () => window.removeEventListener('OPEN_DATA_PANEL', handleOpen);
-  }, []);
-
   const user = useAppSelector((s) => s.auth.user);
   const chatState = useAppSelector((s) => s.chat);
+  const { dataPanelOpen, selectedData, activeConversationId, conversations } = chatState;
 
-  const activeConversation = chatState.conversations.find(
-    (c) => c.id === chatState.activeConversationId
-  );
+  const activeConversation = conversations.find((c) => c.id === activeConversationId);
+  const isEmpty = !activeConversation || activeConversation.messages.length === 0;
 
-  const isEmpty =
-    !activeConversation || activeConversation.messages.length === 0;
-
-  // Reset selected data when switching conversations
-  useEffect(() => {
-    setSelectedData(null);
-  }, [chatState.activeConversationId]);
-
-  // DERIVE LATEST DATA CONTENT
+  // DERIVE LATEST DATA CONTENT (Fallback if no specific data is selected)
   const latestDataContent = useMemo(() => {
     if (!activeConversation) return null;
 
-    // Find last assistant message with structured data
     const messages = [...activeConversation.messages].reverse();
     const dataMessage = messages.find(m => {
       if (m.role !== 'assistant') return false;
@@ -64,110 +40,74 @@ export default function DashboardPage() {
     return parseMessageContent(dataMessage.text, false);
   }, [activeConversation]);
 
-  /* ================= LOAD CONVERSATIONS + FIRST CHAT ================= */
+  // LOAD CONVERSATIONS ON MOUNT
   useEffect(() => {
     if (!user) return;
 
     dispatch(fetchConversations())
       .unwrap()
-      .then((conversations) => {
+      .then((convos) => {
         const savedId = localStorage.getItem('activeConversationId');
-        const targetId = conversations.find((c) => c.id === savedId)?.id || conversations[0]?.id;
-
-        if (targetId) {
-          dispatch(fetchMessages(targetId));
-        }
+        const targetId = convos.find((c) => c.id === savedId)?.id || convos[0]?.id;
+        if (targetId) dispatch(fetchMessages(targetId));
       });
   }, [user, dispatch]);
 
+  // RESET SELECTED DATA ON CONVERSATION SWITCH
+  useEffect(() => {
+    dispatch(setSelectedDataAction(null));
+  }, [activeConversationId, dispatch]);
+
   return (
     <AppShellLayout>
-      <Box
-        style={{
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          overflow: 'hidden', // Prevent page scroll
-        }}
-      >
-        {/* ================= HEADER ================= */}
+      <Box h="100%" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+
+        {/* HEADER SECTION */}
         <Box
+          h={60}
+          px="md"
           style={{
             borderBottom: '1px solid var(--mantine-color-default-border)',
-            padding: '8px 16px',
-            height: '60px',
             flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center'
           }}
         >
           <HeaderBar
-            showDataPanel={showDataPanel}
-            onToggleDataPanel={() => setShowDataPanel(o => !o)}
+            showDataPanel={dataPanelOpen}
+            onToggleDataPanel={() => dispatch(setDataPanelOpen(!dataPanelOpen))}
           />
         </Box>
 
-        {/* ================= MAIN CONTENT ROW ================= */}
-        <Box
-          style={{
-            flex: 1,
-            display: 'flex',
-            overflow: 'hidden',
-          }}
-        >
+        {/* MAIN BODY SECTION */}
+        <Box style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+
           {/* LEFT: CHAT AREA */}
-          <Box
-            style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              minWidth: 0, // Flex child fix
-            }}
-          >
-            <Box
-              style={{
-                flex: 1,
-                overflowY: 'auto',
-                padding: '16px',
-                position: 'relative',
-              }}
-              p={{ base: 'xs', sm: 'md' }}
-            >
+          <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+            <Box style={{ flex: 1, overflowY: 'auto', position: 'relative' }} p="md">
               {isEmpty && (
-                <Center
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    pointerEvents: 'none',
-                  }}
-                >
+                <Center style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
                   <Stack align="center" maw={640} px="md">
-                    <Text size="xl" fw={600} ta="center">
-                      How can I help you today?
-                    </Text>
+                    <Text size="xl" fw={600} ta="center">How can I help you today?</Text>
                   </Stack>
                 </Center>
               )}
-
               <ChatWindow />
             </Box>
 
-            <Box p={{ base: 'xs', sm: 'md' }}>
+            <Box p="md">
               <ChatInput />
             </Box>
           </Box>
 
-          {/* RIGHT: DATA PANEL (Third Partition) */}
-          <Collapse
-            in={showDataPanel}
-            transitionDuration={200}
-            animateOpacity
-          >
+          {/* RIGHT: DATA PANEL CONTAINER */}
+          <Collapse in={dataPanelOpen} transitionDuration={200}>
             <Box
+              w={400}
+              h="100%"
+              p="md"
               style={{
-                width: 400,
-                height: '100%',
                 borderLeft: '1px solid var(--mantine-color-default-border)',
-                padding: 16,
                 backgroundColor: 'var(--mantine-color-body)',
               }}
             >

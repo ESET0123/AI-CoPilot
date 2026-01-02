@@ -18,24 +18,15 @@ app.get('/', (_req, res) => {
   res.send('SERVER OK');
 });
 
+import { MessagesController } from './controllers/messages.controller';
+
 app.use('/health', healthRoutes);
 app.use('/auth', authRoutes);
 app.use('/conversations', conversationsRoutes);
 app.use('/messages', messagesRoutes);
 app.use('/api/transcribe', transcribeRoutes);
 
-app.post('/stop', requireAuth, async (req, res) => {
-  const { conversation_id } = req.body;
-  if (!conversation_id) return res.status(400).json({ message: 'conversation_id required' });
-
-  try {
-    const { ChatService } = await import('./chat/chat.service');
-    await ChatService.stopGeneration(conversation_id);
-    res.json({ message: 'Stop signal sent' });
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to signal stop' });
-  }
-});
+app.post('/stop', requireAuth, MessagesController.stop);
 
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
