@@ -45,7 +45,7 @@ export default function AppShellLayout({
 
         <AppShell.Main
           style={{
-            height: '100vh',
+            height: '100dvh',
             display: 'flex',
             flexDirection: 'column',
           }}

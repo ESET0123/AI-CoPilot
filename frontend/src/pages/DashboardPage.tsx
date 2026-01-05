@@ -1,4 +1,5 @@
 import { Box, Center, Stack, Text, Collapse } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { useEffect, useMemo } from 'react';
 
 import AppShellLayout from '../components/layout/AppShellLayout';
@@ -21,6 +22,8 @@ export default function DashboardPage() {
   const user = useAppSelector((s) => s.auth.user);
   const chatState = useAppSelector((s) => s.chat);
   const { dataPanelOpen, selectedData, activeConversationId, conversations } = chatState;
+
+  const isMobile = useMediaQuery('(max-width: 425px)');
 
   const activeConversation = conversations.find((c) => c.id === activeConversationId);
   const isEmpty = !activeConversation || activeConversation.messages.length === 0;
@@ -80,7 +83,12 @@ export default function DashboardPage() {
         </Box>
 
         {/* MAIN BODY SECTION */}
-        <Box style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        <Box style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          overflow: 'hidden'
+        }}>
 
           {/* LEFT: CHAT AREA */}
           <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
@@ -103,12 +111,14 @@ export default function DashboardPage() {
           {/* RIGHT: DATA PANEL CONTAINER */}
           <Collapse in={dataPanelOpen} transitionDuration={200}>
             <Box
-              w={400}
-              h="100%"
+              w={isMobile ? '100%' : 400}
+              h={isMobile ? 350 : "100%"}
               p="md"
               style={{
-                borderLeft: '1px solid var(--mantine-color-default-border)',
+                borderLeft: isMobile ? 'none' : '1px solid var(--mantine-color-default-border)',
+                borderTop: isMobile ? '1px solid var(--mantine-color-default-border)' : 'none',
                 backgroundColor: 'var(--mantine-color-body)',
+                overflowY: 'auto'
               }}
             >
               <DataPanel content={selectedData || latestDataContent} />

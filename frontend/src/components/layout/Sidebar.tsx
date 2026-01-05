@@ -10,6 +10,7 @@ import {
   ScrollArea,
   TextInput,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import {
   IconChevronDown,
   IconChevronLeft,
@@ -25,6 +26,7 @@ import { useState } from 'react';
 import { designTokens } from '../../styles/designTokens';
 
 import UserMenu from './UserMenu';
+import { useLayout } from './AppShellLayout';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   setActiveConversation,
@@ -65,6 +67,9 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
     setDraftTitle('');
   };
 
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const { toggleMobile } = useLayout();
+
   return (
     <Stack h="100%" p="sm" gap="sm">
       {/* ================= TOP ================= */}
@@ -77,7 +82,13 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
           variant="subtle"
           radius="xl"
           type="button"
-          onClick={() => onToggle(!collapsed)}
+          onClick={() => {
+            if (isMobile) {
+              toggleMobile();
+            } else {
+              onToggle(!collapsed);
+            }
+          }}
         >
           {collapsed ? <IconChevronRight /> : <IconChevronLeft />}
         </ActionIcon>
