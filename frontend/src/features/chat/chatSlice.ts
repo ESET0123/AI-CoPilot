@@ -260,7 +260,7 @@ const chatSlice = createSlice({
 
     setSelectedData(state, action: { payload: any }) {
       state.selectedData = action.payload;
-      state.dataPanelOpen = true; // Auto-open when data is selected
+      state.dataPanelOpen = false;
     },
   },
 
