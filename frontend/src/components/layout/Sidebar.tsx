@@ -67,7 +67,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
     setDraftTitle('');
   };
 
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery('(max-width: 425px)');
   const { toggleMobile } = useLayout();
 
   return (
