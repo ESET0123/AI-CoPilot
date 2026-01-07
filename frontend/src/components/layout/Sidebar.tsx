@@ -13,7 +13,7 @@ import {
 import { useMediaQuery } from '@mantine/hooks';
 import {
   IconChevronDown,
-  IconChevronLeft,
+  // IconChevronLeft,
   IconChevronRight,
   IconDots,
   IconPlus,
@@ -22,6 +22,7 @@ import {
   IconTrash,
   IconCheck,
 } from '@tabler/icons-react';
+import { IconLayoutSidebarRightCollapse, IconLayoutSidebarRightExpand } from '@tabler/icons-react';
 import { useState } from 'react';
 import { designTokens } from '../../styles/designTokens';
 
@@ -90,7 +91,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
             }
           }}
         >
-          {collapsed ? <IconChevronRight /> : <IconChevronLeft />}
+          {collapsed ? <IconLayoutSidebarRightCollapse stroke={1.5} /> : <IconLayoutSidebarRightExpand stroke={1.5} />}
         </ActionIcon>
       </Group>
 

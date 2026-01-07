@@ -1,7 +1,6 @@
 import { Paper, Text, Loader, Box, Alert, useMantineColorScheme } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useMemo } from 'react';
-// import ChartWidget from './ChartWidget';
 import { designTokens } from '../../styles/designTokens';
 import { useAppDispatch } from '../../app/hooks';
 import { setSelectedData } from '../../features/chat/chatSlice';
@@ -101,20 +100,6 @@ export default function MessageBubble({ role, text, loading }: Props) {
           {content.text}
         </Text>
       )}
-
-      {/* RENDER WIDGETS */}
-      {/* {content.type === 'chart' && content.data && Array.isArray(content.data) && (
-        <Box mt="md">
-          <ChartWidget
-            data={content.data}
-            xKey={content.extras?.xKey || 'ts'}
-            yKey={content.extras?.yKey || 'value'}
-            label={content.extras?.yLabel}
-          />
-        </Box>
-      )} */}
-
-
 
       {/* VIEW DETAILS BUTTON */}
       {['sql', 'table', 'chart'].includes(content.type) && content.data && (

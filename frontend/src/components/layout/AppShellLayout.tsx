@@ -10,6 +10,7 @@ type LayoutContextType = {
 
 const LayoutContext = createContext<LayoutContextType | null>(null);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useLayout = () => {
   const context = useContext(LayoutContext);
   if (!context) {
@@ -21,11 +22,7 @@ export const useLayout = () => {
   return context;
 };
 
-export default function AppShellLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AppShellLayout({ children, }: { children: React.ReactNode; }) {
   const [opened, { toggle }] = useDisclosure();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -44,12 +41,7 @@ export default function AppShellLayout({
         </AppShell.Navbar>
 
         <AppShell.Main
-          style={{
-            height: '100dvh',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
+          style={{height: '100dvh', display: 'flex', flexDirection: 'column' }} >
           {children}
         </AppShell.Main>
       </AppShell>

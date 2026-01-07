@@ -23,7 +23,7 @@ axiosClient.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response?.status === 401) {
-      // 🔥 FORCE LOGOUT ON INVALID TOKEN
+      //  FORCE LOGOUT ON INVALID TOKEN
       localStorage.removeItem('auth');
       store.dispatch(logout());
       window.location.href = '/login';

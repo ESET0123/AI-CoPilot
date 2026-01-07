@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { chatApi } from '../../services/api';
 import { logout } from '../auth/authSlice';
 import type { RootState } from '../../app/store';
+import { parseMessageContent } from '../../utils/contentParser';
 
 /* ================= TYPES ================= */
 
@@ -260,7 +262,9 @@ const chatSlice = createSlice({
 
     setSelectedData(state, action: { payload: any }) {
       state.selectedData = action.payload;
-      state.dataPanelOpen = false;
+      if (action.payload) {
+        state.dataPanelOpen = true;
+      }
     },
   },
 
@@ -294,60 +298,19 @@ const chatSlice = createSlice({
         }
 
         // Add assistant reply
+        const assistantText = action.payload.assistant.content;
         convo.messages.push({
           id: action.payload.assistant.id,
           role: 'assistant',
-          text: action.payload.assistant.content,
+          text: assistantText,
         });
+
+        // Auto-open data panel if it contains structured data
+        const parsed = parseMessageContent(assistantText, false);
+        if (parsed.type !== 'text' && parsed.type !== 'error' && parsed.data) {
+          state.dataPanelOpen = true;
+        }
       })
-      // .addCase(sendMessage.rejected, (state, action) => {
-      //   state.sendingConversationIds = state.sendingConversationIds.filter(
-      //     id => id !== action.meta.arg.conversationId
-      //   );
-      //   const convo = state.conversations.find(
-      //     c => c.id === action.meta.arg.conversationId
-      //   );
-      //   if (!convo) return;
-
-      //   convo.messages = convo.messages.filter(
-      //     m => !(m.role === 'assistant' && m.loading)
-      //   );
-
-      //   // If it was cancelled by the user, don't show an error message
-      //   if (action.payload === 'Request cancelled') {
-      //     return;
-      //   }
-
-      //   convo.messages.push({
-      //     id: crypto.randomUUID(),
-      //     role: 'assistant',
-      //     text: 'Something went wrong. Please try again.',
-      //   });
-      // })
-      // .addCase(sendMessage.rejected, (state, action) => {
-      //   state.sendingConversationIds = state.sendingConversationIds.filter(
-      //     id => id !== action.meta.arg.conversationId
-      //   );
-
-      //   const convo = state.conversations.find(
-      //     c => c.id === action.meta.arg.conversationId
-      //   );
-      //   if (!convo) return;
-
-      //   // Remove loading bubble
-      //   convo.messages = convo.messages.filter(
-      //     m => !(m.role === 'assistant' && m.loading)
-      //   );
-
-      //   // 🚫 DO NOTHING if user cancelled
-      //   if (action.payload === 'Request cancelled') return;
-
-      //   convo.messages.push({
-      //     id: crypto.randomUUID(),
-      //     role: 'assistant',
-      //     text: 'Something went wrong. Please try again.',
-      //   });
-      // })
       .addCase(sendMessage.rejected, (state, action) => {
         const convoId = action.meta.arg.conversationId;
 
@@ -363,7 +326,7 @@ const chatSlice = createSlice({
           m => !(m.role === 'assistant' && m.loading)
         );
 
-        // 🔥 USER STOPPED GENERATION
+        //  USER STOPPED GENERATION
         if (action.payload === 'Request cancelled' || action.error.name === 'AbortError' || action.meta.aborted) {
           convo.messages.push({
             id: crypto.randomUUID(),
@@ -373,7 +336,7 @@ const chatSlice = createSlice({
           return;
         }
 
-        // ❌ Real error
+        // Real error
         convo.messages.push({
           id: crypto.randomUUID(),
           role: 'assistant',

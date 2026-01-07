@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Textarea, Group, ActionIcon, Paper, Tooltip } from '@mantine/core';
 import { IconSend, IconPlayerStop, IconMicrophone } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';

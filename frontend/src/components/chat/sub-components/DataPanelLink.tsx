@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Text } from '@mantine/core';
 import { designTokens } from '../../../styles/designTokens';
 import { useAppDispatch } from '../../../app/hooks';
