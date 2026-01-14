@@ -14,10 +14,10 @@ import keycloak from './config/keycloak';
 const searchParams = new URLSearchParams(window.location.search);
 const hashParams = new URLSearchParams(window.location.hash.substring(1));
 const hasCode = searchParams.has('code') || hashParams.has('code');
-console.log('[main.tsx] URL:', window.location.href);
-console.log('[main.tsx] Search params:', window.location.search);
-console.log('[main.tsx] Hash params:', window.location.hash);
-console.log('[main.tsx] hasCode:', hasCode);
+// console.log('[main.tsx] URL:', window.location.href);
+// console.log('[main.tsx] Search params:', window.location.search);
+// console.log('[main.tsx] Hash params:', window.location.hash);
+// console.log('[main.tsx] hasCode:', hasCode);
 
 // If we have an auth code, skip Keycloak init entirely and let the backend handle the exchange
 if (hasCode) {

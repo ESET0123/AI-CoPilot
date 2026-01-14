@@ -13,15 +13,15 @@ export default function AppRoutes() {
   const hasAuthCode = searchParams.has('code') || hashParams.has('code');
   const code = searchParams.get('code') || hashParams.get('code');
 
-  console.log('[AppRoutes] URL:', window.location.href);
-  console.log('[AppRoutes] hasAuthCode:', hasAuthCode);
-  console.log('[AppRoutes] code value:', code);
-  console.log('[AppRoutes] user:', user);
+  // console.log('[AppRoutes] URL:', window.location.href);
+  // console.log('[AppRoutes] hasAuthCode:', hasAuthCode);
+  // console.log('[AppRoutes] code value:', code);
+  // console.log('[AppRoutes] user:', user);
 
   // If we have a code but no user, stay on the current route and render LoginPage 
   // to handle the callback without being redirected by ProtectedRoute.
   if (hasAuthCode && !user) {
-    console.log('[AppRoutes] Rendering LoginPage for callback handling');
+    // console.log('[AppRoutes] Rendering LoginPage for callback handling');
     return <LoginPage />;
   }
 

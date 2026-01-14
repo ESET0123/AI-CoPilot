@@ -1,4 +1,6 @@
-import { Paper, Text, Loader, Box, Alert, useMantineColorScheme } from '@mantine/core';
+import { Paper, Text, Loader, Box, Alert, 
+  // useMantineColorScheme 
+} from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useMemo } from 'react';
 import { designTokens } from '../../styles/designTokens';
@@ -20,8 +22,8 @@ export default function MessageBubble({ role, text, loading }: Props) {
   }, [text, isUser]);
 
 
-  const { colorScheme } = useMantineColorScheme();
-  const isDark = colorScheme === 'dark';
+  // const { colorScheme } = useMantineColorScheme();
+  // const isDark = colorScheme === 'dark';
 
   if (loading) {
     return (
@@ -54,7 +56,7 @@ export default function MessageBubble({ role, text, loading }: Props) {
           ? '#ffffff'
           : isError
             ? 'var(--mantine-color-red-light)'
-            : 'transparent', // Light lime background from DashboardPage
+            : 'transparent', 
         color: isUser ? '#334155' : 'inherit',
         border: isUser ? '1px solid rgba(0,0,0,0.05)' : 'none',
         transition: designTokens.transitions.normal,
@@ -68,15 +70,33 @@ export default function MessageBubble({ role, text, loading }: Props) {
       }}
     >
       {!isUser && (
-        <Box style={{
-          width: 16,
-          height: 16,
-          borderRadius: '50%',
-          background: designTokens.gradients.vibrant, // Refined vibrant gradient
-          marginTop: 4,
-          flexShrink: 0,
-          boxShadow: '0 0 10px rgba(163, 230, 53, 0.4)' // Subtle glow
-        }} />
+        // <Box style={{
+        //   width: 16,
+        //   height: 16,
+        //   borderRadius: '50%',
+        //   background: 'radial-gradient(circle, rgb(152, 249, 5) 0%, rgba(132, 204, 22, 0) 70%)',
+        //   marginTop: 4,
+        //   flexShrink: 0,
+        //   boxShadow: '0 0 10px rgba(163, 230, 53, 0.4)' // Subtle glow
+        // }} />
+        <Box
+          style={{
+              // position: 'absolute',
+              // top: '50%',
+              // left: '50%',
+              // padding: '14px',
+              // transform: 'translate(-50%, -50%)',
+              width: 20,
+              height: 20,
+              borderRadius: '50%',
+              marginTop: 4,
+              flexShrink: 0,
+              background: 'linear-gradient(135deg, #4ade80 0%, #ece019 100%)',
+              // boxShadow: '0 20px 25px -5px rgba(74, 222, 128, 0.3), inset 0 -4px 6px -1px rgba(0,0,0,0.05)',
+
+              // zIndex: 0,
+          }}
+      />
       )}
       <Box style={{ flex: 1 }}>
         {isError && !isUser ? (

@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Textarea, Group, ActionIcon, Paper, Tooltip, Box, ThemeIcon } from '@mantine/core';
+import { Textarea, Group, ActionIcon, Paper, Tooltip, Box, 
+  // ThemeIcon
+ } from '@mantine/core';
 import { IconSend, IconPlayerStop, IconMicrophone, IconSearch, IconBulb, IconWorld, IconPaperclip, IconWaveSine } from '@tabler/icons-react'; // Added new icons
 import { useEffect, useRef, useState } from 'react';
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
@@ -17,6 +19,10 @@ import {
 interface ChatInputProps {
   isHeroMode?: boolean;
 }
+
+// Keep track of active requests globally to handle component unmounting/remounting
+// (e.g. when switching from DashboardHero to ChatWindow)
+const activeRequests = new Map<string, { abort: () => void }>();
 
 export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   const dispatch = useAppDispatch();
@@ -46,6 +52,16 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   const handleStop = () => {
     if (!isCurrentSending) return;
 
+    // Try to find the active request in the global map first (handles remounting)
+    if (activeConversationId) {
+      const globalPromise = activeRequests.get(activeConversationId);
+      if (globalPromise) {
+        globalPromise.abort();
+        activeRequests.delete(activeConversationId);
+      }
+    }
+
+    // Fallback to local ref if needed
     if (pendingThunkRef.current) {
       pendingThunkRef.current.abort();
       pendingThunkRef.current = null;
@@ -68,9 +84,9 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
 
     setValue('');
 
-    try {
-      let targetConvoId = activeConversationId;
+    let targetConvoId = activeConversationId;
 
+    try {
       if (draftMessageMode) {
         const convo = await dispatch(
           createConversation(message.slice(0, 40))
@@ -89,7 +105,11 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             message,
           })
         );
+
+        // Store promise globally and locally
         pendingThunkRef.current = promise;
+        activeRequests.set(targetConvoId, promise);
+
         await promise.unwrap();
       }
     } catch (err: unknown) {
@@ -99,6 +119,9 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
       }
     } finally {
       pendingThunkRef.current = null;
+      if (targetConvoId) {
+        activeRequests.delete(targetConvoId);
+      }
     }
   };
 
@@ -145,7 +168,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             maxRows={8}
             variant="unstyled"
             disabled={isCurrentSending}
-            style={{ flex: 1, marginTop: isHeroMode ? 0 : 24 }}
+            style={{ flex: 1, marginTop: 0 }}
             styles={{
               input: {
                 padding: '8px 4px',
@@ -165,16 +188,51 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
 
         <Group justify="space-between" align="center" mt="xs">
           {/* Left Actions (Search Toggle, etc) - Only in Hero Mode for now as per design */}
-          {/* {isHeroMode ? ( */}
-            <Group gap="xs">
-              <ThemeIcon variant="outline" color="gray" size="lg" radius="md" style={{ borderColor: '#d9f99d', color: '#334155' }}>
-                <IconSearch size={18} />
-              </ThemeIcon>
-              <ThemeIcon variant="light" color="lime" size="lg" radius="md" style={{ backgroundColor: '#ecfccb', color: '#4d7c0f' }}>
-                <IconBulb size={18} />
-              </ThemeIcon>
-            </Group>
-           {/* ) : <Box />} */}
+
+          {/* Search / Reason Toggle */}
+          <Box
+            
+            style={{
+              backgroundColor: '#ecfccb',
+              padding: '4px',
+              borderRadius: 8,
+              display: 'flex',
+              gap: '4px',
+              border: '1px solid #d9f99d',
+            }}
+          >
+            {/* Search Mode (Active by default for now) */}
+            <ActionIcon
+              variant="transparent"
+              size="lg"
+              radius="l"
+              style={{
+                backgroundColor: '#ffffff',
+                border: '1px solid #84cc16',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                color: '#000000',
+              }}
+            >
+              {/* Use IconZoomExclamation or similar if available, or just IconSearch with a small badge if needed. 
+                   Standard IconSearch is fine based on request "style like this" which shows a magnifying glass. 
+                   The image has a star inside, IconMessageSearch or IconSparkles inside? 
+                   I'll use IconSearch for now as it's cleaner. */}
+              <IconSearch size={18} stroke={2.5} />
+            </ActionIcon>
+
+            {/* Reasoning/Idea Mode */}
+            <ActionIcon
+              variant="transparent"
+              size="lg"
+              radius="xl"
+              style={{
+                color: '#1a1a1a',
+                border: '1px solid transparent',
+              }}
+            >
+              <IconBulb size={20} stroke={2} />
+            </ActionIcon>
+          </Box>
 
           <Group gap="xs">
             {/* Globe & Attach Icons (Visual only for now) */}
