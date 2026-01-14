@@ -55,6 +55,30 @@ export const loginWithKeycloak = createAsyncThunk(
   }
 );
 
+export const loginWithCredentials = createAsyncThunk(
+  'auth/loginWithCredentials',
+  async (credentials: any, { rejectWithValue }) => {
+    try {
+      const { data } = await authApi.login(credentials);
+
+      localStorage.setItem(
+        'auth',
+        JSON.stringify({
+          user: data.user,
+          token: data.access_token,
+          refreshToken: data.refresh_token,
+          idToken: data.id_token,
+        })
+      );
+
+      return data;
+    } catch (error: any) {
+      console.error('[authSlice] Login failed:', error.response?.data || error.message);
+      return rejectWithValue(error.response?.data?.message || 'Login failed');
+    }
+  }
+);
+
 export const handleKeycloakCallback = createAsyncThunk(
   'auth/handleCallback',
   async (code: string, { rejectWithValue }) => {
@@ -188,6 +212,18 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(handleKeycloakCallback.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.isAuthenticated = false;
+      })
+      .addCase(loginWithCredentials.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+        state.token = action.payload.access_token;
+        state.refreshToken = action.payload.refresh_token;
+        state.idToken = action.payload.id_token;
+        state.isAuthenticated = true;
+        state.error = null;
+      })
+      .addCase(loginWithCredentials.rejected, (state, action) => {
         state.error = action.payload as string;
         state.isAuthenticated = false;
       })

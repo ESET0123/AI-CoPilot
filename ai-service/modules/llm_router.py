@@ -130,8 +130,10 @@ def generate_sql(query, model_type="local"):
     
     resp = call_llm(prompt, model_type)
     
-    # Safety Check: If the API returned an error message, don't execute it as SQL
-    if "Error" in resp and ("Connection" in resp or "API" in resp):
+    # --- SAFETY CHECK 1: ERROR STRINGS ---
+    # If the LLM returned a known error message, stop here
+    if resp.startswith("Error") or resp.startswith("Local AI"):
+        logger.error(f"LLM Error detected: {resp}")
         return f"-- SYSTEM ERROR: {resp}", resp
 
     # --- AGGRESSIVE CLEANING ---
@@ -143,12 +145,17 @@ def generate_sql(query, model_type="local"):
         sql = resp
 
     # 2. Find the Start of the Query
-    # Look for the first "SELECT" or "WITH" (case-insensitive)
-    match = re.search(r"\b(SELECT|WITH)\b", sql, re.IGNORECASE)
+    # Look for the first "SELECT", "WITH", or "SHOW" (case-insensitive)
+    match = re.search(r"\b(SELECT|WITH|SHOW)\b", sql, re.IGNORECASE)
     
     if match:
-        # Keep everything starting from "SELECT" (or WITH)
+        # Keep everything starting from the keyword
         sql = sql[match.start():]
+    else:
+        # --- SAFETY CHECK 2: NO SQL KEYWORDS ---
+        # If we can't find SELECT or WITH, it's likely conversational text or an uncaught error
+        logger.warning(f"No SQL keywords found in LLM response: {resp[:100]}...")
+        return f"-- SYSTEM ERROR: LLM returned invalid SQL format.", resp
     
     # 3. Final cleanup of whitespace and trailing semicolons inside text
     sql = sql.strip()

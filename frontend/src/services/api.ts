@@ -10,6 +10,10 @@ export const authApi = {
     });
   },
 
+  login(credentials: any) {
+    return axiosClient.post('/auth/login', credentials);
+  },
+
   refreshToken(refreshToken: string) {
     return axiosClient.post('/auth/refresh', { refresh_token: refreshToken });
   },

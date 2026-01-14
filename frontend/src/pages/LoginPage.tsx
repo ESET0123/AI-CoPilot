@@ -1,148 +1,231 @@
-import { Button, Stack, Text, Box, Paper, ActionIcon, Divider, Loader, Center } from '@mantine/core';
+import {
+  Button,
+  Stack,
+  Text,
+  Box,
+  TextInput,
+  PasswordInput,
+  Title,
+  Image,
+  // List,
+  ThemeIcon,
+  // Center,
+  Container,
+  LoadingOverlay,
+  Divider,
+  SimpleGrid,
+  Group,
+  Paper,
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { IconSun, IconMoon, IconLogin } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
+import { IconChartPie, IconAlertTriangle, IconUsers, IconActivity, IconCalculator, IconLock, IconMail } from '@tabler/icons-react';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { handleKeycloakCallback, loginWithKeycloak } from '../features/auth/authSlice';
-import HeaderBar from '../components/layout/HeaderBar';
-import { toggleTheme } from '../features/theme/themeSlice';
-import keycloak from '../config/keycloak';
+import { loginWithCredentials } from '../features/auth/authSlice';
 
 export default function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  const { user, error } = useAppSelector(s => s.auth);
-  const scheme = useAppSelector(s => s.theme.colorScheme);
-
+  const { user, error, isAuthenticated } = useAppSelector((s) => s.auth);
   const [loading, setLoading] = useState(false);
 
-  // Handle OAuth2 callback
-  useEffect(() => {
-    // Check both query string and hash fragment for code
-    const code = searchParams.get('code') ||
-      new URLSearchParams(window.location.hash.substring(1)).get('code');
-    console.log('[LoginPage] OAuth callback check - code:', code);
-    if (code) {
-      setLoading(true);
-      console.log('[LoginPage] Dispatching handleKeycloakCallback');
-      dispatch(handleKeycloakCallback(code))
-        .unwrap()
-        .then((data) => {
-          console.log('[LoginPage] Callback success, data:', data);
-          console.log('[LoginPage] Navigating to /dashboard');
-          navigate('/dashboard', { replace: true });
-        })
-        .catch((err) => {
-          console.error('[LoginPage] Callback failed:', err);
-          setLoading(false);
-        });
-    }
-  }, [searchParams, dispatch, navigate]);
+  const form = useForm({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validate: {
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+      password: (value) => (value.length < 1 ? 'Password is required' : null),
+    },
+  });
 
   useEffect(() => {
-    console.log('[LoginPage] User state changed:', user);
-    if (user) {
-      console.log('[LoginPage] User exists, navigating to /dashboard');
+    if (isAuthenticated || user) {
       navigate('/dashboard', { replace: true });
     }
-  }, [user, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
-  const handleLogin = () => {
-    dispatch(loginWithKeycloak());
+  const handleSubmit = (values: typeof form.values) => {
+    setLoading(true);
+    dispatch(loginWithCredentials(values))
+      .unwrap()
+      .then(() => {
+        navigate('/dashboard', { replace: true });
+      })
+      .catch((err) => {
+        console.error('[LoginPage] Login failed:', err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
-  if (loading) {
-    return (
-      <Center h="100vh">
-        <Stack align="center" gap="md">
-          <Loader size="lg" />
-          <Text c="dimmed">Authenticating...</Text>
-        </Stack>
-      </Center>
-    );
-  }
-
   return (
-    <>
-      {/* ================= HEADER ================= */}
+    <Box style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
+      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ blur: 2 }} />
+
+      {/* ================= LEFT PANEL (Features) ================= */}
       <Box
         style={{
-          borderBottom: '1px solid var(--mantine-color-default-border)',
-          padding: '12px 24px',
+          flex: 1.2,
+          backgroundImage: 'url("/login_bg.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          color: 'white',
+          padding: '4vh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between', // Push content to edges
+          position: 'relative',
         }}
+        visibleFrom="md"
       >
-        <HeaderBar />
+        <Box>
+          <Image src="/logo-esyasoft.png" w={180} />
+        </Box>
+
+        <Stack gap="xl">
+          <Box>
+            <Title order={1} size={36} fw={700} style={{ color: '#1A1A1A', lineHeight: 1.2, marginBottom: 8 }}>
+              See the Network Thinking
+            </Title>
+            <Text size="md" c="#1A1A1A" fw={500}>
+              Utility Analytics Platform
+            </Text>
+            <Box w={60} h={4} bg="#4CAF50" mt="xs" style={{ borderRadius: 2 }} />
+          </Box>
+
+          <Paper p="xl" radius="lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', backdropFilter: 'blur(10px)' }}>
+            <SimpleGrid cols={2} spacing="xl" verticalSpacing="xl">
+              <Group gap="sm" align="flex-start" wrap="nowrap">
+                <ThemeIcon color="green" variant="light" size="lg" radius="md">
+                  <IconChartPie size={20} />
+                </ThemeIcon>
+                <Text size="sm" c="#1A1A1A" fw={600} style={{ lineHeight: 1.3 }}>
+                  AI-Powered Analytics & Insights
+                </Text>
+              </Group>
+
+              <Group gap="sm" align="flex-start" wrap="nowrap">
+                <ThemeIcon color="green" variant="light" size="lg" radius="md">
+                  <IconActivity size={20} />
+                </ThemeIcon>
+                <Text size="sm" c="#1A1A1A" fw={600} style={{ lineHeight: 1.3 }}>
+                  Real-time Load Forecasting
+                </Text>
+              </Group>
+
+              <Group gap="sm" align="flex-start" wrap="nowrap">
+                <ThemeIcon color="green" variant="light" size="lg" radius="md">
+                  <IconAlertTriangle size={20} />
+                </ThemeIcon>
+                <Text size="sm" c="#1A1A1A" fw={600} style={{ lineHeight: 1.3 }}>
+                  Theft & Anomaly Detection
+                </Text>
+              </Group>
+
+              <Group gap="sm" align="flex-start" wrap="nowrap">
+                <ThemeIcon color="green" variant="light" size="lg" radius="md">
+                  <IconCalculator size={20} />
+                </ThemeIcon>
+                <Text size="sm" c="#1A1A1A" fw={600} style={{ lineHeight: 1.3 }}>
+                  Smart Tariff Management
+                </Text>
+              </Group>
+
+              <Group gap="sm" align="flex-start" wrap="nowrap">
+                <ThemeIcon color="green" variant="light" size="lg" radius="md">
+                  <IconUsers size={20} />
+                </ThemeIcon>
+                <Text size="sm" c="#1A1A1A" fw={600} style={{ lineHeight: 1.3 }}>
+                  Predictive Defaulter Analysis
+                </Text>
+              </Group>
+            </SimpleGrid>
+          </Paper>
+        </Stack>
       </Box>
 
-      {/* ================= PAGE ================= */}
+      {/* ================= RIGHT PANEL (Form) ================= */}
       <Box
         style={{
-          minHeight: 'calc(100vh - 64px)',
+          flex: 1,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background:
-            scheme === 'dark'
-              ? 'radial-gradient(circle at top, #1a1b1e, #0f0f10)'
-              : 'radial-gradient(circle at top, #f8fafc, #eef2ff)',
+          backgroundColor: 'white',
         }}
       >
-        <Paper withBorder radius="xl" shadow="lg" p="xl" w={360}>
-          <Stack gap="md">
+        <Container size={420} w="100%">
+          <Stack gap="xl">
             <Stack gap={4}>
-              <Text size="xl" fw={600}>
-                Sign in
-              </Text>
-              <Text size="sm" c="dimmed">
-                Login using Keycloak
+              <Title order={2} fw={700} size={32} c="#1A1A1A">
+                Welcome Back
+              </Title>
+              <Text c="dimmed" size="sm">
+                Sign in to access your utility analytics dashboard
               </Text>
             </Stack>
 
             <Divider />
 
-            <Stack gap="sm">
-              {error && <Text c="red">{error}</Text>}
+            <form onSubmit={form.onSubmit(handleSubmit)}>
+              <Stack gap="md">
+                {error && (
+                  <Text c="red" size="sm" fw={500}>
+                    {error}
+                  </Text>
+                )}
 
-              {/* ================= KEYCLOAK LOGIN BUTTON ================= */}
-              <Button
-                type="button"
-                fullWidth
-                leftSection={<IconLogin size={16} />}
-                onClick={handleLogin}
-                variant="gradient"
-                gradient={{ from: '#BFFF00', to: '#99FF33', deg: 135 }}
-                styles={{
-                  root: {
-                    color: '#1A1A1A',
-                    fontWeight: 700,
-                  },
-                }}
-              >
-                Sign in with Keycloak
-              </Button>
-            </Stack>
+                <TextInput
+                  label="Email Address"
+                  placeholder="name@company.com"
+                  required
+                  size="md"
+                  radius="md"
+                  leftSection={<IconMail size={18} />}
+                  {...form.getInputProps('email')}
+                />
+
+                <PasswordInput
+                  label="Password"
+                  placeholder="Your password"
+                  required
+                  size="md"
+                  radius="md"
+                  leftSection={<IconLock size={18} />}
+                  {...form.getInputProps('password')}
+                />
+
+                <Button
+                  type="submit"
+                  size="md"
+                  radius="xl"
+                  mt="xl"
+                  color="dark"
+                  styles={{
+                    root: {
+                      width: 'fit-content',
+                      backgroundColor: '#1A1A1A',
+                      height: 48,
+                      '&:hover': {
+                        backgroundColor: '#000',
+                      },
+                    },
+                  }}
+                >
+                  Sign In
+                </Button>
+              </Stack>
+            </form>
+
+
           </Stack>
-        </Paper>
+        </Container>
       </Box>
-
-      {/* ================= THEME TOGGLE ================= */}
-      <ActionIcon
-        onClick={() => dispatch(toggleTheme())}
-        size="lg"
-        radius="xl"
-        variant="filled"
-        color={scheme === 'dark' ? 'yellow' : 'blue'}
-        style={{
-          position: 'fixed',
-          right: 24,
-          bottom: 24,
-        }}
-      >
-        {scheme === 'dark' ? <IconSun /> : <IconMoon />}
-      </ActionIcon>
-    </>
+    </Box>
   );
 }

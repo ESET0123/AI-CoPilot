@@ -40,8 +40,6 @@ export type ChatState = {
   activeConversationId: string | null;
   draftMessageMode: boolean;
   sendingConversationIds: string[];
-  dataPanelOpen: boolean;
-  selectedData: any | null;
 };
 
 /* ================= INITIAL STATE ================= */
@@ -51,8 +49,6 @@ const initialState: ChatState = {
   activeConversationId: null,
   draftMessageMode: true,
   sendingConversationIds: [],
-  dataPanelOpen: false,
-  selectedData: null,
 };
 
 /* ================= THUNKS ================= */
@@ -255,17 +251,6 @@ const chatSlice = createSlice({
         loading: true,
       });
     },
-
-    setDataPanelOpen(state, action: { payload: boolean }) {
-      state.dataPanelOpen = action.payload;
-    },
-
-    setSelectedData(state, action: { payload: any }) {
-      state.selectedData = action.payload;
-      if (action.payload) {
-        state.dataPanelOpen = true;
-      }
-    },
   },
 
   extraReducers: (builder) => {
@@ -304,12 +289,6 @@ const chatSlice = createSlice({
           role: 'assistant',
           text: assistantText,
         });
-
-        // Auto-open data panel if it contains structured data
-        const parsed = parseMessageContent(assistantText, false);
-        if (parsed.type !== 'text' && parsed.type !== 'error' && parsed.data) {
-          state.dataPanelOpen = true;
-        }
       })
       .addCase(sendMessage.rejected, (state, action) => {
         const convoId = action.meta.arg.conversationId;
@@ -436,8 +415,6 @@ export const {
   setActiveConversation,
   addUserMessage,
   addAssistantLoading,
-  setDataPanelOpen,
-  setSelectedData,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

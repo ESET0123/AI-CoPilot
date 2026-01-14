@@ -25,6 +25,28 @@ export class AuthService {
     }
 
     /**
+     * Login with username and password (Direct Access Grant)
+     */
+    static async loginWithCredentials(username: string, password: string): Promise<any> {
+        const tokenUrl = `${keycloakServerUrl}/realms/${keycloakRealm}/protocol/openid-connect/token`;
+
+        const params = new URLSearchParams({
+            grant_type: 'password',
+            client_id: keycloakConfig.resource,
+            client_secret: keycloakConfig.credentials.secret,
+            username,
+            password,
+            scope: 'openid',
+        });
+
+        const response = await axios.post(tokenUrl, params, {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        });
+
+        return response.data;
+    }
+
+    /**
      * Refresh access token using refresh token
      */
     static async refreshAccessToken(refreshToken: string): Promise<any> {
@@ -66,5 +88,9 @@ export class AuthService {
      */
     static async upsertUserFromKeycloak(keycloakId: string, email: string): Promise<any> {
         return await AuthRepository.upsertUserFromKeycloak(keycloakId, email);
+    }
+
+    static async findUserByKeycloakId(keycloakId: string): Promise<any> {
+        return await AuthRepository.findByKeycloakId(keycloakId);
     }
 }

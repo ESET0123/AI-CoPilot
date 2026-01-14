@@ -7,12 +7,23 @@ export const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use((config) => {
+  const url = config.url || '';
+  // Don't add auth header to auth endpoints
+  if (url.includes('/auth/')) {
+    return config;
+  }
+
   const storedAuth = localStorage.getItem('auth');
 
   if (storedAuth) {
-    const { token } = JSON.parse(storedAuth);
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    try {
+      const auth = JSON.parse(storedAuth);
+      const token = auth.token || auth.access_token;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch (e) {
+      console.error('[AxiosClient] Failed to parse auth from localStorage', e);
     }
   }
 
@@ -40,6 +51,11 @@ axiosClient.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // If the failed request was already an auth request, don't retry (prevents infinite loops)
+      if (originalRequest.url?.startsWith('/auth')) {
+        return Promise.reject(error);
+      }
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -55,6 +71,7 @@ axiosClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
+        console.log('[AxiosClient] Token expired, attempting refresh...');
         const result = await store.dispatch(refreshAccessToken()).unwrap();
         const newToken = result.access_token;
 
@@ -62,9 +79,11 @@ axiosClient.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axiosClient(originalRequest);
       } catch (refreshError) {
+        console.error('[AxiosClient] Token refresh failed, logging out...');
         processQueue(refreshError, null);
         localStorage.removeItem('auth');
         store.dispatch(logout());
+        // Use a more gentle way to redirect if possible, but window.location is definitive
         window.location.href = '/login';
         return Promise.reject(refreshError);
       } finally {

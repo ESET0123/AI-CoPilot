@@ -15,14 +15,17 @@ import {
   IconChevronDown,
   // IconChevronLeft,
   IconChevronRight,
+  IconMenu2,
+  IconSearch,
   IconDots,
-  IconPlus,
-  IconMessage,
+  // IconPlus,
+  // IconMessage,
   IconPencil,
+  IconEdit,
   IconTrash,
   IconCheck,
 } from '@tabler/icons-react';
-import { IconLayoutSidebarRightCollapse, IconLayoutSidebarRightExpand } from '@tabler/icons-react';
+// import { IconLayoutSidebarRightCollapse, IconLayoutSidebarRightExpand } from '@tabler/icons-react';
 import { useState } from 'react';
 import { designTokens } from '../../styles/designTokens';
 
@@ -75,9 +78,6 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
     <Stack h="100%" p="sm" gap="sm">
       {/* ================= TOP ================= */}
       <Group justify={collapsed ? 'center' : 'space-between'}>
-        {!collapsed && (
-          <img src="/ai_icon.png" alt="Logo" style={{ height: 38 }} />
-        )}
 
         <ActionIcon
           variant="subtle"
@@ -91,21 +91,24 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
             }
           }}
         >
-          {collapsed ? <IconLayoutSidebarRightCollapse stroke={1.5} /> : <IconLayoutSidebarRightExpand stroke={1.5} />}
+          <IconMenu2 stroke={1.5} color="#000000" />
         </ActionIcon>
+        {!collapsed && (
+          <IconSearch color="#000000" size={20} />
+        )}
       </Group>
 
       {/* ================= MIDDLE ================= */}
       <Stack style={{ flex: 1, overflow: 'hidden' }}>
         {collapsed && (
           <ActionIcon
-            radius="xl"
-            size="lg"
-            variant="filled"
+            // radius="xl"
+            // size="lg"
+            // variant="filled"
             type="button"
             onClick={() => dispatch(startNewChat())}
           >
-            <IconPlus size={18} />
+            <IconEdit size={14} />
           </ActionIcon>
         )}
 
@@ -113,42 +116,48 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
           <>
             <Button
               type="button"
-              leftSection={<IconPlus size={16} />}
-              radius="xl"
-              variant="gradient"
-              gradient={{ from: 'blue', to: 'cyan', deg: 135 }}
+              leftSection={<IconEdit size={18} stroke={1.5} />}
+              variant="subtle"
+              color="dark"
+              fullWidth
+              justify="flex-start"
               onClick={() => dispatch(startNewChat())}
               styles={{
                 root: {
-                  transition: designTokens.transitions.normal,
-                  boxShadow: '0 4px 12px rgba(79, 172, 254, 0.3)',
+                  height: 48,
+                  padding: '0 12px',
+                  marginBottom: 0,
+                  fontWeight: 600,
+                  fontSize: '15.5px',
+                  color: '#000000',
                   '&:hover': {
-                    transform: 'translateY(-1px)',
-                    boxShadow: '0 6px 16px rgba(79, 172, 254, 0.4)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
                   },
                 },
               }}
             >
-              New chat
+              New Chat
             </Button>
+
+            <Divider />
 
             <Group
               justify="space-between"
               align="center"
+              px="xs"
+              mt="xs"
+              mb={4}
               onClick={() => setOpen((o) => !o)}
               style={{ cursor: 'pointer' }}
             >
-              <Group gap={6}>
-                <IconMessage size={16} />
-                <Text size="sm" fw={500}>
-                  Your chats
-                </Text>
-              </Group>
+              <Text size="xs" fw={700} style={{ letterSpacing: '0.08em', color: '#000000' }}>
+                CHATS
+              </Text>
 
               {open ? (
-                <IconChevronDown size={16} />
+                <IconChevronDown size={14} color="#000000" />
               ) : (
-                <IconChevronRight size={16} />
+                <IconChevronRight size={14} color="#000000" />
               )}
             </Group>
           </>
@@ -176,11 +185,11 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                         px="xs"
                         py={6}
                         style={{
-                          borderRadius: 12,
+                          borderRadius: 22,
                           background: isActive
-                            ? 'linear-gradient(135deg, rgba(79, 172, 254, 0.15) 0%, rgba(0, 242, 254, 0.15) 100%)'
+                            ? 'linear-gradient(135deg, rgba(163, 230, 53, 0.1) 0%, rgba(132, 204, 22, 0.1) 100%)'
                             : 'transparent',
-                          border: isActive ? '1px solid rgba(79, 172, 254, 0.3)' : '1px solid transparent',
+                          border: isActive ? '1px solid rgba(132, 204, 22, 0.2)' : '1px solid transparent',
                           transition: designTokens.transitions.normal,
                           cursor: 'pointer',
                         }}
@@ -252,6 +261,8 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                               root: {
                                 flexGrow: 1,
                                 background: 'transparent',
+                                color: '#000000',
+                                fontWeight: isActive ? 600 : 400,
                               },
                             }}
                           >
@@ -317,10 +328,9 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
       </Stack>
 
       {/* ================= BOTTOM ================= */}
-      {collapsed && (
-        <img src="/ai_icon.png" alt="Logo" style={{ height: 28 }} />
+      {!collapsed && (
+        <Divider />
       )}
-      <Divider />
       <UserMenu collapsed={collapsed} />
     </Stack>
   );

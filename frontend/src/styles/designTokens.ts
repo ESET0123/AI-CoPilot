@@ -57,11 +57,42 @@ export const designTokens = {
         },
     },
 
+    // Colors
+    colors: {
+        lime: {
+            50: '#f7fee7',
+            100: '#ecfccb',
+            200: '#d9f99d',
+            300: '#bef264',
+            400: '#a3e635',
+            500: '#84cc16',
+            600: '#65a30d',
+            700: '#4d7c0f',
+            800: '#3f6212',
+            900: '#365314',
+        },
+        slate: {
+            50: '#f8fafc',
+            100: '#f1f5f9',
+            200: '#e2e8f0',
+            300: '#cbd5e1',
+            400: '#94a3b8',
+            500: '#64748b',
+            600: '#475569',
+            700: '#334155',
+            800: '#1e293b',
+            900: '#0f172a',
+        },
+    },
+
     // Gradients
     gradients: {
-        primary: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        blue: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-        purple: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+        primary: 'linear-gradient(135deg, #a3e635 0%, #65a30d 100%)',
+        vibrant: 'linear-gradient(135deg, #bef264 0%, #a3e635 100%)',
+        soft: 'linear-gradient(135deg, #f7fee7 0%, #ecfccb 100%)',
+        glow: 'radial-gradient(circle at 50% 50%, #f7fee7 0%, #ffffff 100%)',
+        mesh: 'radial-gradient(at 0% 0%, #ecfccb 0px, transparent 50%), radial-gradient(at 100% 0%, #f7fee7 0px, transparent 50%), radial-gradient(at 100% 100%, #ecfccb 0px, transparent 50%), radial-gradient(at 0% 100%, #f7fee7 0px, transparent 50%)',
+        dark: 'linear-gradient(135deg, #334155 0%, #0f172a 100%)',
         success: 'linear-gradient(135deg, #81FBB8 0%, #28C76F 100%)',
         danger: 'linear-gradient(135deg, #FF6B9D 0%, #C94B4B 100%)',
     },

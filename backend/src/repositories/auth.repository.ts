@@ -70,4 +70,12 @@ export class AuthRepository {
         );
         return result.rows[0];
     }
+
+    static async findByKeycloakId(keycloakId: string): Promise<{ id: string, email: string, role: string } | null> {
+        const result = await pool.query(
+            `SELECT id, email, role FROM users WHERE keycloak_id = $1`,
+            [keycloakId]
+        );
+        return result.rows[0] || null;
+    }
 }

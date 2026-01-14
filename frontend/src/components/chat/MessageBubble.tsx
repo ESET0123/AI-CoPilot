@@ -2,8 +2,6 @@ import { Paper, Text, Loader, Box, Alert, useMantineColorScheme } from '@mantine
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useMemo } from 'react';
 import { designTokens } from '../../styles/designTokens';
-import { useAppDispatch } from '../../app/hooks';
-import { setSelectedData } from '../../features/chat/chatSlice';
 
 import { parseMessageContent } from '../../utils/contentParser';
 
@@ -14,14 +12,11 @@ type Props = {
 };
 
 export default function MessageBubble({ role, text, loading }: Props) {
-  const dispatch = useAppDispatch();
   const isUser = role === 'user';
 
   // Parse structured data if assistant
   const content = useMemo(() => {
-    const p = parseMessageContent(text, isUser);
-    // if (!isUser) console.log('[MessageBubble] Parsed Content:', p);
-    return p;
+    return parseMessageContent(text, isUser);
   }, [text, isUser]);
 
 
@@ -48,87 +43,65 @@ export default function MessageBubble({ role, text, loading }: Props) {
 
   return (
     <Paper
-      shadow="sm"
+      shadow="xs"
       p="md"
       radius="lg"
-      withBorder
+      withBorder={!isUser}
       style={{
         alignSelf: isUser ? 'flex-end' : 'flex-start',
         maxWidth: isUser ? '85%' : '100%',
         background: isUser
-          ? 'linear-gradient(135deg, #4facfe 0%, #0e7c81ff 100%)'
+          ? '#ffffff'
           : isError
             ? 'var(--mantine-color-red-light)'
-            : isDark
-              ? 'var(--mantine-color-dark-6)'
-              : 'var(--mantine-color-default)',
-        color: isUser ? 'white' : 'inherit',
-        borderColor: isUser
-          ? 'transparent'
-          : isDark && !isError
-            ? 'var(--mantine-color-dark-4)'
-            : undefined,
+            : 'transparent', // Light lime background from DashboardPage
+        color: isUser ? '#334155' : 'inherit',
+        border: isUser ? '1px solid rgba(0,0,0,0.05)' : 'none',
         transition: designTokens.transitions.normal,
         boxShadow: isUser
-          ? '0 4px 12px rgba(79, 172, 254, 0.3)'
-          : isDark
-            ? '0 2px 8px rgba(0, 0, 0, 0.3)'
-            : '0 2px 8px rgba(0, 0, 0, 0.08)',
+          ? '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+          : 'none',
         animation: 'slideUp 0.3s ease-out',
-        transform: 'translateZ(0)', // GPU acceleration
+        display: 'flex',
+        gap: '12px',
+        alignItems: 'flex-start'
       }}
     >
-      {isError && !isUser ? (
-        <Alert
-          icon={<IconAlertCircle size={16} />}
-          color="red"
-          variant="light"
-          styles={{ root: { padding: '8px 12px' } }}
-        >
-          <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
-            {content.text}
-          </Text>
-        </Alert>
-      ) : (
-        <Text
-          size="sm"
-          style={{
-            whiteSpace: 'pre-wrap',
-            lineHeight: 1.6,
-          }}
-        >
-          {content.text}
-        </Text>
+      {!isUser && (
+        <Box style={{
+          width: 16,
+          height: 16,
+          borderRadius: '50%',
+          background: designTokens.gradients.vibrant, // Refined vibrant gradient
+          marginTop: 4,
+          flexShrink: 0,
+          boxShadow: '0 0 10px rgba(163, 230, 53, 0.4)' // Subtle glow
+        }} />
       )}
-
-      {/* VIEW DETAILS BUTTON */}
-      {['sql', 'table', 'chart'].includes(content.type) && content.data && (
-        <Box mt="sm">
+      <Box style={{ flex: 1 }}>
+        {isError && !isUser ? (
+          <Alert
+            icon={<IconAlertCircle size={16} />}
+            color="red"
+            variant="light"
+            styles={{ root: { padding: '8px 12px' } }}
+          >
+            <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
+              {content.text}
+            </Text>
+          </Alert>
+        ) : (
           <Text
-            size="xs"
-            c={isUser ? 'rgba(255, 255, 255, 0.9)' : 'dimmed'}
+            size="sm"
             style={{
-              cursor: 'pointer',
-              textDecoration: 'underline',
-              transition: designTokens.transitions.fast,
-              display: 'inline-block',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateX(2px)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateX(0)';
-            }}
-            onClick={() => {
-              // Set selected data in Redux (which also opens the panel)
-              dispatch(setSelectedData(content));
+              whiteSpace: 'pre-wrap',
+              lineHeight: 1.6,
             }}
           >
-            View details in Data Panel →
+            {content.text}
           </Text>
-        </Box>
-      )}
-
+        )}
+      </Box>
     </Paper>
   );
 }

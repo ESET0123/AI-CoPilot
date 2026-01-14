@@ -1,13 +1,7 @@
-import { Group, Title, Burger, ActionIcon, Tooltip } from '@mantine/core';
+import { Group, Title, Burger, Box } from '@mantine/core';
 import { useLayout } from './AppShellLayout';
-import { IconLayoutSidebarRightCollapse, IconLayoutSidebarRightExpand } from '@tabler/icons-react';
 
-type Props = {
-  onToggleDataPanel?: () => void;
-  showDataPanel?: boolean;
-};
-
-export default function HeaderBar({ onToggleDataPanel, showDataPanel }: Props) {
+export default function HeaderBar() {
   const { mobileOpened, toggleMobile } = useLayout();
 
   return (
@@ -18,26 +12,13 @@ export default function HeaderBar({ onToggleDataPanel, showDataPanel }: Props) {
           onClick={toggleMobile}
           hiddenFrom="sm"
           size="sm"
+          color="#000000"
         />
-        <Title order={4}>Esyasoft AI CoPilot</Title>
+        <Title order={4} style={{ color: '#000000', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <Box component="span" style={{ fontWeight: 800 }}>esyasoft</Box>
+          {/* <Box component="span" style={{ fontWeight: 400, color: '#94a3b8' }}>AI CoPilot</Box> */}
+        </Title>
       </Group>
-
-      {onToggleDataPanel && (
-        <Tooltip label={showDataPanel ? 'Hide Data Panel' : 'Show Data Panel'}>
-          <ActionIcon
-            variant="subtle"
-            color="gray"
-            onClick={onToggleDataPanel}
-            size="lg"
-          >
-            {showDataPanel ? (
-              <IconLayoutSidebarRightExpand stroke={1.5} />
-            ) : (
-              <IconLayoutSidebarRightCollapse stroke={1.5} />
-            )}
-          </ActionIcon>
-        </Tooltip>
-      )}
     </Group>
   );
 }

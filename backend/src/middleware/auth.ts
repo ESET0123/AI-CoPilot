@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import { keycloakServerUrl, keycloakRealm } from '../config/keycloak.config';
+import { AuthService } from '../services/auth.service';
 
 interface JwtPayload {
   sub: string;
@@ -38,23 +39,44 @@ export function requireAuth(
   const header = req.headers.authorization;
 
   if (!header || !header.startsWith('Bearer ')) {
+    console.warn('[AUTH] Missing or malformed Bearer token:', header ? 'Present but malformed' : 'Missing');
     return res.status(401).json({ message: 'Missing token' });
   }
 
   const token = header.replace('Bearer ', '');
+  console.log('[AUTH] Token received length:', token.length);
 
   // Verify token with Keycloak's public key
-  jwt.verify(token, getKey, { algorithms: ['RS256'] }, (err, decoded) => {
+  jwt.verify(token, getKey, { algorithms: ['RS256'] }, async (err, decoded) => {
     if (err) {
+      console.error('[AUTH] Token verification failed:', err.message);
       return res.status(401).json({ message: 'Invalid token' });
     }
 
     const payload = decoded as JwtPayload;
-    req.userId = payload.sub;
-    req.userEmail = payload.email || payload.preferred_username;
-    req.userRoles = payload.realm_access?.roles || [];
+    console.log('[AUTH] Token verified successfully for Keycloak user:', payload.email || payload.sub);
 
-    next();
+    try {
+      // Resolve internal DB ID from Keycloak ID (sub)
+      const user = await AuthService.findUserByKeycloakId(payload.sub);
+
+      if (!user) {
+        console.warn('[AUTH] User not found in database for Keycloak ID:', payload.sub);
+        // Optional: Auto-upsert here if needed, but usually the callback handles it.
+        // For robustness, let's just reject with 401 and let the frontend re-auth.
+        return res.status(401).json({ message: 'User not registered in database' });
+      }
+
+      console.log('[AUTH] Resolved internal DB ID:', user.id);
+      req.userId = user.id;
+      req.userEmail = user.email || payload.email || payload.preferred_username;
+      req.userRoles = payload.realm_access?.roles || [];
+
+      next();
+    } catch (dbErr: any) {
+      console.error('[AUTH] Database error during user resolution:', dbErr.message);
+      return res.status(500).json({ message: 'Authentication service error' });
+    }
   });
 }
 

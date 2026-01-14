@@ -9,6 +9,7 @@ import {
 import {
   IconLogout,
   IconSun,
+  IconSettings,
   IconMoon,
   IconUser,
 } from '@tabler/icons-react';
@@ -76,12 +77,13 @@ export default function UserMenu({ collapsed = false }: Props) {
             }}
           >
             <ActionIcon variant="subtle" radius="xl" size={collapsed ? 'lg' : 'md'}>
-              <IconUser size={collapsed ? 22 : 18} />
+              <IconSettings size={collapsed ? 22 : 18} color="#000000" />
             </ActionIcon>
 
             {!collapsed && (
-              <Text size="sm" fw={500}>
-                {user?.email ?? 'User'}
+              <Text size="sm" fw={500} style={{ color: '#000000' }}>
+                {/* {user?.email ?? 'User'} */}
+                Settings & Help
               </Text>
             )}
           </Group>

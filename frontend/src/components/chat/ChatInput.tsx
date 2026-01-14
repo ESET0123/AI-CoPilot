@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Textarea, Group, ActionIcon, Paper, Tooltip } from '@mantine/core';
-import { IconSend, IconPlayerStop, IconMicrophone } from '@tabler/icons-react';
+import { Textarea, Group, ActionIcon, Paper, Tooltip, Box, ThemeIcon } from '@mantine/core';
+import { IconSend, IconPlayerStop, IconMicrophone, IconSearch, IconBulb, IconWorld, IconPaperclip, IconWaveSine } from '@tabler/icons-react'; // Added new icons
 import { useEffect, useRef, useState } from 'react';
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
 import { designTokens } from '../../styles/designTokens';
@@ -14,7 +14,11 @@ import {
   stopMessage,
 } from '../../features/chat/chatSlice';
 
-export default function ChatInput() {
+interface ChatInputProps {
+  isHeroMode?: boolean;
+}
+
+export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   const dispatch = useAppDispatch();
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -100,41 +104,53 @@ export default function ChatInput() {
 
   return (
     <Paper
-      shadow="md"
-      p="sm"
-      radius="xl"
+      shadow={isHeroMode ? 'sm' : 'xs'}
+      p="md"
+      radius="lg"
       style={{
-        maxWidth: 768,
+        maxWidth: 800,
         margin: '0 auto',
         width: '100%',
+        backgroundColor: '#ffffff',
+        border: '1px solid #d9f99d',
+        position: 'relative',
         transition: designTokens.transitions.normal,
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(79, 172, 254, 0.1)',
+        minHeight: isHeroMode ? 140 : 'auto',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
+
+
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
           handleSend();
         }}
+        style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
       >
-        <Group align="flex-end" gap="xs" wrap="nowrap">
+        <Box style={{ flex: 1, display: 'flex' }}>
           <Textarea
             ref={inputRef}
             value={value}
             onChange={(e) => setValue(e.currentTarget.value)}
-            placeholder={isCurrentSending ? 'Waiting for response...' : 'Message...'}
+            placeholder={
+              isHeroMode
+                ? "𝗔𝗦𝗞 𝗔𝗡𝗬𝗧𝗛𝗜𝗡𝗚. TYPE @ FOR MENTIONS AND / FOR SHORTCUTS"
+                : (isCurrentSending ? "Waiting for response..." : "Message...")
+            }
             autosize
-            minRows={1}
-            maxRows={5}
-            radius="xl"
+            minRows={isHeroMode ? 3 : 1}
+            maxRows={8}
+            variant="unstyled"
             disabled={isCurrentSending}
-            style={{ flex: 1 }}
+            style={{ flex: 1, marginTop: isHeroMode ? 0 : 24 }}
             styles={{
               input: {
-                transition: designTokens.transitions.fast,
-                '&:focus': {
-                  boxShadow: '0 0 0 2px rgba(79, 172, 254, 0.2)',
-                },
+                padding: '8px 4px',
+                fontSize: '15px',
+                lineHeight: 1.5,
               },
             }}
             autoFocus
@@ -145,8 +161,35 @@ export default function ChatInput() {
               }
             }}
           />
+        </Box>
+
+        <Group justify="space-between" align="center" mt="xs">
+          {/* Left Actions (Search Toggle, etc) - Only in Hero Mode for now as per design */}
+          {/* {isHeroMode ? ( */}
+            <Group gap="xs">
+              <ThemeIcon variant="outline" color="gray" size="lg" radius="md" style={{ borderColor: '#d9f99d', color: '#334155' }}>
+                <IconSearch size={18} />
+              </ThemeIcon>
+              <ThemeIcon variant="light" color="lime" size="lg" radius="md" style={{ backgroundColor: '#ecfccb', color: '#4d7c0f' }}>
+                <IconBulb size={18} />
+              </ThemeIcon>
+            </Group>
+           {/* ) : <Box />} */}
 
           <Group gap="xs">
+            {/* Globe & Attach Icons (Visual only for now) */}
+            <Tooltip label="Search web">
+              <ActionIcon variant="subtle" color="gray" radius="xl" size="lg">
+                <IconWorld size={18} />
+              </ActionIcon>
+            </Tooltip>
+
+            <Tooltip label="Attach file">
+              <ActionIcon variant="subtle" color="gray" radius="xl" size="lg">
+                <IconPaperclip size={18} />
+              </ActionIcon>
+            </Tooltip>
+
             <Tooltip label={isRecording ? 'Stop recording' : 'Record voice'}>
               <ActionIcon
                 onClick={isRecording ? stopRecording : startRecording}
@@ -168,31 +211,23 @@ export default function ChatInput() {
             <Tooltip label={isCurrentSending ? 'Stop generating' : 'Send message'}>
               <ActionIcon
                 type="submit"
-                color={isCurrentSending ? 'red' : 'blue'}
+                color={isCurrentSending ? 'red' : '#334155'}
                 variant="filled"
-                radius="xl"
-                size="lg"
+                radius="md"
+                size="xl"
                 disabled={!isCurrentSending && !value.trim()}
                 style={{
                   transition: designTokens.transitions.normal,
                   boxShadow: !isCurrentSending && value.trim()
-                    ? '0 4px 12px rgba(79, 172, 254, 0.4)'
+                    ? '0 4px 12px rgba(0, 0, 0, 0.1)'
                     : 'none',
-                  transform: 'scale(1)',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isCurrentSending && value.trim()) {
-                    e.currentTarget.style.transform = 'scale(1.05)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
                 }}
               >
                 {isCurrentSending ? (
-                  <IconPlayerStop size={18} />
+                  <IconPlayerStop size={20} />
                 ) : (
-                  <IconSend size={18} />
+                  // Use WaveSine for that specific "AI" feel in the design, or standard Send
+                  isHeroMode ? <IconWaveSine size={20} /> : <IconSend size={20} />
                 )}
               </ActionIcon>
             </Tooltip>

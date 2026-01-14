@@ -54,6 +54,44 @@ export class AuthController {
   }
 
   /**
+   * Login with username and password
+   */
+  static async login(req: Request, res: Response) {
+    console.log('[AuthController] Login hit');
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        return res.status(400).json({ message: 'Email and password are required' });
+      }
+
+      console.log('[AuthController] Logging in user:', email);
+      const tokens = await AuthService.loginWithCredentials(email, password);
+      console.log('[AuthController] Tokens received successfully');
+
+      // Decode ID token to get user info
+      const decoded = jwt.decode(tokens.id_token) as any;
+      const keycloakId = decoded.sub;
+      const userEmail = decoded.email || decoded.preferred_username;
+
+      // Upsert user in database
+      const user = await AuthService.upsertUserFromKeycloak(keycloakId, userEmail);
+      console.log('[AuthController] User upserted/found');
+
+      res.json({
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+        id_token: tokens.id_token,
+        expires_in: tokens.expires_in,
+        user,
+      });
+    } catch (error: any) {
+      console.error('[AuthController] Login error:', error.response?.data || error.message);
+      res.status(401).json({ message: 'Invalid credentials' });
+    }
+  }
+
+  /**
    * Token refresh endpoint
    */
   static async refresh(req: Request, res: Response) {

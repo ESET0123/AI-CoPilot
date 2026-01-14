@@ -14,10 +14,12 @@ export class ConversationsController {
     static async create(req: Request, res: Response) {
         try {
             const { title } = req.body;
+            console.log('[ConversationsController] Creating conversation for userId:', req.userId);
             const conversation = await ConversationsService.createConversation(req.userId!, title);
             res.status(201).json(conversation);
-        } catch (err) {
-            res.status(500).json({ message: 'Internal Server Error' });
+        } catch (err: any) {
+            console.error('[ConversationsController] Create error details:', err.message, err.stack);
+            res.status(500).json({ message: 'Internal Server Error', error: err.message });
         }
     }
 

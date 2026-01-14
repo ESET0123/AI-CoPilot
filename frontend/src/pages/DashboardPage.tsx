@@ -1,47 +1,30 @@
-import { Box, Center, Stack, Text, Collapse } from '@mantine/core';
+import { Box } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 
 import AppShellLayout from '../components/layout/AppShellLayout';
 import HeaderBar from '../components/layout/HeaderBar';
 import ChatWindow from '../components/chat/ChatWindow';
 import ChatInput from '../components/chat/ChatInput';
-import DataPanel from '../components/chat/DataPanel';
+import DashboardHero from '../components/chat/DashboardHero';
+import { designTokens } from '../styles/designTokens';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import {
   fetchConversations,
   fetchMessages,
-  setDataPanelOpen,
-  setSelectedData as setSelectedDataAction
 } from '../features/chat/chatSlice';
-import { parseMessageContent } from '../utils/contentParser';
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
   const user = useAppSelector((s) => s.auth.user);
   const chatState = useAppSelector((s) => s.chat);
-  const { dataPanelOpen, selectedData, activeConversationId, conversations } = chatState;
+  const { activeConversationId, conversations } = chatState;
 
   const isMobile = useMediaQuery('(max-width: 425px)');
 
   const activeConversation = conversations.find((c) => c.id === activeConversationId);
   const isEmpty = !activeConversation || activeConversation.messages.length === 0;
-
-  // DERIVE LATEST DATA CONTENT (Fallback if no specific data is selected)
-  const latestDataContent = useMemo(() => {
-    if (!activeConversation) return null;
-
-    const messages = [...activeConversation.messages].reverse();
-    const dataMessage = messages.find(m => {
-      if (m.role !== 'assistant') return false;
-      const parsed = parseMessageContent(m.text, false);
-      return parsed.type !== 'text' && parsed.type !== 'error' && parsed.data;
-    });
-
-    if (!dataMessage) return null;
-    return parseMessageContent(dataMessage.text, false);
-  }, [activeConversation]);
 
   // LOAD CONVERSATIONS ON MOUNT
   useEffect(() => {
@@ -56,11 +39,6 @@ export default function DashboardPage() {
       });
   }, [user, dispatch]);
 
-  // RESET SELECTED DATA ON CONVERSATION SWITCH
-  useEffect(() => {
-    dispatch(setSelectedDataAction(null));
-  }, [activeConversationId, dispatch]);
-
   return (
     <AppShellLayout>
       <Box h="100%" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -68,62 +46,52 @@ export default function DashboardPage() {
         {/* HEADER SECTION */}
         <Box
           h={60}
-          px="md"
+          px="xl"
           style={{
-            borderBottom: '1px solid var(--mantine-color-default-border)',
+            background: designTokens.gradients.glow,
+            borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
             flexShrink: 0,
             display: 'flex',
             alignItems: 'center'
           }}
         >
-          <HeaderBar
-            showDataPanel={dataPanelOpen}
-            onToggleDataPanel={() => dispatch(setDataPanelOpen(!dataPanelOpen))}
-          />
+          <HeaderBar />
         </Box>
 
         {/* MAIN BODY SECTION */}
-        <Box style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: isMobile ? 'column' : 'row',
-          overflow: 'hidden'
-        }}>
+        <Box
+          // p="xl"
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            overflow: 'hidden',
+            background: designTokens.gradients.glow
+          }}>
 
           {/* LEFT: CHAT AREA */}
           <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-            <Box style={{ flex: 1, overflowY: 'auto', position: 'relative' }} p="md">
-              {isEmpty && (
-                <Center style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-                  <Stack align="center" maw={640} px="md">
-                    <Text size="xl" fw={600} ta="center">How can I help you today?</Text>
-                  </Stack>
-                </Center>
-              )}
-              <ChatWindow />
-            </Box>
 
-            <Box p="md">
-              <ChatInput />
-            </Box>
+            {isEmpty ? (
+              // DRAFT MODE: Hero Section
+              <Box style={{ flex: 1, overflowY: 'auto' }}>
+                <DashboardHero />
+              </Box>
+            ) : (
+              // ACTIVE MODE: Chat Window + Bottom Input
+              <>
+                <Box style={{ flex: 1, overflowY: 'auto', position: 'relative' }} p="md">
+                  <ChatWindow />
+                </Box>
+
+                <Box p="md" style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Box maw={800} w="100%">
+                    <ChatInput />
+                  </Box>
+                </Box>
+              </>
+            )}
           </Box>
-
-          {/* RIGHT: DATA PANEL CONTAINER */}
-          <Collapse in={dataPanelOpen} transitionDuration={200}>
-            <Box
-              w={isMobile ? '100%' : 400}
-              h={isMobile ? 350 : "100%"}
-              p="md"
-              style={{
-                borderLeft: isMobile ? 'none' : '1px solid var(--mantine-color-default-border)',
-                borderTop: isMobile ? '1px solid var(--mantine-color-default-border)' : 'none',
-                backgroundColor: 'var(--mantine-color-body)',
-                overflowY: 'auto'
-              }}
-            >
-              <DataPanel content={selectedData || latestDataContent} />
-            </Box>
-          </Collapse>
         </Box>
       </Box>
     </AppShellLayout>
