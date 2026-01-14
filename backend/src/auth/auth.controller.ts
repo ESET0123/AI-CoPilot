@@ -1,42 +1,110 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import jwt from 'jsonwebtoken';
+import axios from 'axios';
 
 export class AuthController {
-  static async sendLoginOtp(req: Request, res: Response) {
+  /**
+   * OAuth2 callback endpoint
+   * Exchanges authorization code for tokens
+   */
+  static async callback(req: Request, res: Response) {
+    console.log('[AuthController] Callback hit');
     try {
-      let { email } = req.body;
+      const { code } = req.query;
+      const redirectUri = req.query.redirect_uri as string || 'http://localhost:5173';
 
-      if (!email || !EMAIL_REGEX.test(email)) {
-        return res.status(400).json({ message: 'Valid email is required' });
+      console.log('[AuthController] Code:', code ? 'Present' : 'Missing');
+      console.log('[AuthController] Redirect URI:', redirectUri);
+
+      if (!code) {
+        return res.status(400).json({ message: 'Authorization code missing' });
       }
 
-      email = email.toLowerCase().trim();
-      await AuthService.initiateLogin(email);
+      // Exchange code for tokens
+      console.log('[AuthController] Exchanging code for tokens...');
+      const tokens = await AuthService.exchangeCodeForTokens(code as string, redirectUri);
+      console.log('[AuthController] Tokens received successfully');
 
-      return res.json({ message: 'OTP sent to email' });
-    } catch (err) {
-      console.error('SEND OTP ERROR:', err);
-      return res.status(500).json({ message: 'Failed to send OTP' });
+      // Decode ID token to get user info
+      const decoded = jwt.decode(tokens.id_token) as any;
+      const keycloakId = decoded.sub;
+      const email = decoded.email || decoded.preferred_username;
+      console.log('[AuthController] User decoded:', { keycloakId, email });
+
+      // Upsert user in database
+      const user = await AuthService.upsertUserFromKeycloak(keycloakId, email);
+      console.log('[AuthController] User upserted/found');
+
+      res.json({
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+        id_token: tokens.id_token,
+        expires_in: tokens.expires_in,
+        user,
+      });
+    } catch (error: any) {
+      console.error('[AuthController] OAuth callback error full:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('[AuthController] Axios error data:', error.response?.data);
+        console.error('[AuthController] Axios error status:', error.response?.status);
+      }
+      res.status(500).json({ message: 'Authentication failed', details: error.message });
     }
   }
 
-  static async verifyLoginOtp(req: Request, res: Response) {
+  /**
+   * Token refresh endpoint
+   */
+  static async refresh(req: Request, res: Response) {
     try {
-      const { email, otp } = req.body;
-      if (!email || !otp) {
-        return res.status(400).json({ message: 'Email and OTP required' });
+      const { refresh_token } = req.body;
+
+      if (!refresh_token) {
+        return res.status(400).json({ message: 'Refresh token missing' });
       }
 
-      const result = await AuthService.verifyLogin(email.toLowerCase().trim(), otp);
-      res.json(result);
-    } catch (err: any) {
-      if (err.message === 'INVALID_OTP') {
-        return res.status(400).json({ message: 'Invalid or expired OTP' });
-      }
-      console.error('VERIFY OTP ERROR:', err);
-      res.status(500).json({ message: 'OTP verification failed' });
+      const tokens = await AuthService.refreshAccessToken(refresh_token);
+
+      res.json({
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+        expires_in: tokens.expires_in,
+      });
+    } catch (error: any) {
+      console.error('Token refresh error:', error.response?.data || error.message);
+      res.status(401).json({ message: 'Invalid refresh token' });
     }
+  }
+
+  /**
+   * Logout endpoint
+   */
+  static async logout(req: Request, res: Response) {
+    try {
+      const { refresh_token } = req.body;
+
+      if (refresh_token) {
+        await AuthService.logout(refresh_token);
+      }
+
+      res.json({ message: 'Logged out successfully' });
+    } catch (error: any) {
+      console.error('Logout error:', error.response?.data || error.message);
+      res.status(500).json({ message: 'Logout failed' });
+    }
+  }
+
+  // Legacy OTP endpoints (kept for backward compatibility)
+  static async sendLoginOtp(req: Request, res: Response) {
+    res.status(410).json({
+      message: 'OTP authentication is deprecated. Please use Keycloak authentication.'
+    });
+  }
+
+  static async verifyLoginOtp(req: Request, res: Response) {
+    res.status(410).json({
+      message: 'OTP authentication is deprecated. Please use Keycloak authentication.'
+    });
   }
 }

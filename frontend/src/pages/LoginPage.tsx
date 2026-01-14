@@ -1,49 +1,69 @@
-import { TextInput, Button, Stack, Text, Box, Paper, ActionIcon, Divider } from '@mantine/core';
+import { Button, Stack, Text, Box, Paper, ActionIcon, Divider, Loader, Center } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { IconSun, IconMoon, IconLogin } from '@tabler/icons-react';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { sendOtp, verifyOtp } from '../features/auth/authSlice';
+import { handleKeycloakCallback, loginWithKeycloak } from '../features/auth/authSlice';
 import HeaderBar from '../components/layout/HeaderBar';
 import { toggleTheme } from '../features/theme/themeSlice';
+import keycloak from '../config/keycloak';
 
 export default function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const { user, email, error } = useAppSelector(s => s.auth);
+  const { user, error } = useAppSelector(s => s.auth);
   const scheme = useAppSelector(s => s.theme.colorScheme);
 
-  const [emailInput, setEmailInput] = useState('');
-  const [otp, setOtp] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-  const [sendingOtp, setSendingOtp] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Handle OAuth2 callback
+  useEffect(() => {
+    // Check both query string and hash fragment for code
+    const code = searchParams.get('code') ||
+      new URLSearchParams(window.location.hash.substring(1)).get('code');
+    console.log('[LoginPage] OAuth callback check - code:', code);
+    if (code) {
+      setLoading(true);
+      console.log('[LoginPage] Dispatching handleKeycloakCallback');
+      dispatch(handleKeycloakCallback(code))
+        .unwrap()
+        .then((data) => {
+          console.log('[LoginPage] Callback success, data:', data);
+          console.log('[LoginPage] Navigating to /dashboard');
+          navigate('/dashboard', { replace: true });
+        })
+        .catch((err) => {
+          console.error('[LoginPage] Callback failed:', err);
+          setLoading(false);
+        });
+    }
+  }, [searchParams, dispatch, navigate]);
 
   useEffect(() => {
+    console.log('[LoginPage] User state changed:', user);
     if (user) {
+      console.log('[LoginPage] User exists, navigating to /dashboard');
       navigate('/dashboard', { replace: true });
     }
   }, [user, navigate]);
 
-  const handleSendOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (sendingOtp || otpSent) return;
-
-    setSendingOtp(true);
-    try {
-      await dispatch(sendOtp(emailInput)).unwrap();
-      setOtpSent(true);
-    } finally {
-      setSendingOtp(false);
-    }
+  const handleLogin = () => {
+    dispatch(loginWithKeycloak());
   };
 
-  const handleVerifyOtp = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-    dispatch(verifyOtp({ email, otp }));
-  };
+  if (loading) {
+    return (
+      <Center h="100vh">
+        <Stack align="center" gap="md">
+          <Loader size="lg" />
+          <Text c="dimmed">Authenticating...</Text>
+        </Stack>
+      </Center>
+    );
+  }
 
   return (
     <>
@@ -77,61 +97,33 @@ export default function LoginPage() {
                 Sign in
               </Text>
               <Text size="sm" c="dimmed">
-                Login using email OTP
+                Login using Keycloak
               </Text>
             </Stack>
 
             <Divider />
 
-            <form
-              onSubmit={otpSent ? handleVerifyOtp : handleSendOtp}
-            >
-              <Stack gap="sm">
-                {/* ================= EMAIL ================= */}
-                <TextInput
-                  label="Email"
-                  placeholder="you@example.com"
-                  value={otpSent ? email ?? emailInput : emailInput}
-                  onChange={(e) =>
-                    setEmailInput(e.currentTarget.value)
-                  }
-                  disabled={otpSent}
-                  required
-                />
+            <Stack gap="sm">
+              {error && <Text c="red">{error}</Text>}
 
-                {/* ================= OTP (AFTER SEND) ================= */}
-                {otpSent && (
-                  <TextInput
-                    label="Enter OTP"
-                    placeholder="6-digit code"
-                    value={otp}
-                    onChange={(e) =>
-                      setOtp(e.currentTarget.value)
-                    }
-                    required
-                  />
-                )}
-
-                {error && <Text c="red">{error}</Text>}
-
-                {/* ================= ACTION BUTTON ================= */}
-                <Button
-                  type="submit"
-                  fullWidth
-                  leftSection={
-                    !otpSent ? (
-                      <IconLogin size={16} />
-                    ) : undefined
-                  }
-                  disabled={
-                    sendingOtp ||
-                    (otpSent && otp.trim().length === 0)
-                  }
-                >
-                  {otpSent ? 'Verify OTP' : 'Send OTP'}
-                </Button>
-              </Stack>
-            </form>
+              {/* ================= KEYCLOAK LOGIN BUTTON ================= */}
+              <Button
+                type="button"
+                fullWidth
+                leftSection={<IconLogin size={16} />}
+                onClick={handleLogin}
+                variant="gradient"
+                gradient={{ from: '#BFFF00', to: '#99FF33', deg: 135 }}
+                styles={{
+                  root: {
+                    color: '#1A1A1A',
+                    fontWeight: 700,
+                  },
+                }}
+              >
+                Sign in with Keycloak
+              </Button>
+            </Stack>
           </Stack>
         </Paper>
       </Box>

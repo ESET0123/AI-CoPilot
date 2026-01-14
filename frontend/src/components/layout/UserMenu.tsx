@@ -13,7 +13,9 @@ import {
   IconUser,
 } from '@tabler/icons-react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { logout } from '../../features/auth/authSlice';
+import { logoutUser } from '../../features/auth/authSlice';
+// ...
+
 import { toggleTheme } from '../../features/theme/themeSlice';
 import { useNavigate } from 'react-router-dom';
 import { IconTrash } from '@tabler/icons-react';
@@ -111,8 +113,7 @@ export default function UserMenu({ collapsed = false }: Props) {
           color="red"
           leftSection={<IconLogout size={16} />}
           onClick={() => {
-            dispatch(logout());
-            navigate('/login', { replace: true });
+            dispatch(logoutUser());
           }}
         >
           Logout

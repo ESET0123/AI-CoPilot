@@ -3,6 +3,22 @@ import { axiosClient } from './axiosClient';
 /* ================= AUTH ================= */
 
 export const authApi = {
+  // Keycloak OAuth2 endpoints
+  keycloakCallback(code: string, redirectUri: string) {
+    return axiosClient.get('/auth/callback', {
+      params: { code, redirect_uri: redirectUri },
+    });
+  },
+
+  refreshToken(refreshToken: string) {
+    return axiosClient.post('/auth/refresh', { refresh_token: refreshToken });
+  },
+
+  logout(refreshToken: string) {
+    return axiosClient.post('/auth/logout', { refresh_token: refreshToken });
+  },
+
+  // Legacy OTP endpoints (deprecated)
   sendOtp(email: string) {
     return axiosClient.post('/auth/send-otp', {
       email: email.toLowerCase().trim(),

@@ -9,6 +9,12 @@ router.use((req, _res, next) => {
   next();
 });
 
+// OAuth2 / Keycloak endpoints
+router.get('/callback', AuthController.callback);
+router.post('/refresh', AuthController.refresh);
+router.post('/logout', AuthController.logout);
+
+// Legacy OTP endpoints (deprecated)
 router.post('/send-otp', AuthController.sendLoginOtp);
 router.post('/verify-otp', AuthController.verifyLoginOtp);
 

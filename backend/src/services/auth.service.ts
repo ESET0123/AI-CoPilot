@@ -1,28 +1,70 @@
+import axios from 'axios';
+import { keycloakServerUrl, keycloakRealm, keycloakConfig } from '../config/keycloak.config';
 import { AuthRepository } from '../repositories/auth.repository';
-import { generateOtp } from '../utils/otp';
-import { sendOtpEmail } from '../utils/mailer';
-import { generateJwt } from '../utils/tokens';
 
 export class AuthService {
-    static async initiateLogin(email: string): Promise<void> {
-        const otp = generateOtp();
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+    /**
+     * Exchange authorization code for tokens
+     */
+    static async exchangeCodeForTokens(code: string, redirectUri: string): Promise<any> {
+        const tokenUrl = `${keycloakServerUrl}/realms/${keycloakRealm}/protocol/openid-connect/token`;
 
-        await AuthRepository.invalidateOldOtps(email);
-        await AuthRepository.createOtp(email, otp, expiresAt);
-        await sendOtpEmail(email, otp);
+        const params = new URLSearchParams({
+            grant_type: 'authorization_code',
+            client_id: keycloakConfig.resource,
+            client_secret: keycloakConfig.credentials.secret,
+            code,
+            redirect_uri: redirectUri,
+        });
+
+        const response = await axios.post(tokenUrl, params, {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        });
+
+        return response.data;
     }
 
-    static async verifyLogin(email: string, otp: string): Promise<{ token: string, user: any }> {
-        const otpId = await AuthRepository.findValidOtp(email, otp);
-        if (!otpId) {
-            throw new Error('INVALID_OTP');
-        }
+    /**
+     * Refresh access token using refresh token
+     */
+    static async refreshAccessToken(refreshToken: string): Promise<any> {
+        const tokenUrl = `${keycloakServerUrl}/realms/${keycloakRealm}/protocol/openid-connect/token`;
 
-        await AuthRepository.markOtpAsUsed(otpId);
-        const user = await AuthRepository.upsertUser(email);
-        const token = generateJwt(user.id);
+        const params = new URLSearchParams({
+            grant_type: 'refresh_token',
+            client_id: keycloakConfig.resource,
+            client_secret: keycloakConfig.credentials.secret,
+            refresh_token: refreshToken,
+        });
 
-        return { token, user };
+        const response = await axios.post(tokenUrl, params, {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        });
+
+        return response.data;
+    }
+
+    /**
+     * Logout user from Keycloak
+     */
+    static async logout(refreshToken: string): Promise<void> {
+        const logoutUrl = `${keycloakServerUrl}/realms/${keycloakRealm}/protocol/openid-connect/logout`;
+
+        const params = new URLSearchParams({
+            client_id: keycloakConfig.resource,
+            client_secret: keycloakConfig.credentials.secret,
+            refresh_token: refreshToken,
+        });
+
+        await axios.post(logoutUrl, params, {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        });
+    }
+
+    /**
+     * Upsert user in database based on Keycloak user info
+     */
+    static async upsertUserFromKeycloak(keycloakId: string, email: string): Promise<any> {
+        return await AuthRepository.upsertUserFromKeycloak(keycloakId, email);
     }
 }

@@ -56,4 +56,18 @@ export class AuthRepository {
         );
         return result.rows[0];
     }
+
+    static async upsertUserFromKeycloak(keycloakId: string, email: string): Promise<{ id: string, email: string, keycloak_id: string, role: string }> {
+        const result = await pool.query(
+            `
+      INSERT INTO users (email, keycloak_id, is_email_verified)
+      VALUES ($1, $2, true)
+      ON CONFLICT (email)
+      DO UPDATE SET keycloak_id = $2, is_email_verified = true
+      RETURNING id, email, keycloak_id, role
+      `,
+            [email, keycloakId]
+        );
+        return result.rows[0];
+    }
 }
