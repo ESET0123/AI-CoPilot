@@ -12,6 +12,7 @@ import {
   fetchConversations,
   fetchMessages,
 } from '../features/chat/chatSlice';
+import QuickAccessCategories from '../components/chat/QuickAccessCategories';
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
@@ -92,6 +93,9 @@ export default function DashboardPage() {
                   <Box maw={800} w="100%">
                     <ChatInput />
                   </Box>
+                </Box>
+                <Box p="md" style={{ display: 'flex', justifyContent: 'center' }}>
+                  <QuickAccessCategories />
                 </Box>
               </>
             )}

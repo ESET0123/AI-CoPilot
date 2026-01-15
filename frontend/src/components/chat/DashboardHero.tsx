@@ -1,9 +1,8 @@
 import {
-    Box, Container, SimpleGrid, Stack, Text, Title,
+    Box, Container, Stack, Text, Title,
 } from '@mantine/core';
-import { IconAlertTriangle, IconActivity, IconCalculator, IconUsers } from '@tabler/icons-react';
 import ChatInput from './ChatInput';
-import QuickActionCard from './QuickActionCard';
+import QuickAccessCategories from './QuickAccessCategories';
 import { useAppSelector } from '../../app/hooks';
 
 export default function DashboardHero() {
@@ -72,35 +71,7 @@ export default function DashboardHero() {
                     <ChatInput isHeroMode />
                 </Box>
 
-                <Box w="100%" maw={900}>
-                    <Text fw={600} size="lg" mb="md" c="#334155">Quick Access Categories</Text>
-                    <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md">
-                        <QuickActionCard
-                            title="Theft Detection"
-                            description="View Real Time data and detect anomalies"
-                            icon={IconAlertTriangle}
-                            onClick={() => { }}
-                        />
-                        <QuickActionCard
-                            title="Load Forecasting"
-                            description="View Real Time data and detect patterns"
-                            icon={IconActivity}
-                            onClick={() => { }}
-                        />
-                        <QuickActionCard
-                            title="Smart Tariff"
-                            description="Optimize tariff structures"
-                            icon={IconCalculator}
-                            onClick={() => { }}
-                        />
-                        <QuickActionCard
-                            title="Defaulter Analysis"
-                            description="Predictive analysis for payments"
-                            icon={IconUsers}
-                            onClick={() => { }}
-                        />
-                    </SimpleGrid>
-                </Box>
+                <QuickAccessCategories />
             </Box>
             <style>{`
         @keyframes pulse {
