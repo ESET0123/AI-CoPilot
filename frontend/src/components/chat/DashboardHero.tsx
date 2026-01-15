@@ -1,8 +1,6 @@
 import {
     Box, Container, Stack, Text, Title,
 } from '@mantine/core';
-import ChatInput from './ChatInput';
-import QuickAccessCategories from './QuickAccessCategories';
 import { useAppSelector } from '../../app/hooks';
 
 export default function DashboardHero() {
@@ -20,7 +18,7 @@ export default function DashboardHero() {
     const greeting = getGreeting();
 
     return (
-        <Container size="lg" h="100%" styles={{ root: { display: "flex", flexDirection: "column", padding: "2rem", marginBottom: "14rem" } }}>
+        <Container size="lg" h="100%" display="flex" style={{ flexDirection: "column" }} p="2rem">
             <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
 
                 {/* Animated Glow Orb */}
@@ -67,11 +65,6 @@ export default function DashboardHero() {
                     </Text>
                 </Stack>
 
-                <Box w="100%" maw={800} mb="4rem">
-                    <ChatInput isHeroMode />
-                </Box>
-
-                <QuickAccessCategories />
             </Box>
             <style>{`
         @keyframes pulse {

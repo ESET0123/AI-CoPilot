@@ -4,15 +4,13 @@ import { useEffect } from 'react';
 
 import AppShellLayout from '../components/layout/AppShellLayout';
 import HeaderBar from '../components/layout/HeaderBar';
-import ChatWindow from '../components/chat/ChatWindow';
-import ChatInput from '../components/chat/ChatInput';
-import DashboardHero from '../components/chat/DashboardHero';
+import DraftView from '../components/chat/DraftView';
+import ActiveConversationView from '../components/chat/ActiveConversationView';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import {
   fetchConversations,
   fetchMessages,
 } from '../features/chat/chatSlice';
-import QuickAccessCategories from '../components/chat/QuickAccessCategories';
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
@@ -75,29 +73,14 @@ export default function DashboardPage() {
           }}>
 
           {/* LEFT: CHAT AREA */}
-          <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflowY: 'auto' }}>
 
             {isEmpty ? (
-              // DRAFT MODE: Hero Section
-              <Box style={{ flex: 1, overflowY: 'auto' }}>
-                <DashboardHero />
-              </Box>
+              // DRAFT MODE: Hero Section + Input + Quick Access
+              <DraftView />
             ) : (
-              // ACTIVE MODE: Chat Window + Bottom Input
-              <>
-                <Box style={{ flex: 1, overflowY: 'auto', position: 'relative' }} p="md">
-                  <ChatWindow />
-                </Box>
-
-                <Box p="md" style={{ display: 'flex', justifyContent: 'center' }}>
-                  <Box maw={800} w="100%">
-                    <ChatInput />
-                  </Box>
-                </Box>
-                <Box p="md" style={{ display: 'flex', justifyContent: 'center' }}>
-                  <QuickAccessCategories />
-                </Box>
-              </>
+              // ACTIVE MODE: Chat Window + Input + Quick Access
+              <ActiveConversationView />
             )}
           </Box>
         </Box>
