@@ -63,7 +63,7 @@ export default function DashboardPage() {
 
         {/* MAIN BODY SECTION */}
         <Box
-          // p="xl"
+          p="xl"
           style={{
             flex: 1,
             display: 'flex',
@@ -73,7 +73,7 @@ export default function DashboardPage() {
           }}>
 
           {/* LEFT: CHAT AREA */}
-          <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflowY: 'auto' }}>
+          <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: '100%', overflowY: 'auto' }}>
 
             {isEmpty ? (
               // DRAFT MODE: Hero Section + Input + Quick Access

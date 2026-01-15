@@ -54,10 +54,10 @@ export default function QuickActionCard({ title, description, onClick }: QuickAc
                 />
 
                 <Group align="flex-start" gap={4} style={{ flexDirection: 'column' }}>
-                    <Text fw={700} c="#1e293b" size="sm">
+                    <Text fw={700} c="#1e293b" size="md">
                         {title}
                     </Text>
-                    <Text size="xs" c="#64748b" style={{ lineHeight: 1.4 }}>
+                    <Text size="sm" c="#64748b" style={{ lineHeight: 1.4 }}>
                         {description}
                     </Text>
                 </Group>

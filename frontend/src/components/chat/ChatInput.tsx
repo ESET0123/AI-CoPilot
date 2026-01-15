@@ -132,7 +132,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
       p="md"
       radius="lg"
       style={{
-        maxWidth: 800,
+        maxWidth: 900,
         margin: '0 auto',
         width: '100%',
         backgroundColor: '#ffffff',
@@ -173,8 +173,8 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             styles={{
               input: {
                 padding: '8px 4px',
-                fontSize: '15px',
-                lineHeight: 1.5,
+                fontSize: '18px',
+                lineHeight: 1.6,
                 color: '#000000', // Force black text
               },
             }}
@@ -287,7 +287,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                   <IconPlayerStop size={20} />
                 ) : (
                   // Use WaveSine for that specific "AI" feel in the design, or standard Send
-                  <IconWaveSine color='white' size={20} /> )}
+                  <IconWaveSine color='white' size={20} />)}
               </ActionIcon>
             </Tooltip>
           </Group>

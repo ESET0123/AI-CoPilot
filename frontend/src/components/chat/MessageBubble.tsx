@@ -1,7 +1,7 @@
 import {
-  Paper, Text, Loader, Box, Alert,
+  Paper, Text, Loader, Box, Alert, Group, ActionIcon, Stack, Title
 } from '@mantine/core';
-import { IconAlertCircle } from '@tabler/icons-react';
+import { IconAlertCircle, IconDownload, IconCopy, IconRefresh, IconCornerDownRight } from '@tabler/icons-react';
 import { useMemo } from 'react';
 
 import { parseMessageContent } from '../../utils/contentParser';
@@ -19,9 +19,6 @@ export default function MessageBubble({ role, text, loading }: Props) {
   const content = useMemo(() => {
     return parseMessageContent(text, isUser);
   }, [text, isUser]);
-
-
-
 
   if (loading) {
     return (
@@ -68,15 +65,6 @@ export default function MessageBubble({ role, text, loading }: Props) {
       }}
     >
       {!isUser && (
-        // <Box style={{
-        //   width: 16,
-        //   height: 16,
-        //   borderRadius: '50%',
-        //   background: 'radial-gradient(circle, rgb(152, 249, 5) 0%, rgba(132, 204, 22, 0) 70%)',
-        //   marginTop: 4,
-        //   flexShrink: 0,
-        //   boxShadow: '0 0 10px rgba(163, 230, 53, 0.4)' // Subtle glow
-        // }} />
         <Box
           style={{
             // position: 'absolute',
@@ -97,6 +85,12 @@ export default function MessageBubble({ role, text, loading }: Props) {
         />
       )}
       <Box style={{ flex: 1 }}>
+        {!isUser && content.extras?.title && (
+          <Title order={4} mb="xs" c="#1e293b" style={{ fontWeight: 600 }}>
+            {content.extras.title}
+          </Title>
+        )}
+
         {isError && !isUser ? (
           <Alert
             icon={<IconAlertCircle size={16} />}
@@ -104,20 +98,57 @@ export default function MessageBubble({ role, text, loading }: Props) {
             variant="light"
             styles={{ root: { padding: '8px 12px' } }}
           >
-            <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
+            <Text size="md" style={{ whiteSpace: 'pre-wrap' }}>
               {content.text}
             </Text>
           </Alert>
         ) : (
-          <Text
-            size="sm"
-            style={{
-              whiteSpace: 'pre-wrap',
-              lineHeight: 1.6,
-            }}
-          >
-            {content.text}
-          </Text>
+          <Box>
+            <Text
+              size="lg"
+              style={{
+                whiteSpace: 'pre-wrap',
+                lineHeight: 1.6,
+                fontWeight: 500, // Slightly bolder for better visibility
+              }}
+            >
+              {content.text}
+            </Text>
+
+            {!isUser && (
+              <Box mt="md">
+                {/* Action Icons: Download, Copy, Refresh */}
+                <Group gap="sm" mb="md">
+                  <ActionIcon variant="subtle" color="gray" size="sm">
+                    <IconDownload size={16} />
+                  </ActionIcon>
+                  <ActionIcon variant="subtle" color="gray" size="sm">
+                    <IconCopy size={16} />
+                  </ActionIcon>
+                  <ActionIcon variant="subtle" color="gray" size="sm">
+                    <IconRefresh size={16} />
+                  </ActionIcon>
+                </Group>
+
+                {/* Related Section */}
+                {content.extras?.related && content.extras.related.length > 0 && (
+                  <Box>
+                    <Text fw={600} size="md" mb="xs" c="#334155">Related</Text>
+                    <Stack gap={4}>
+                      {content.extras.related.map((link: string, i: number) => (
+                        <Group key={i} gap="xs" style={{ cursor: 'pointer' }}>
+                          <IconCornerDownRight size={14} color="#84cc16" />
+                          <Text size="md" c="#65a30d" style={{ '&:hover': { textDecoration: 'underline' } }}>
+                            {link}
+                          </Text>
+                        </Group>
+                      ))}
+                    </Stack>
+                  </Box>
+                )}
+              </Box>
+            )}
+          </Box>
         )}
       </Box>
     </Paper>

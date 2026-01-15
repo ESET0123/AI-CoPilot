@@ -26,7 +26,7 @@ export default function ChatWindow() {
 
   return (
     <Stack style={{
-      maxWidth: 800,
+      maxWidth: 900,
       margin: '0 auto'
     }}>
       {convo.messages.map((msg) => (

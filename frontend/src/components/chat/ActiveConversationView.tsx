@@ -5,26 +5,33 @@ import QuickAccessCategories from './QuickAccessCategories';
 
 export default function ActiveConversationView() {
     return (
-        <Box display="flex" style={{ flexDirection: 'column', minHeight: '100%' }}>
-            {/* Chat Content expands to fill available space */}
-            <Box w="100%" h="100vh" style={{ overflowY: 'auto' }}>
-                <ChatWindow />
+        <Box display="flex" style={{ flexDirection: 'column' }}>
+            {/* Primary View: Chat Window + Input (90% height) */}
+            <Box display="flex" style={{ flexDirection: 'column', height: '90vh', overflow: 'hidden' }}>
+                {/* Chat Content expands to fill available space */}
+                <Box w="100%" style={{ flex: 1, overflowY: 'auto' }}>
+                    <ChatWindow />
+                </Box>
+
+                {/* Input Area */}
+                <Box
+                    p="md"
+                    w="100%"
+                    display="flex"
+                    style={{
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        background: 'transparent'
+                    }}
+                >
+                    <Box maw={900} w="100%" mb="md" >
+                        <ChatInput />
+                    </Box>
+                </Box>
             </Box>
 
-            {/* Input and Actions at the bottom */}
-            <Box
-                p="md"
-                w="100%"
-                display="flex"
-                style={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    background: 'transparent'
-                }}
-            >
-                <Box maw={800} w="100%" mb="md" >
-                    <ChatInput />
-                </Box>
+            {/* Below the Fold: Action Categories (Scrollable and Hidden by default) */}
+            <Box py="xl" display="flex" style={{ justifyContent: 'center' }}>
                 <QuickAccessCategories />
             </Box>
         </Box>

@@ -29,7 +29,7 @@ export default function DashboardHero() {
                             position: 'absolute',
                             top: '50%',
                             left: '50%',
-                            padding: '14px',
+                            // padding: '14px',
                             transform: 'translate(-50%, -50%)',
                             width: 160,
                             height: 160,
@@ -54,13 +54,13 @@ export default function DashboardHero() {
                 </Box>
 
                 <Stack gap="xs" align="center" mb="3rem">
-                    <Title order={1} size={42} fw={700} c="#1e293b" ta="center">
+                    <Title order={1} size={48} fw={800} c="#1e293b" ta="center">
                         {greeting}, {firstName}
                     </Title>
-                    <Title order={2} size={42} fw={700} c="#1e293b" ta="center">
+                    <Title order={2} size={48} fw={800} c="#1e293b" ta="center">
                         What's on <Text span c="#65a30d" inherit>your mind?</Text>
                     </Title>
-                    <Text c="dimmed" size="md" maw={500} ta="center" mt="sm">
+                    <Text c="dimmed" size="lg" maw={600} ta="center" mt="sm">
                         Find answers to your questions quickly or choose a category below to refine results
                     </Text>
                 </Stack>

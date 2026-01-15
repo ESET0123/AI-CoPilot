@@ -9,7 +9,7 @@ export default function DraftView() {
             <Box style={{ flex: 1 }}>
                 <DashboardHero />
             </Box>
-            <Box w="100%" maw={800} mx="auto" mb="4rem">
+            <Box w="100%" maw={900} mx="auto" mb="4rem">
                 <ChatInput isHeroMode />
             </Box>
             <Box w="100%" maw={900} mx="auto" mb="2rem">
