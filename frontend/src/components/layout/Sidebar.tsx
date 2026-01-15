@@ -27,7 +27,6 @@ import {
 } from '@tabler/icons-react';
 // import { IconLayoutSidebarRightCollapse, IconLayoutSidebarRightExpand } from '@tabler/icons-react';
 import { useState } from 'react';
-import { designTokens } from '../../styles/designTokens';
 
 import UserMenu from './UserMenu';
 import { useLayout } from './AppShellLayout';
@@ -39,6 +38,7 @@ import {
   deleteConversation,
   startNewChat,
 } from '../../features/chat/chatSlice';
+import type { Conversation } from '../../features/chat/chatSlice';
 
 type Props = {
   collapsed: boolean;
@@ -75,7 +75,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
   const { toggleMobile } = useLayout();
 
   return (
-    <Stack h="100%" p="sm" gap="sm">
+    <Stack h="100%" p="sm" gap="sm" style={{ backgroundColor: '#ffffff' }}>
       {/* ================= TOP ================= */}
       <Group justify={collapsed ? 'center' : 'space-between'}>
 
@@ -118,7 +118,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
               type="button"
               leftSection={<IconEdit size={18} stroke={1.5} />}
               variant="subtle"
-              color="dark"
+              color="gray"
               fullWidth
               justify="flex-start"
               onClick={() => dispatch(startNewChat())}
@@ -171,9 +171,9 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                 {conversations
                   // ✅ ONLY FIX: hide empty / invalid conversations
                   .filter(
-                    (c) => c.title && c.title.trim().length > 0
+                    (c: Conversation) => c.title && c.title.trim().length > 0
                   )
-                  .map((c) => {
+                  .map((c: Conversation) => {
                     const isActive = c.id === activeConversationId;
                     const isEditing = editingId === c.id;
 
@@ -190,7 +190,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                             ? 'linear-gradient(135deg, rgba(163, 230, 53, 0.1) 0%, rgba(132, 204, 22, 0.1) 100%)'
                             : 'transparent',
                           border: isActive ? '1px solid rgba(132, 204, 22, 0.2)' : '1px solid transparent',
-                          transition: designTokens.transitions.normal,
+                          transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
                           cursor: 'pointer',
                         }}
                         onMouseEnter={(e) => {

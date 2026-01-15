@@ -1,15 +1,14 @@
-import { Navigate } from 'react-router-dom';
-import { useAppSelector } from '../../app/hooks';
-import type { ReactNode } from 'react';
+import { Navigate } from "react-router-dom";
+import { useAppSelector } from "../../app/hooks";
 
-export default function ProtectedRoute({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  const user = useAppSelector((s) => s.auth.user);
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
 
-  if (!user) {
+export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 

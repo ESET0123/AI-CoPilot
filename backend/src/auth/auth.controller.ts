@@ -66,23 +66,22 @@ export class AuthController {
       }
 
       console.log('[AuthController] Logging in user:', email);
-      const tokens = await AuthService.loginWithCredentials(email, password);
+      const result = await AuthService.loginWithCredentials(email, password);
       console.log('[AuthController] Tokens received successfully');
 
       // Decode ID token to get user info
-      const decoded = jwt.decode(tokens.id_token) as any;
+      const decoded = jwt.decode(result.tokens.id_token) as any;
       const keycloakId = decoded.sub;
       const userEmail = decoded.email || decoded.preferred_username;
 
-      // Upsert user in database
-      const user = await AuthService.upsertUserFromKeycloak(keycloakId, userEmail);
-      console.log('[AuthController] User upserted/found');
+      // User is already upserted in authenticateUser
+      const user = result.user;
 
       res.json({
-        access_token: tokens.access_token,
-        refresh_token: tokens.refresh_token,
-        id_token: tokens.id_token,
-        expires_in: tokens.expires_in,
+        access_token: result.tokens.access_token,
+        refresh_token: result.tokens.refresh_token,
+        id_token: result.tokens.id_token,
+        expires_in: result.tokens.expires_in,
         user,
       });
     } catch (error: any) {

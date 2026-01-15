@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Textarea, Group, ActionIcon, Paper, Tooltip, Box, 
+import {
+  Textarea, Group, ActionIcon, Paper, Tooltip, Box,
   // ThemeIcon
- } from '@mantine/core';
+} from '@mantine/core';
 import { IconSend, IconPlayerStop, IconMicrophone, IconSearch, IconBulb, IconWorld, IconPaperclip, IconWaveSine } from '@tabler/icons-react'; // Added new icons
 import { useEffect, useRef, useState } from 'react';
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
-import { designTokens } from '../../styles/designTokens';
+
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   sendMessage,
@@ -137,7 +138,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
         backgroundColor: '#ffffff',
         border: '1px solid #d9f99d',
         position: 'relative',
-        transition: designTokens.transitions.normal,
+        transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
         minHeight: isHeroMode ? 140 : 'auto',
         display: 'flex',
         flexDirection: 'column',
@@ -191,7 +192,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
 
           {/* Search / Reason Toggle */}
           <Box
-            
+
             style={{
               backgroundColor: '#ecfccb',
               padding: '4px',
@@ -258,7 +259,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 disabled={isCurrentSending || isTranscribing}
                 loading={isTranscribing}
                 style={{
-                  transition: designTokens.transitions.normal,
+                  transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
                   transform: isRecording ? 'scale(1.1)' : 'scale(1)',
                 }}
               >
@@ -275,7 +276,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 size="xl"
                 disabled={!isCurrentSending && !value.trim()}
                 style={{
-                  transition: designTokens.transitions.normal,
+                  transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
                   boxShadow: !isCurrentSending && value.trim()
                     ? '0 4px 12px rgba(0, 0, 0, 0.1)'
                     : 'none',

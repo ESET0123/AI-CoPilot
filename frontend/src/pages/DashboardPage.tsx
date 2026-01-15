@@ -7,8 +7,6 @@ import HeaderBar from '../components/layout/HeaderBar';
 import ChatWindow from '../components/chat/ChatWindow';
 import ChatInput from '../components/chat/ChatInput';
 import DashboardHero from '../components/chat/DashboardHero';
-import { designTokens } from '../styles/designTokens';
-
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import {
   fetchConversations,
@@ -48,7 +46,7 @@ export default function DashboardPage() {
           h={60}
           px="xl"
           style={{
-            background: designTokens.gradients.glow,
+            background: 'radial-gradient(circle at 50% 50%, #f7fee7 0%, #ffffff 100%)',
             borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
             flexShrink: 0,
             display: 'flex',
@@ -66,7 +64,7 @@ export default function DashboardPage() {
             display: 'flex',
             flexDirection: isMobile ? 'column' : 'row',
             overflow: 'hidden',
-            background: designTokens.gradients.glow
+            background: 'radial-gradient(circle at 50% 50%, #f7fee7 0%, #ffffff 100%)'
           }}>
 
           {/* LEFT: CHAT AREA */}

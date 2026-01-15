@@ -8,17 +8,10 @@ import {
 } from '@mantine/core';
 import {
   IconLogout,
-  IconSun,
   IconSettings,
-  IconMoon,
-  IconUser,
 } from '@tabler/icons-react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { logoutUser } from '../../features/auth/authSlice';
-// ...
-
-import { toggleTheme } from '../../features/theme/themeSlice';
-import { useNavigate } from 'react-router-dom';
+import { logout } from '../../features/auth/authSlice';
 import { IconTrash } from '@tabler/icons-react';
 import { deleteAllConversations } from '../../features/chat/chatSlice';
 import { useDisclosure } from '@mantine/hooks';
@@ -31,10 +24,8 @@ type Props = {
 
 export default function UserMenu({ collapsed = false }: Props) {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
 
   const user = useAppSelector((s) => s.auth.user);
-  const scheme = useAppSelector((s) => s.theme.colorScheme);
 
   const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -92,16 +83,6 @@ export default function UserMenu({ collapsed = false }: Props) {
 
       {/* ===== Dropdown ===== */}
       <Menu.Dropdown>
-        <Menu.Item
-          leftSection={
-            scheme === 'dark'
-              ? <IconSun size={16} />
-              : <IconMoon size={16} />
-          }
-          onClick={() => dispatch(toggleTheme())}
-        >
-          Toggle theme
-        </Menu.Item>
 
         <Menu.Item
           // color="red"
@@ -115,7 +96,7 @@ export default function UserMenu({ collapsed = false }: Props) {
           color="red"
           leftSection={<IconLogout size={16} />}
           onClick={() => {
-            dispatch(logoutUser());
+            dispatch(logout());
           }}
         >
           Logout

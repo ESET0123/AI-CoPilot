@@ -18,7 +18,7 @@ axiosClient.interceptors.request.use((config) => {
   if (storedAuth) {
     try {
       const auth = JSON.parse(storedAuth);
-      const token = auth.token || auth.access_token;
+      const token = auth.access_token;
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

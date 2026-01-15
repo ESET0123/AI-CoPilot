@@ -78,7 +78,7 @@ export default function LoginPage() {
           padding: '4vh',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between', // Push content to edges
+          justifyContent: 'space-between',
           position: 'relative',
         }}
         visibleFrom="md"

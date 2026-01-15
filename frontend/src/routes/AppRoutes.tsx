@@ -11,7 +11,6 @@ export default function AppRoutes() {
   // Check both query string and hash fragment for code
   const hashParams = new URLSearchParams(window.location.hash.substring(1));
   const hasAuthCode = searchParams.has('code') || hashParams.has('code');
-  const code = searchParams.get('code') || hashParams.get('code');
 
   // console.log('[AppRoutes] URL:', window.location.href);
   // console.log('[AppRoutes] hasAuthCode:', hasAuthCode);

@@ -25,10 +25,12 @@ export default function ChatWindow() {
   if (!convo) return null;
 
   return (
-    <Stack  style={{ maxWidth: 800,
-        margin: '0 auto' }}>
-      {convo.messages.map((msg, idx) => (
-        <MessageBubble key={idx} {...msg} />
+    <Stack style={{
+      maxWidth: 800,
+      margin: '0 auto'
+    }}>
+      {convo.messages.map((msg) => (
+        <MessageBubble key={msg.id} {...msg} />
       ))}
 
       {/* Scroll target */}
