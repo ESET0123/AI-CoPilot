@@ -1,35 +1,23 @@
-// import { useAppSelector } from "../../app/hooks";
+import { useAppSelector } from "../../app/hooks";
 
-// export default function RoleGuard({ roles, children }) {
-//   const userRoles = useAppSelector((s) => s.auth.roles);
+interface RoleGuardProps {
+    roles: string[];
+    children: React.ReactNode;
+}
 
-//   if (!userRoles || userRoles.length === 0) {
-//     return null;
-//   }
+/**
+ * A component that only renders its children if the current user
+ * has at least one of the specified roles extracted from Keycloak.
+ */
+export default function RoleGuard({ roles, children }: RoleGuardProps) {
+    const userRoles = useAppSelector((s) => s.auth.roles || []);
 
-//   const hasAccess = roles.some((r: string) => userRoles.includes(r));
+    if (!userRoles || userRoles.length === 0) {
+        return null;
+    }
 
-//   return hasAccess ? children : null;
-// }
+    // Check if user has at least one of the required roles
+    const hasAccess = roles.some((r: string) => userRoles.includes(r));
 
-
-
-////Example usage
-
-// import RoleGuard from "../components/auth/RoleGuard";
-
-// export default function DashboardPage() {
-//   return (
-//     <>
-//       <h1>Dashboard</h1>
-
-//       <RoleGuard roles={["admin"]}>
-//         <AdminPanel />
-//       </RoleGuard>
-
-//       <RoleGuard roles={["viewer", "admin"]}>
-//         <UserStatistics />
-//       </RoleGuard>
-//     </>
-//   );
-// }
+    return hasAccess ? <>{children}</> : null;
+}

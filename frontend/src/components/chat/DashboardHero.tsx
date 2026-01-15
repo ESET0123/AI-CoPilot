@@ -18,7 +18,7 @@ export default function DashboardHero() {
     const greeting = getGreeting();
 
     return (
-        <Container size="lg" h="100%" display="flex" style={{ flexDirection: "column" }} p="2rem">
+        <Container size="lg" h="100%" display="flex" style={{ flexDirection: "column" }}>
             <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
 
                 {/* Animated Glow Orb */}
@@ -34,7 +34,7 @@ export default function DashboardHero() {
                             width: 160,
                             height: 160,
                             borderRadius: '50%',
-                            background: 'radial-gradient(circle, rgba(34, 208, 40, 0.65) 0%, rgba(132, 204, 22, 0) 70%)',
+                            background: 'radial-gradient(circle, rgba(34, 208, 40, 0.65) 0%, rgba(132, 204, 22, 0) 60%)',
                             filter: 'blur(20px)',
                             zIndex: 0,
                         }}
@@ -54,13 +54,13 @@ export default function DashboardHero() {
                 </Box>
 
                 <Stack gap="xs" align="center" mb="3rem">
-                    <Title order={1} size={48} fw={800} c="#1e293b" ta="center">
+                    <Title order={1} size={36} fw={700} c="#1e293b" ta="center">
                         {greeting}, {firstName}
                     </Title>
-                    <Title order={2} size={48} fw={800} c="#1e293b" ta="center">
+                    <Title order={2} size={36} fw={700} c="#1e293b" ta="center">
                         What's on <Text span c="#65a30d" inherit>your mind?</Text>
                     </Title>
-                    <Text c="dimmed" size="lg" maw={600} ta="center" mt="sm">
+                    <Text c="dimmed" size="md" maw={500} ta="center" mt="sm">
                         Find answers to your questions quickly or choose a category below to refine results
                     </Text>
                 </Stack>

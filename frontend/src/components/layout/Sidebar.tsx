@@ -71,7 +71,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
     setDraftTitle('');
   };
 
-  const isMobile = useMediaQuery('(max-width: 425px)');
+  const isMobile = useMediaQuery('(max-width: 768px)');
   const { toggleMobile } = useLayout();
 
   return (
@@ -104,7 +104,10 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
           <ActionIcon
             style={{ backgroundColor: '#ffffff', color: '#000000', justifyContent: 'center' }}
             type="button"
-            onClick={() => dispatch(startNewChat())}
+            onClick={() => {
+              dispatch(startNewChat());
+              if (isMobile) toggleMobile();
+            }}
           >
             <IconEdit stroke={1.5} />
           </ActionIcon>
@@ -119,7 +122,10 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
               color="gray"
               fullWidth
               justify="flex-start"
-              onClick={() => dispatch(startNewChat())}
+              onClick={() => {
+                dispatch(startNewChat());
+                if (isMobile) toggleMobile();
+              }}
               styles={{
                 root: {
                   height: 48,
@@ -253,6 +259,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                             onClick={() => {
                               dispatch(setActiveConversation(c.id));
                               dispatch(fetchMessages(c.id));
+                              if (isMobile) toggleMobile();
                             }}
                             styles={{
                               root: {

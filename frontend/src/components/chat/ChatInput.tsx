@@ -173,7 +173,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             styles={{
               input: {
                 padding: '8px 4px',
-                fontSize: '18px',
+                fontSize: '16px',
                 lineHeight: 1.6,
                 color: '#000000', // Force black text
               },

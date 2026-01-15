@@ -18,7 +18,7 @@ export default function DashboardPage() {
   const chatState = useAppSelector((s) => s.chat);
   const { activeConversationId, conversations } = chatState;
 
-  const isMobile = useMediaQuery('(max-width: 425px)');
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   const activeConversation = conversations.find((c) => c.id === activeConversationId);
   const isEmpty = !activeConversation || activeConversation.messages.length === 0;
@@ -42,14 +42,13 @@ export default function DashboardPage() {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        zoom: '0.8',
         background: 'radial-gradient(circle at 50% 0%, rgba(236, 252, 203, 0.8) 10%, #ffffff 70%)'
       }}>
 
         {/* HEADER SECTION */}
         <Box
           h={60}
-          px="xl"
+          px="md"
           style={{
             background: 'transparent',
             borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
@@ -63,7 +62,6 @@ export default function DashboardPage() {
 
         {/* MAIN BODY SECTION */}
         <Box
-          p="xl"
           style={{
             flex: 1,
             display: 'flex',
@@ -72,14 +70,11 @@ export default function DashboardPage() {
             background: 'transparent'
           }}>
 
-          {/* LEFT: CHAT AREA */}
-          <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: '100%', overflowY: 'auto' }}>
+          <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%', overflowY: 'auto' }}>
 
             {isEmpty ? (
-              // DRAFT MODE: Hero Section + Input + Quick Access
               <DraftView />
             ) : (
-              // ACTIVE MODE: Chat Window + Input + Quick Access
               <ActiveConversationView />
             )}
           </Box>
