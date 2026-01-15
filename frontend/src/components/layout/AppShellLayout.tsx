@@ -41,7 +41,7 @@ export default function AppShellLayout({ children, }: { children: React.ReactNod
         </AppShell.Navbar>
 
         <AppShell.Main
-          style={{height: '100dvh', display: 'flex', flexDirection: 'column' }} >
+          style={{ height: '100dvh', display: 'flex', flexDirection: 'column' }} >
           {children}
         </AppShell.Main>
       </AppShell>

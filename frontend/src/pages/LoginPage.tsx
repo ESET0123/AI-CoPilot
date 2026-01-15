@@ -70,19 +70,41 @@ export default function LoginPage() {
       {/* ================= LEFT PANEL (Features) ================= */}
       <Box
         style={{
-          flex: 1.2,
-          backgroundImage: 'url("/login_bg.png")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          flex: 1,
+          background: `
+            radial-gradient(circle at 0% 0%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 0%),
+            radial-gradient(circle at 0% 0%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 0%),
+            radial-gradient(circle at 85% 50%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 0%),
+            linear-gradient(170deg, #ffffffff 0%, #4caf50 100%)
+          `,
+          backgroundSize: '100% 100%',
           color: 'white',
           padding: '4vh',
+          margin: '2vh',
+          borderRadius: '10px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
           position: 'relative',
+          overflow: 'hidden',
         }}
         visibleFrom="md"
       >
+        {/* Decorative Circle Pattern */}
+        <Box
+          style={{
+            position: 'absolute',
+            top: '10%',
+            right: '-5%',
+            width: '50%',
+            height: '50%',
+            opacity: 0.2,
+            backgroundImage: 'url("/login_pattern.png")',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            pointerEvents: 'none',
+          }}
+        />
         <Box>
           <Image src="/logo-esyasoft.png" w={180} />
         </Box>

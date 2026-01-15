@@ -2,9 +2,9 @@ import express from 'express';
 import cors from 'cors';
 
 import healthRoutes from './routes/health';
-import authRoutes from './auth/auth.routes';
-import conversationsRoutes from './chat/conversations.routes';
-import messagesRoutes from './chat/messages.routes';
+
+import conversationsRoutes from './routes/conversations.routes';
+import messagesRoutes from './routes/messages.routes';
 import transcribeRoutes from './routes/transcribe.routes';
 import { requireAuth } from './middleware/auth';
 
@@ -21,7 +21,7 @@ app.get('/', (_req, res) => {
 import { MessagesController } from './controllers/messages.controller';
 
 app.use('/health', healthRoutes);
-app.use('/auth', authRoutes);
+
 app.use('/conversations', conversationsRoutes);
 app.use('/messages', messagesRoutes);
 app.use('/api/transcribe', transcribeRoutes);

@@ -7,10 +7,18 @@ import QuickActionCard from './QuickActionCard';
 import { useAppSelector } from '../../app/hooks';
 
 export default function DashboardHero() {
-    // We can get the user name from the store, defaulting to "User"
     const user = useAppSelector((s) => s.auth.user);
     // console.log('User in DashboardHero:', user);
     const firstName = user?.given_name || user?.name?.split(' ')[0] || user?.email?.split('@')[0] || 'User';
+
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'Good Morning';
+        if (hour < 18) return 'Good Afternoon';
+        return 'Good Evening';
+    };
+
+    const greeting = getGreeting();
 
     return (
         <Container size="lg" h="100%" styles={{ root: { display: "flex", flexDirection: "column", padding: "2rem", marginBottom: "14rem" } }}>
@@ -50,7 +58,7 @@ export default function DashboardHero() {
 
                 <Stack gap="xs" align="center" mb="3rem">
                     <Title order={1} size={42} fw={700} c="#1e293b" ta="center">
-                        Good Afternoon, {firstName}
+                        {greeting}, {firstName}
                     </Title>
                     <Title order={2} size={42} fw={700} c="#1e293b" ta="center">
                         What's on <Text span c="#65a30d" inherit>your mind?</Text>

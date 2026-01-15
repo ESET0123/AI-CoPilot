@@ -102,7 +102,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
       <Stack style={{ flex: 1, overflow: 'hidden' }}>
         {collapsed && (
           <ActionIcon
-            style={{ backgroundColor: '#ffffff', color: '#000000' }}
+            style={{ backgroundColor: '#ffffff', color: '#000000', justifyContent: 'center' }}
             type="button"
             onClick={() => dispatch(startNewChat())}
           >
@@ -167,7 +167,6 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
             <Collapse in={open}>
               <Stack gap={4}>
                 {conversations
-                  // ✅ ONLY FIX: hide empty / invalid conversations
                   .filter(
                     (c: Conversation) => c.title && c.title.trim().length > 0
                   )
