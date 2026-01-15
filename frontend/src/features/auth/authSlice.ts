@@ -1,6 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosClient } from "../../services/axiosClient";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+// import { axiosClient } from "../../services/axiosClient";
+
+// Keycloak Config
+const KC_URL = import.meta.env.VITE_KEYCLOAK_URL;
+const KC_REALM = import.meta.env.VITE_KEYCLOAK_REALM;
+const KC_CLIENT_ID = import.meta.env.VITE_KEYCLOAK_CLIENT_ID;
+const KC_TOKEN_URL = `${KC_URL}/realms/${KC_REALM}/protocol/openid-connect/token`;
 
 export interface AuthState {
   user: any | null;
@@ -16,10 +24,44 @@ export const loginWithCredentials = createAsyncThunk(
   "auth/login",
   async (payload: { email: string; password: string }, thunkAPI) => {
     try {
-      const res = await axiosClient.post("/auth/login", payload);
-      return res.data;
+      const params = new URLSearchParams();
+      params.append("client_id", KC_CLIENT_ID);
+      params.append("grant_type", "password");
+      params.append("username", payload.email);
+      params.append("password", payload.password);
+      params.append("scope", "openid profile email");
+
+      // Direct call to Keycloak (bypass backend)
+      const res = await axios.post(KC_TOKEN_URL, params, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      });
+
+      const data = res.data;
+      const decoded: any = jwtDecode(data.access_token);
+
+      const user = {
+        email: decoded.email || decoded.preferred_username,
+        // Prioritize specific name fields, fallback to email prefix
+        name: decoded.name,
+        given_name: decoded.given_name,
+        family_name: decoded.family_name,
+        roles: decoded.realm_access?.roles || [],
+        groups: decoded.groups || [],
+        sub: decoded.sub, // Keycloak ID
+      };
+
+      return {
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+        user,
+      };
     } catch (err: any) {
-      return thunkAPI.rejectWithValue(err.response?.data?.message || "Login failed");
+      console.error("Login error:", err);
+      // Construct a readable error message
+      const msg = err.response?.data?.error_description || err.response?.data?.error || "Login failed";
+      return thunkAPI.rejectWithValue(msg);
     }
   }
 );
@@ -29,14 +71,28 @@ export const refreshAccessToken = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const storedAuth = JSON.parse(localStorage.getItem("auth") || "{}");
+      if (!storedAuth.refresh_token) {
+        return thunkAPI.rejectWithValue("No refresh token found");
+      }
 
-      const res = await axiosClient.post("/auth/refresh", {
-        refresh_token: storedAuth.refresh_token,
+      const params = new URLSearchParams();
+      params.append("client_id", KC_CLIENT_ID);
+      params.append("grant_type", "refresh_token");
+      params.append("refresh_token", storedAuth.refresh_token);
+
+      const res = await axios.post(KC_TOKEN_URL, params, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       });
 
-      return res.data;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const data = res.data;
+      return {
+        access_token: data.access_token,
+        refresh_token: data.refresh_token, // Keycloak rotates refresh tokens by default
+      };
     } catch (err) {
+      console.error("Refresh error:", err);
       return thunkAPI.rejectWithValue("Token refresh failed");
     }
   }
@@ -114,6 +170,9 @@ const authSlice = createSlice({
 
     builder.addCase(refreshAccessToken.fulfilled, (state, action) => {
       state.access_token = action.payload.access_token;
+      if (action.payload.refresh_token) {
+        state.refresh_token = action.payload.refresh_token;
+      }
 
       const stored = JSON.parse(localStorage.getItem("auth") || "{}");
       localStorage.setItem(
@@ -121,7 +180,7 @@ const authSlice = createSlice({
         JSON.stringify({
           ...stored,
           access_token: action.payload.access_token,
-          refresh_token: action.payload.refresh_token,
+          refresh_token: state.refresh_token, // Use updated or existing
         })
       );
     });

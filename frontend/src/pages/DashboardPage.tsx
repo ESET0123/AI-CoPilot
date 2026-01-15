@@ -39,14 +39,20 @@ export default function DashboardPage() {
 
   return (
     <AppShellLayout>
-      <Box h="100%" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <Box h="100%" style={{
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        zoom: '0.8',
+        background: 'radial-gradient(circle at 50% 0%, rgba(236, 252, 203, 0.8) 10%, #ffffff 70%)'
+      }}>
 
         {/* HEADER SECTION */}
         <Box
           h={60}
           px="xl"
           style={{
-            background: 'radial-gradient(circle at 50% 50%, #d9e8b7 0%, #ffffff 100%)',
+            background: 'transparent',
             borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
             flexShrink: 0,
             display: 'flex',
@@ -64,7 +70,7 @@ export default function DashboardPage() {
             display: 'flex',
             flexDirection: isMobile ? 'column' : 'row',
             overflow: 'hidden',
-            background: 'radial-gradient(circle at 50% 50%, #d9e8b7 0%, #ffffff 100%)'
+            background: 'transparent'
           }}>
 
           {/* LEFT: CHAT AREA */}

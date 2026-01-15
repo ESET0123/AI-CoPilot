@@ -61,15 +61,23 @@ export function requireAuth(
       const user = await AuthService.findUserByKeycloakId(payload.sub);
 
       if (!user) {
-        console.warn('[AUTH] User not found in database for Keycloak ID:', payload.sub);
-        // Optional: Auto-upsert here if needed, but usually the callback handles it.
-        // For robustness, let's just reject with 401 and let the frontend re-auth.
-        return res.status(401).json({ message: 'User not registered in database' });
+        console.log('[AUTH] User not found in database, performing JIT provisioning for:', payload.sub);
+        const email = payload.email || payload.preferred_username || "";
+
+        try {
+          const newUser = await AuthService.upsertUserFromKeycloak(payload.sub, email);
+          req.userId = newUser.id;
+          req.userEmail = newUser.email;
+          console.log('[AUTH] JIT provisioning successful. Resolved ID:', newUser.id);
+        } catch (jitError: any) {
+          console.error('[AUTH] JIT provisioning failed:', jitError.message);
+          return res.status(500).json({ message: 'User provisioning failed' });
+        }
+      } else {
+        req.userId = user.id;
+        req.userEmail = user.email || payload.email || payload.preferred_username;
       }
 
-      console.log('[AUTH] Resolved internal DB ID:', user.id);
-      req.userId = user.id;
-      req.userEmail = user.email || payload.email || payload.preferred_username;
       req.userRoles = payload.realm_access?.roles || [];
 
       next();
