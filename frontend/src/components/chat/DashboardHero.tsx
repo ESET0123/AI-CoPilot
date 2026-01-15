@@ -1,6 +1,5 @@
 import {
     Box, Container, SimpleGrid, Stack, Text, Title,
-    // useMantineTheme 
 } from '@mantine/core';
 import { IconAlertTriangle, IconActivity, IconCalculator, IconUsers } from '@tabler/icons-react';
 import ChatInput from './ChatInput';
@@ -8,14 +7,13 @@ import QuickActionCard from './QuickActionCard';
 import { useAppSelector } from '../../app/hooks';
 
 export default function DashboardHero() {
-    // const theme = useMantineTheme();
     // We can get the user name from the store, defaulting to "User"
     const user = useAppSelector((s) => s.auth.user);
     // console.log('User in DashboardHero:', user);
     const firstName = user?.email?.split('@')[0] || 'User';
 
     return (
-        <Container size="lg" h="100%" styles={{ root: { display: "flex", flexDirection: "column", padding: "2rem", marginBottom: "14rem"}}}>
+        <Container size="lg" h="100%" styles={{ root: { display: "flex", flexDirection: "column", padding: "2rem", marginBottom: "14rem" } }}>
             <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
 
                 {/* Animated Glow Orb */}
@@ -31,7 +29,7 @@ export default function DashboardHero() {
                             width: 160,
                             height: 160,
                             borderRadius: '50%',
-                            background: 'radial-gradient(circle, rgb(152, 249, 5) 0%, rgba(132, 204, 22, 0) 70%)',
+                            background: 'radial-gradient(circle, rgba(34, 208, 40, 0.65) 0%, rgba(132, 204, 22, 0) 70%)',
                             filter: 'blur(20px)',
                             zIndex: 0,
                         }}

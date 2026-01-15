@@ -40,9 +40,28 @@ export const refreshAccessToken = createAsyncThunk(
   }
 );
 
-const authSlice = createSlice<AuthState>({
-  name: "auth",
-  initialState: {
+const loadAuthFromStorage = (): AuthState => {
+  try {
+    const stored = localStorage.getItem("auth");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Ensure we have at least the token and user
+      if (parsed.access_token && parsed.user) {
+        return {
+          user: parsed.user,
+          access_token: parsed.access_token,
+          refresh_token: parsed.refresh_token || null,
+          roles: parsed.user.roles || [],
+          groups: parsed.user.groups || [],
+          isAuthenticated: true,
+          error: null,
+        };
+      }
+    }
+  } catch (e) {
+    console.error("Failed to load auth from storage", e);
+  }
+  return {
     user: null,
     access_token: null,
     refresh_token: null,
@@ -50,7 +69,12 @@ const authSlice = createSlice<AuthState>({
     groups: [],
     isAuthenticated: false,
     error: null,
-  },
+  };
+};
+
+const authSlice = createSlice<AuthState>({
+  name: "auth",
+  initialState: loadAuthFromStorage(),
   reducers: {
     logout(state) {
       state.user = null;

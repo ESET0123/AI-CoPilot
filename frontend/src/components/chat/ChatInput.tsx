@@ -3,7 +3,7 @@ import {
   Textarea, Group, ActionIcon, Paper, Tooltip, Box,
   // ThemeIcon
 } from '@mantine/core';
-import { IconSend, IconPlayerStop, IconMicrophone, IconSearch, IconBulb, IconWorld, IconPaperclip, IconWaveSine } from '@tabler/icons-react'; // Added new icons
+import { IconPlayerStop, IconMicrophone, IconSearch, IconBulb, IconWorld, IconPaperclip, IconWaveSine } from '@tabler/icons-react'; // Added new icons
 import { useEffect, useRef, useState } from 'react';
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
 
@@ -136,7 +136,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
         margin: '0 auto',
         width: '100%',
         backgroundColor: '#ffffff',
-        border: '1px solid #d9f99d',
+        border: '1px solid rgba(0, 0, 0, 0.05)',
         position: 'relative',
         transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
         minHeight: isHeroMode ? 140 : 'auto',

@@ -1,6 +1,5 @@
 import {
   Paper, Text, Loader, Box, Alert,
-  // useMantineColorScheme 
 } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useMemo } from 'react';
@@ -22,8 +21,7 @@ export default function MessageBubble({ role, text, loading }: Props) {
   }, [text, isUser]);
 
 
-  // const { colorScheme } = useMantineColorScheme();
-  // const isDark = colorScheme === 'dark';
+
 
   if (loading) {
     return (

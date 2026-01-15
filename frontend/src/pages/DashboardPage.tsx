@@ -46,7 +46,7 @@ export default function DashboardPage() {
           h={60}
           px="xl"
           style={{
-            background: 'radial-gradient(circle at 50% 50%, #f7fee7 0%, #ffffff 100%)',
+            background: 'radial-gradient(circle at 50% 50%, #d9e8b7 0%, #ffffff 100%)',
             borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
             flexShrink: 0,
             display: 'flex',
@@ -64,7 +64,7 @@ export default function DashboardPage() {
             display: 'flex',
             flexDirection: isMobile ? 'column' : 'row',
             overflow: 'hidden',
-            background: 'radial-gradient(circle at 50% 50%, #f7fee7 0%, #ffffff 100%)'
+            background: 'radial-gradient(circle at 50% 50%, #d9e8b7 0%, #ffffff 100%)'
           }}>
 
           {/* LEFT: CHAT AREA */}
