@@ -30,7 +30,12 @@ export class AuthController {
       const decoded = jwt.decode(tokens.id_token) as any;
       const keycloakId = decoded.sub;
       const email = decoded.email || decoded.preferred_username;
-      console.log('[AuthController] User decoded:', { keycloakId, email });
+
+      const name = decoded.name;
+      const given_name = decoded.given_name;
+      const family_name = decoded.family_name;
+
+      console.log('[AuthController] User decoded:', { keycloakId, email, name });
 
       // Upsert user in database
       const user = await AuthService.upsertUserFromKeycloak(keycloakId, email);
@@ -41,7 +46,12 @@ export class AuthController {
         refresh_token: tokens.refresh_token,
         id_token: tokens.id_token,
         expires_in: tokens.expires_in,
-        user,
+        user: {
+          ...user,
+          name,
+          given_name,
+          family_name
+        },
       });
     } catch (error: any) {
       console.error('[AuthController] OAuth callback error full:', error);

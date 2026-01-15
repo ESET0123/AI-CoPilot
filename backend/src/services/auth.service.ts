@@ -36,6 +36,10 @@ export class AuthService {
     const clientRoles = decoded.resource_access?.[keycloakClientId]?.roles || [];
     const groups = decoded.groups || [];
 
+    const name = decoded.name;
+    const given_name = decoded.given_name;
+    const family_name = decoded.family_name;
+
     // Upsert into local DB
     const user = await AuthRepository.upsertUserFromKeycloak(keycloakId, email);
 
@@ -43,6 +47,9 @@ export class AuthService {
       tokens,
       user: {
         ...user,
+        name,
+        given_name,
+        family_name,
         roles: realmRoles.concat(clientRoles),
         groups,
       },

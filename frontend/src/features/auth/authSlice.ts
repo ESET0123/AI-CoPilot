@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosClient } from "../../services/axiosClient";
 
@@ -34,6 +35,7 @@ export const refreshAccessToken = createAsyncThunk(
       });
 
       return res.data;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       return thunkAPI.rejectWithValue("Token refresh failed");
     }
@@ -72,9 +74,9 @@ const loadAuthFromStorage = (): AuthState => {
   };
 };
 
-const authSlice = createSlice<AuthState>({
+const authSlice = createSlice({
   name: "auth",
-  initialState: loadAuthFromStorage(),
+  initialState: loadAuthFromStorage() as AuthState,
   reducers: {
     logout(state) {
       state.user = null;

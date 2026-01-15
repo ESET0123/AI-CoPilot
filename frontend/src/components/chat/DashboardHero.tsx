@@ -10,7 +10,7 @@ export default function DashboardHero() {
     // We can get the user name from the store, defaulting to "User"
     const user = useAppSelector((s) => s.auth.user);
     // console.log('User in DashboardHero:', user);
-    const firstName = user?.email?.split('@')[0] || 'User';
+    const firstName = user?.given_name || user?.name?.split(' ')[0] || user?.email?.split('@')[0] || 'User';
 
     return (
         <Container size="lg" h="100%" styles={{ root: { display: "flex", flexDirection: "column", padding: "2rem", marginBottom: "14rem" } }}>
