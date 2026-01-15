@@ -187,6 +187,12 @@ export default function LoginPage() {
                   size="md"
                   radius="md"
                   leftSection={<IconMail size={18} />}
+                  styles={{
+                    input: {
+                      backgroundColor: 'white',
+                      color: 'black',
+                    },
+                  }}
                   {...form.getInputProps('email')}
                 />
 
@@ -197,6 +203,12 @@ export default function LoginPage() {
                   size="md"
                   radius="md"
                   leftSection={<IconLock size={18} />}
+                  styles={{
+                    input: {
+                      backgroundColor: 'white',
+                      color: 'black',
+                    },
+                  }}
                   {...form.getInputProps('password')}
                 />
 

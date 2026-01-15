@@ -102,13 +102,11 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
       <Stack style={{ flex: 1, overflow: 'hidden' }}>
         {collapsed && (
           <ActionIcon
-            // radius="xl"
-            // size="lg"
-            // variant="filled"
+            style={{ backgroundColor: '#ffffff', color: '#000000' }}
             type="button"
             onClick={() => dispatch(startNewChat())}
           >
-            <IconEdit size={14} />
+            <IconEdit stroke={1.5} />
           </ActionIcon>
         )}
 
@@ -195,7 +193,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                         }}
                         onMouseEnter={(e) => {
                           if (!isActive) {
-                            e.currentTarget.style.backgroundColor = 'var(--mantine-color-default-hover)';
+                            e.currentTarget.style.backgroundColor = 'var(--mantine-color-gray-0)';
                           }
                         }}
                         onMouseLeave={(e) => {

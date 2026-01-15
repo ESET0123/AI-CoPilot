@@ -175,6 +175,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 padding: '8px 4px',
                 fontSize: '15px',
                 lineHeight: 1.5,
+                color: '#000000', // Force black text
               },
             }}
             autoFocus
@@ -227,7 +228,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
               size="lg"
               radius="xl"
               style={{
-                color: '#1a1a1a',
+                color: '#000000', // Was #1a1a1a, making pure black
                 border: '1px solid transparent',
               }}
             >
@@ -238,13 +239,13 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
           <Group gap="xs">
             {/* Globe & Attach Icons (Visual only for now) */}
             <Tooltip label="Search web">
-              <ActionIcon variant="subtle" color="gray" radius="xl" size="lg">
+              <ActionIcon variant="subtle" style={{ color: '#000000' }} radius="xl" size="lg">
                 <IconWorld size={18} />
               </ActionIcon>
             </Tooltip>
 
             <Tooltip label="Attach file">
-              <ActionIcon variant="subtle" color="gray" radius="xl" size="lg">
+              <ActionIcon variant="subtle" style={{ color: '#000000' }} radius="xl" size="lg">
                 <IconPaperclip size={18} />
               </ActionIcon>
             </Tooltip>
@@ -252,16 +253,16 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             <Tooltip label={isRecording ? 'Stop recording' : 'Record voice'}>
               <ActionIcon
                 onClick={isRecording ? stopRecording : startRecording}
-                color={isRecording ? 'red' : 'gray'}
+                style={{
+                  color: isRecording ? 'red' : '#000000',
+                  transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
+                  transform: isRecording ? 'scale(1.1)' : 'scale(1)',
+                }}
                 variant={isRecording ? 'filled' : 'subtle'}
                 radius="xl"
                 size="lg"
                 disabled={isCurrentSending || isTranscribing}
                 loading={isTranscribing}
-                style={{
-                  transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
-                  transform: isRecording ? 'scale(1.1)' : 'scale(1)',
-                }}
               >
                 <IconMicrophone size={18} />
               </ActionIcon>
@@ -270,7 +271,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             <Tooltip label={isCurrentSending ? 'Stop generating' : 'Send message'}>
               <ActionIcon
                 type="submit"
-                color={isCurrentSending ? 'red' : '#334155'}
+                color={isCurrentSending ? 'red' : '#000000'}
                 variant="filled"
                 radius="md"
                 size="xl"
@@ -286,8 +287,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                   <IconPlayerStop size={20} />
                 ) : (
                   // Use WaveSine for that specific "AI" feel in the design, or standard Send
-                  isHeroMode ? <IconWaveSine size={20} /> : <IconSend size={20} />
-                )}
+                  <IconWaveSine color='white' size={20} /> )}
               </ActionIcon>
             </Tooltip>
           </Group>
