@@ -14,12 +14,12 @@ export const authApi = {
     return axiosClient.post('/auth/login', credentials);
   },
 
-  refreshToken(refreshToken: string) {
-    return axiosClient.post('/auth/refresh', { refresh_token: refreshToken });
+  refreshToken() {
+    return axiosClient.post('/auth/refresh');
   },
 
-  logout(refreshToken: string) {
-    return axiosClient.post('/auth/logout', { refresh_token: refreshToken });
+  logout() {
+    return axiosClient.post('/auth/logout');
   },
 
   // Legacy OTP endpoints (deprecated)

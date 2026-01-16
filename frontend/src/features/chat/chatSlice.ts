@@ -57,7 +57,7 @@ export const fetchConversations = createAsyncThunk<
   void,
   { state: RootState }
 >('chat/fetchConversations', async (_, { getState, rejectWithValue }) => {
-  if (!getState().auth.access_token) {
+  if (!getState().auth.isAuthenticated) {
     return rejectWithValue('Not authenticated');
   }
 
@@ -70,7 +70,7 @@ export const fetchMessages = createAsyncThunk<
   string,
   { state: RootState }
 >('chat/fetchMessages', async (conversationId, { getState, rejectWithValue }) => {
-  if (!getState().auth.access_token) {
+  if (!getState().auth.isAuthenticated) {
     return rejectWithValue('Not authenticated');
   }
 
@@ -83,7 +83,7 @@ export const createConversation = createAsyncThunk<
   string,
   { state: RootState }
 >('chat/createConversation', async (title, { getState, rejectWithValue }) => {
-  if (!getState().auth.access_token) {
+  if (!getState().auth.isAuthenticated) {
     return rejectWithValue('Not authenticated');
   }
 
@@ -109,7 +109,7 @@ export const renameConversation = createAsyncThunk<
   { conversationId: string; title: string },
   { state: RootState }
 >('chat/renameConversation', async (payload, { getState, rejectWithValue }) => {
-  if (!getState().auth.access_token) {
+  if (!getState().auth.isAuthenticated) {
     return rejectWithValue('Not authenticated');
   }
 
@@ -126,7 +126,7 @@ export const deleteConversation = createAsyncThunk<
   string,
   { state: RootState }
 >('chat/deleteConversation', async (conversationId, { getState, rejectWithValue }) => {
-  if (!getState().auth.access_token) {
+  if (!getState().auth.isAuthenticated) {
     return rejectWithValue('Not authenticated');
   }
 
@@ -139,7 +139,7 @@ export const deleteAllConversations = createAsyncThunk<
   void,
   { state: RootState }
 >('chat/deleteAllConversations', async (_, { getState, rejectWithValue }) => {
-  if (!getState().auth.access_token) {
+  if (!getState().auth.isAuthenticated) {
     return rejectWithValue('Not authenticated');
   }
 
@@ -157,7 +157,7 @@ export const sendMessage = createAsyncThunk<
   { conversationId: string; message: string },
   { state: RootState }
 >('chat/sendMessage', async (payload, { getState, rejectWithValue, signal }) => {
-  if (!getState().auth.access_token) {
+  if (!getState().auth.isAuthenticated) {
     return rejectWithValue('Not authenticated');
   }
 
@@ -191,7 +191,7 @@ export const stopMessage = createAsyncThunk<
   string,
   { state: RootState }
 >('chat/stopMessage', async (conversationId, { getState, rejectWithValue }) => {
-  if (!getState().auth.access_token) {
+  if (!getState().auth.isAuthenticated) {
     return rejectWithValue('Not authenticated');
   }
 

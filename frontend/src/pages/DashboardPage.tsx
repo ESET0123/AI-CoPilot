@@ -42,6 +42,7 @@ export default function DashboardPage() {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
+        zoom: '0.9',
         background: 'radial-gradient(circle at 50% 0%, rgba(236, 252, 203, 0.8) 10%, #ffffff 70%)'
       }}>
 

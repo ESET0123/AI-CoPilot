@@ -36,14 +36,20 @@ export function requireAuth(
   res: Response,
   next: NextFunction
 ) {
+  let token = '';
   const header = req.headers.authorization;
 
-  if (!header || !header.startsWith('Bearer ')) {
-    console.warn('[AUTH] Missing or malformed Bearer token:', header ? 'Present but malformed' : 'Missing');
+  if (header && header.startsWith('Bearer ')) {
+    token = header.replace('Bearer ', '');
+  } else if (req.cookies?.access_token) {
+    token = req.cookies.access_token;
+  }
+
+  if (!token) {
+    console.warn('[AUTH] Missing token (no header or cookie)');
     return res.status(401).json({ message: 'Missing token' });
   }
 
-  const token = header.replace('Bearer ', '');
   console.log('[AUTH] Token received length:', token.length);
 
   // Verify token with Keycloak's public key

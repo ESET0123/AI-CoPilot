@@ -9,7 +9,7 @@ export default function ActiveConversationView() {
             {/* Primary View: Chat Window + Input (90% height) */}
             <Box display="flex" style={{ flexDirection: 'column', height: '90vh', overflow: 'hidden' }}>
                 {/* Chat Content expands to fill available space */}
-                <Box w="100%" style={{ flex: 1, overflowY: 'auto' }}>
+                <Box w="100%" mt="md" style={{ flex: 1, overflowY: 'auto' }}>
                     <ChatWindow />
                 </Box>
 

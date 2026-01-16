@@ -22,14 +22,13 @@ export default function DashboardHero() {
             <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
 
                 {/* Animated Glow Orb */}
-                <Box style={{ position: 'relative', marginBottom: '2rem' }}>
+                <Box style={{ position: 'relative', margin: '2rem' }}>
                     {/* The soft glow behind */}
                     <Box
                         style={{
                             position: 'absolute',
                             top: '50%',
                             left: '50%',
-                            // padding: '14px',
                             transform: 'translate(-50%, -50%)',
                             width: 160,
                             height: 160,

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  Textarea, Group, ActionIcon, Paper, Tooltip, Box,
+  Textarea, Group, ActionIcon, Paper, Tooltip, Box, Text
   // ThemeIcon
 } from '@mantine/core';
-import { IconPlayerStop, IconMicrophone, IconSearch, IconBulb, IconWorld, IconPaperclip, IconWaveSine } from '@tabler/icons-react'; // Added new icons
+import { IconPlayerStop, IconMicrophone, IconSearch, IconBulb, IconWorld, IconPaperclip, IconWaveSine, IconX } from '@tabler/icons-react'; // Added IconX
 import { useEffect, useRef, useState } from 'react';
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
 
@@ -29,6 +29,8 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   const dispatch = useAppDispatch();
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const pendingThunkRef = useRef<any>(null);
 
   const { activeConversationId, draftMessageMode, sendingConversationIds } =
@@ -126,6 +128,20 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  const removeFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   return (
     <Paper
       shadow={isHeroMode ? 'sm' : 'xs'}
@@ -147,6 +163,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
 
 
 
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -154,6 +171,31 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
         }}
         style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
       >
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+
+        {selectedFile && (
+          <Box px="sm" py="xs" mb="xs" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            backgroundColor: 'rgba(132, 204, 22, 0.1)',
+            borderRadius: '8px',
+            border: '1px solid rgba(132, 204, 22, 0.2)',
+            width: 'fit-content'
+          }}>
+            <IconPaperclip size={16} color="#65a30d" />
+            <Text size="sm" fw={600} style={{ color: '#1a1a1a' }}>{selectedFile.name}</Text>
+            <ActionIcon size="xs" variant="subtle" color="gray" onClick={removeFile}>
+              <IconX size={14} />
+            </ActionIcon>
+          </Box>
+        )}
+
         <Box style={{ flex: 1, display: 'flex' }}>
           <Textarea
             ref={inputRef}
@@ -245,7 +287,13 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             </Tooltip>
 
             <Tooltip label="Attach file">
-              <ActionIcon variant="subtle" style={{ color: '#000000' }} radius="xl" size="lg">
+              <ActionIcon
+                variant="subtle"
+                style={{ color: '#000000' }}
+                radius="xl"
+                size="lg"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <IconPaperclip size={18} />
               </ActionIcon>
             </Tooltip>
