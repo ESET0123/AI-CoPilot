@@ -3,39 +3,43 @@ import { IconAlertTriangle, IconActivity, IconCalculator, IconUsers } from '@tab
 import QuickActionCard from './QuickActionCard';
 import { useAppSelector } from '../../app/hooks';
 
-// Define the configuration for quick actions
-const QUICK_ACTIONS = [
-    {
-        title: "Theft Detection",
-        description: "View Real Time data and detect anomalies",
-        icon: IconAlertTriangle,
-        onClick: () => { alert("Theft Detection clicked") },
-        allowedRoles: ['Executive'] // Only executives
-    },
-    {
-        title: "Load Forecasting",
-        description: "View Real Time data and detect patterns",
-        icon: IconActivity,
-        onClick: () => { alert("Load Forecasting clicked") },
-        allowedRoles: ['Executive'] // Only executives
-    },
-    {
-        title: "Smart Tariff",
-        description: "Optimize tariff structures",
-        icon: IconCalculator,
-        onClick: () => { alert("Smart Tariff clicked") },
-        allowedRoles: ['customer', 'Executive'] // Both
-    },
-    {
-        title: "Defaulter Analysis",
-        description: "Predictive analysis for payments",
-        icon: IconUsers,
-        onClick: () => { alert("Defaulter Analysis clicked") },
-        allowedRoles: ['Executive'] // Only executives
-    }
-];
+import { useNavigate } from 'react-router-dom';
 
 export default function QuickAccessCategories() {
+    const navigate = useNavigate();
+
+    // Define the configuration for quick actions inside to use navigate
+    const QUICK_ACTIONS = [
+        {
+            title: "Theft Detection",
+            description: "View Real Time data and detect anomalies",
+            icon: IconAlertTriangle,
+            onClick: () => { navigate("/theft-detection") },
+            allowedRoles: ['Executive'] // Only executives
+        },
+        {
+            title: "Load Forecasting",
+            description: "View Real Time data and detect patterns",
+            icon: IconActivity,
+            onClick: () => { navigate("/load-forecasting") },
+            allowedRoles: ['Executive'] // Only executives
+        },
+        {
+            title: "Smart Tariff",
+            description: "Optimize tariff structures",
+            icon: IconCalculator,
+            onClick: () => { navigate("/smart-tariff") },
+            allowedRoles: ['customer', 'Executive'] // Both
+        },
+        {
+            title: "Defaulter Analysis",
+            description: "Predictive analysis for payments",
+            icon: IconUsers,
+            onClick: () => { navigate("/defaulter-analysis") },
+            allowedRoles: ['Executive'] // Only executives
+        }
+    ];
+
     // Get user roles from the store
     const userRoles = useAppSelector((state) => state.auth.roles || []);
 

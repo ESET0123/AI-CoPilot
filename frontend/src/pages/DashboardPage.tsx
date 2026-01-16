@@ -2,7 +2,7 @@ import { Box } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { useEffect } from 'react';
 
-import AppShellLayout from '../components/layout/AppShellLayout';
+import DashboardLayout from '../components/layout/DashboardLayout';
 import HeaderBar from '../components/layout/HeaderBar';
 import DraftView from '../components/chat/DraftView';
 import ActiveConversationView from '../components/chat/ActiveConversationView';
@@ -37,7 +37,7 @@ export default function DashboardPage() {
   }, [user, dispatch]);
 
   return (
-    <AppShellLayout>
+    <DashboardLayout>
       <Box h="100%" style={{
         display: 'flex',
         flexDirection: 'column',
@@ -81,6 +81,6 @@ export default function DashboardPage() {
           </Box>
         </Box>
       </Box>
-    </AppShellLayout>
+    </DashboardLayout>
   );
 }

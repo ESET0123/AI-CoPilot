@@ -51,6 +51,8 @@ router.post("/login", async (req, res) => {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
 
+        console.log("[Backend Auth] Keycloak Token Response:", JSON.stringify(response.data, null, 2));
+
         setTokenCookies(res, response.data);
 
         // Decode user info for the frontend
@@ -96,6 +98,8 @@ router.post("/refresh", async (req, res) => {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
 
+        console.log("[Backend Auth] Keycloak Refresh Token Response:", JSON.stringify(response.data, null, 2));
+
         setTokenCookies(res, response.data);
 
         res.json({
@@ -108,7 +112,28 @@ router.post("/refresh", async (req, res) => {
     }
 });
 
-router.post("/logout", (req, res) => {
+router.post("/logout", async (req, res) => {
+    const refreshToken = req.cookies?.refresh_token;
+
+    if (refreshToken) {
+        try {
+            const params = new URLSearchParams();
+            params.append("client_id", keycloakClientId);
+            if (keycloakClientSecret) {
+                params.append("client_secret", keycloakClientSecret);
+            }
+            params.append("refresh_token", refreshToken);
+
+            await axios.post(keycloakEndpoints.logout, params, {
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            });
+            console.log("[Backend Auth] Keycloak session terminated successfully");
+        } catch (error: any) {
+            console.error("[Backend Auth] Keycloak logout failed:", error.response?.data || error.message);
+            // We still proceed to clear cookies locally even if Keycloak logout fails
+        }
+    }
+
     res.clearCookie("access_token");
     res.clearCookie("refresh_token");
     res.json({ message: "Logged out" });

@@ -1,12 +1,4 @@
-// import axios from "axios";
-// import {
-//   keycloakServerUrl,
-//   keycloakRealm,
-//   keycloakClientId,
-//   keycloakClientSecret,
-// } from "../config/keycloak.config";
 import { AuthRepository } from "../repositories/auth.repository";
-// import jwt from "jsonwebtoken";
 
 export class AuthService {
   static async findUserByKeycloakId(keycloakId: string) {

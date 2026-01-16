@@ -29,7 +29,7 @@ import {
 import { useState } from 'react';
 
 import UserMenu from './UserMenu';
-import { useLayout } from './AppShellLayout';
+import { useLayout } from './LayoutContext';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   setActiveConversation,
