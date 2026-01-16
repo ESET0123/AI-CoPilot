@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosClient } from "../../services/axiosClient";
 
 // Keycloak Config
-const KC_URL = import.meta.env.VITE_KEYCLOAK_URL;
-const KC_REALM = import.meta.env.VITE_KEYCLOAK_REALM;
-const KC_CLIENT_ID = import.meta.env.VITE_KEYCLOAK_CLIENT_ID;
-const KC_TOKEN_URL = `${KC_URL}/realms/${KC_REALM}/protocol/openid-connect/token`;
+// const KC_URL = import.meta.env.VITE_KEYCLOAK_URL;
+// const KC_REALM = import.meta.env.VITE_KEYCLOAK_REALM;
+// const KC_CLIENT_ID = import.meta.env.VITE_KEYCLOAK_CLIENT_ID;
+// const KC_TOKEN_URL = `${KC_URL}/realms/${KC_REALM}/protocol/openid-connect/token`;
 
 export interface AuthState {
   user: any | null;
@@ -28,16 +29,6 @@ export const loginWithCredentials = createAsyncThunk(
       });
 
       const data = res.data;
-
-      // We still need the user info on the frontend.
-      // Since we don't return the token in the body (or do we?), we need to parse it.
-      // Actually, my backend didn't return the token in the body.
-      // I should update the backend to at least return the decoded user info if the frontend needs it,
-      // OR the frontend can call a /me endpoint.
-      // For now, let's assume we want to keep the frontend simple and have the backend return the user info.
-
-      // WAIT: I'll need to update the backend /login to return the user info.
-      // Let's first fix the slice to expect what the backend will eventually provide.
 
       return {
         user: data.user,
