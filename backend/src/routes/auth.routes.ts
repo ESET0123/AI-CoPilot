@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Response } from "express";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import {
@@ -9,12 +9,33 @@ import {
 
 const router = Router();
 
+interface TokenResponse {
+    access_token: string;
+    refresh_token: string;
+    expires_in: number;
+    refresh_expires_in?: number;
+    token_type: string;
+}
+
+interface DecodedToken {
+    email?: string;
+    preferred_username?: string;
+    name?: string;
+    given_name?: string;
+    family_name?: string;
+    realm_access?: {
+        roles: string[];
+    };
+    groups?: string[];
+    sub: string;
+}
+
 // Helper to set cookies
-const setTokenCookies = (res: any, tokens: any) => {
-    const cookieOptions: any = {
+const setTokenCookies = (res: Response, tokens: TokenResponse) => {
+    const cookieOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        sameSite: "lax" as const,
         path: "/",
     };
 
@@ -28,7 +49,7 @@ const setTokenCookies = (res: any, tokens: any) => {
     if (tokens.refresh_token) {
         res.cookie("refresh_token", tokens.refresh_token, {
             ...cookieOptions,
-            maxAge: tokens.refresh_expires_in * 1000 || 86400 * 1000 * 30, // Default 30 days if not provided
+            maxAge: (tokens.refresh_expires_in || 86400 * 30) * 1000, // Default 30 days
         });
     }
 };
@@ -51,12 +72,14 @@ router.post("/login", async (req, res) => {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
 
-        console.log("[Backend Auth] Keycloak Token Response:", JSON.stringify(response.data, null, 2));
+        if (process.env.NODE_ENV !== 'production') {
+            console.log("[Backend Auth] Keycloak Token Response:", JSON.stringify(response.data, null, 2));
+        }
 
         setTokenCookies(res, response.data);
 
         // Decode user info for the frontend
-        const decoded: any = jwt.decode(response.data.access_token);
+        const decoded = jwt.decode(response.data.access_token) as DecodedToken;
         const user = {
             email: decoded.email || decoded.preferred_username,
             name: decoded.name,
@@ -98,7 +121,9 @@ router.post("/refresh", async (req, res) => {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
 
-        console.log("[Backend Auth] Keycloak Refresh Token Response:", JSON.stringify(response.data, null, 2));
+        if (process.env.NODE_ENV !== 'production') {
+            console.log("[Backend Auth] Keycloak Refresh Token Response:", JSON.stringify(response.data, null, 2));
+        }
 
         setTokenCookies(res, response.data);
 
@@ -127,7 +152,9 @@ router.post("/logout", async (req, res) => {
             await axios.post(keycloakEndpoints.logout, params, {
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
             });
-            console.log("[Backend Auth] Keycloak session terminated successfully");
+            if (process.env.NODE_ENV !== 'production') {
+                console.log("[Backend Auth] Keycloak session terminated successfully");
+            }
         } catch (error: any) {
             console.error("[Backend Auth] Keycloak logout failed:", error.response?.data || error.message);
             // We still proceed to clear cookies locally even if Keycloak logout fails

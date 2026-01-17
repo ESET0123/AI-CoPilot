@@ -10,9 +10,8 @@ import {
     Divider,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IconLock, IconMail } from '@tabler/icons-react';
+import { TbLock, TbMail } from 'react-icons/tb';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { loginWithCredentials } from '../../features/auth/authSlice';
@@ -33,9 +32,9 @@ export default function LoginForm({ setLoading }: { setLoading: (loading: boolea
         },
     });
 
-    const handleSubmit = (values: typeof form.values) => {
+    const handleSubmit = (values: { email: string; password: string }) => {
         setLoading(true);
-        dispatch(loginWithCredentials(values))
+        dispatch(loginWithCredentials({ username: values.email, password: values.password }))
             .unwrap()
             .then(() => {
                 navigate('/dashboard', { replace: true });
@@ -55,13 +54,13 @@ export default function LoginForm({ setLoading }: { setLoading: (loading: boolea
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: 'white',
+                backgroundColor: 'var(--mantine-color-white)',
             }}
         >
             <Container size={420} w="100%">
                 <Stack gap="xl">
                     <Stack gap={4}>
-                        <Title order={2} fw={700} size={32} c="#1A1A1A">
+                        <Title order={2} fw={700} size={32} c="dark.7">
                             Welcome Back
                         </Title>
                         <Text c="dimmed" size="sm">
@@ -83,15 +82,7 @@ export default function LoginForm({ setLoading }: { setLoading: (loading: boolea
                                 label="Email Address"
                                 placeholder="name@company.com"
                                 required
-                                size="md"
-                                radius="md"
-                                leftSection={<IconMail size={18} />}
-                                styles={{
-                                    input: {
-                                        backgroundColor: 'white',
-                                        color: 'black',
-                                    },
-                                }}
+                                leftSection={<TbMail size={18} />}
                                 {...form.getInputProps('email')}
                             />
 
@@ -99,34 +90,15 @@ export default function LoginForm({ setLoading }: { setLoading: (loading: boolea
                                 label="Password"
                                 placeholder="Your password"
                                 required
-                                size="md"
-                                radius="md"
-                                leftSection={<IconLock size={18} />}
-                                styles={{
-                                    input: {
-                                        backgroundColor: 'white',
-                                        color: 'black',
-                                    },
-                                }}
+                                leftSection={<TbLock size={18} />}
                                 {...form.getInputProps('password')}
                             />
 
                             <Button
                                 type="submit"
-                                size="md"
-                                radius="xl"
                                 mt="xl"
-                                color="dark"
-                                styles={{
-                                    root: {
-                                        width: 'fit-content',
-                                        backgroundColor: '#1A1A1A',
-                                        height: 48,
-                                        '&:hover': {
-                                            backgroundColor: '#000',
-                                        },
-                                    },
-                                }}
+                                color="dark.7"
+                                style={{ width: 'fit-content', height: 48 }}
                             >
                                 Sign In
                             </Button>

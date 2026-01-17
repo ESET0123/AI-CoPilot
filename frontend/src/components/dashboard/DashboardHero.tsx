@@ -3,6 +3,8 @@ import {
 } from '@mantine/core';
 import { useAppSelector } from '../../app/hooks';
 
+import AnimatedGlowOrb from '../ui/AnimatedGlowOrb';
+
 export default function DashboardHero() {
     const user = useAppSelector((s) => s.auth.user);
     // console.log('User in DashboardHero:', user);
@@ -22,34 +24,8 @@ export default function DashboardHero() {
             <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
 
                 {/* Animated Glow Orb */}
-                <Box style={{ position: 'relative', margin: '2rem' }}>
-                    {/* The soft glow behind */}
-                    <Box
-                        style={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            width: 160,
-                            height: 160,
-                            borderRadius: '50%',
-                            background: 'radial-gradient(circle, rgba(34, 208, 40, 0.65) 0%, rgba(132, 204, 22, 0) 60%)',
-                            filter: 'blur(20px)',
-                            zIndex: 0,
-                        }}
-                    />
-                    {/* The crisp sphere */}
-                    <Box
-                        style={{
-                            position: 'relative',
-                            width: 80,
-                            height: 80,
-                            borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #4ade80 0%, #ece019 100%)',
-                            boxShadow: '0 20px 25px -5px rgba(74, 222, 128, 0.3), inset 0 -4px 6px -1px rgba(0,0,0,0.05)',
-                            zIndex: 1,
-                        }}
-                    />
+                <Box mb="2rem" mt="1rem">
+                    <AnimatedGlowOrb size={100} />
                 </Box>
 
                 <Stack gap="xs" align="center" mb="3rem">

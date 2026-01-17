@@ -1,16 +1,24 @@
 import { Box } from '@mantine/core';
-import ChatWindow from './ChatWindow';
-import ChatInput from './ChatInput';
-import QuickAccessCategories from './QuickAccessCategories';
+import { useRef } from 'react';
+import ChatWindow from '../chat/ChatWindow';
+import ChatInput from '../chat/ChatInput';
+import QuickAccessCategories from '../dashboard/QuickAccessCategories';
 
 export default function ActiveConversationView() {
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
     return (
         <Box display="flex" style={{ flexDirection: 'column' }}>
             {/* Primary View: Chat Window + Input (90% height) */}
             <Box display="flex" style={{ flexDirection: 'column', height: '90vh', overflow: 'hidden' }}>
                 {/* Chat Content expands to fill available space */}
-                <Box w="100%" mt="md" style={{ flex: 1, overflowY: 'auto' }}>
-                    <ChatWindow />
+                <Box
+                    ref={scrollContainerRef}
+                    w="100%"
+                    mt="md"
+                    style={{ flex: 1, overflowY: 'auto' }}
+                >
+                    <ChatWindow scrollContainerRef={scrollContainerRef} />
                 </Box>
 
                 {/* Input Area */}

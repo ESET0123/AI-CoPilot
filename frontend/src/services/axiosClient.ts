@@ -48,19 +48,36 @@ axiosClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        console.log('[AxiosClient] Token expired, attempting refresh...');
+        if (import.meta.env.MODE !== 'production') {
+          console.log('[AxiosClient] Token expired, attempting refresh...');
+        }
         await store.dispatch(refreshAccessToken()).unwrap();
-        processQueue(null);
+
+        // Process queued requests after successful refresh
+        try {
+          processQueue(null);
+        } catch (queueError) {
+          console.error('[AxiosClient] Error processing failed queue:', queueError);
+        }
+
         return axiosClient(originalRequest);
       } catch (refreshError) {
         console.error('[AxiosClient] Token refresh failed, logging out...');
-        processQueue(refreshError);
+
+        // Process queued requests with error
+        try {
+          processQueue(refreshError);
+        } catch (queueError) {
+          console.error('[AxiosClient] Error processing failed queue:', queueError);
+        }
+
         localStorage.removeItem('auth_user');
         localStorage.removeItem('auth'); // Clear legacy key too
         store.dispatch(logout());
         window.location.href = '/login';
         return Promise.reject(refreshError);
       } finally {
+        // Always reset the refreshing flag
         isRefreshing = false;
       }
     }

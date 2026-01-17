@@ -10,29 +10,25 @@ import {
     Paper,
 } from '@mantine/core';
 import {
-    IconChartPie,
-    IconAlertTriangle,
-    IconUsers,
-    IconActivity,
-    IconCalculator,
-} from '@tabler/icons-react';
+    TbChartPie,
+    TbAlertTriangle,
+    TbUsers,
+    TbActivity,
+    TbCalculator,
+} from 'react-icons/tb';
+import { designTokens } from '../../styles/designTokens';
 
 export default function LoginFeaturesPanel() {
     return (
         <Box
             style={{
                 flex: 1,
-                background: `
-            radial-gradient(circle at 0% 0%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 0%),
-            radial-gradient(circle at 0% 0%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 0%),
-            radial-gradient(circle at 85% 50%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 0%),
-            linear-gradient(170deg, #ffffffff 0%, #4caf50 100%)
-          `,
+                background: designTokens.gradients.loginPanel,
                 backgroundSize: '100% 100%',
-                color: 'white',
-                padding: '4vh',
-                margin: '2vh',
-                borderRadius: '10px',
+                color: 'var(--mantine-color-white)',
+                padding: designTokens.spacing.vh(4),
+                margin: designTokens.spacing.vh(2),
+                borderRadius: designTokens.radius.md,
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
@@ -62,22 +58,22 @@ export default function LoginFeaturesPanel() {
 
             <Stack gap="xl">
                 <Box>
-                    <Title order={1} size={36} fw={700} style={{ color: '#1A1A1A', lineHeight: 1.2, marginBottom: 8 }}>
+                    <Title order={1} size={36} fw={700} c="dark.7" style={{ lineHeight: 1.2, marginBottom: 8 }}>
                         See the Network Thinking
                     </Title>
-                    <Text size="md" c="#1A1A1A" fw={500}>
+                    <Text size="md" c="dark.7" fw={500}>
                         Utility Analytics Platform
                     </Text>
-                    <Box w={60} h={4} bg="#4CAF50" mt="xs" style={{ borderRadius: 2 }} />
+                    <Box w={60} h={4} bg="brand.5" mt="xs" style={{ borderRadius: 2 }} />
                 </Box>
 
-                <Paper p="xl" radius="lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', backdropFilter: 'blur(10px)' }}>
+                <Paper p="xl" style={{ backgroundColor: designTokens.colors.glass, backdropFilter: 'blur(10px)' }}>
                     <SimpleGrid cols={2} spacing="xl" verticalSpacing="xl">
-                        <FeatureItem icon={IconChartPie} label="AI-Powered Analytics & Insights" />
-                        <FeatureItem icon={IconActivity} label="Real-time Load Forecasting" />
-                        <FeatureItem icon={IconAlertTriangle} label="Theft & Anomaly Detection" />
-                        <FeatureItem icon={IconCalculator} label="Smart Tariff Management" />
-                        <FeatureItem icon={IconUsers} label="Predictive Defaulter Analysis" />
+                        <FeatureItem icon={TbChartPie} label="AI-Powered Analytics & Insights" />
+                        <FeatureItem icon={TbActivity} label="Real-time Load Forecasting" />
+                        <FeatureItem icon={TbAlertTriangle} label="Theft & Anomaly Detection" />
+                        <FeatureItem icon={TbCalculator} label="Smart Tariff Management" />
+                        <FeatureItem icon={TbUsers} label="Predictive Defaulter Analysis" />
                     </SimpleGrid>
                 </Paper>
             </Stack>
@@ -91,7 +87,7 @@ function FeatureItem({ icon: Icon, label }: { icon: any, label: string }) {
             <ThemeIcon color="green" variant="light" size="lg" radius="md">
                 <Icon size={20} />
             </ThemeIcon>
-            <Text size="sm" c="#1A1A1A" fw={600} style={{ lineHeight: 1.3 }}>
+            <Text size="sm" c="dark.7" fw={600} style={{ lineHeight: 1.3 }}>
                 {label}
             </Text>
         </Group>

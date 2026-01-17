@@ -1,7 +1,7 @@
 import {
   Paper, Text, Loader, Box, Alert, Group, ActionIcon, Stack, Title
 } from '@mantine/core';
-import { IconAlertCircle, IconDownload, IconCopy, IconRefresh, IconCornerDownRight } from '@tabler/icons-react';
+import { TbAlertCircle, TbDownload, TbCopy, TbRefresh, TbCornerDownRight } from 'react-icons/tb';
 import { useMemo } from 'react';
 
 import { parseMessageContent } from '../../utils/contentParser';
@@ -93,7 +93,7 @@ export default function MessageBubble({ role, text, loading }: Props) {
 
         {isError && !isUser ? (
           <Alert
-            icon={<IconAlertCircle size={16} />}
+            icon={<TbAlertCircle size={16} />}
             color="red"
             variant="light"
             styles={{ root: { padding: '8px 12px' } }}
@@ -120,13 +120,13 @@ export default function MessageBubble({ role, text, loading }: Props) {
                 {/* Action Icons: Download, Copy, Refresh */}
                 <Group gap="sm" mb="md">
                   <ActionIcon variant="subtle" color="gray" size="sm">
-                    <IconDownload size={16} />
+                    <TbDownload size={16} />
                   </ActionIcon>
                   <ActionIcon variant="subtle" color="gray" size="sm">
-                    <IconCopy size={16} />
+                    <TbCopy size={16} />
                   </ActionIcon>
                   <ActionIcon variant="subtle" color="gray" size="sm">
-                    <IconRefresh size={16} />
+                    <TbRefresh size={16} />
                   </ActionIcon>
                 </Group>
 
@@ -137,7 +137,7 @@ export default function MessageBubble({ role, text, loading }: Props) {
                     <Stack gap={4}>
                       {content.extras.related.map((link: string, i: number) => (
                         <Group key={i} gap="xs" style={{ cursor: 'pointer' }}>
-                          <IconCornerDownRight size={14} color="#84cc16" />
+                          <TbCornerDownRight size={14} color="#84cc16" />
                           <Text size="md" c="#65a30d" style={{ '&:hover': { textDecoration: 'underline' } }}>
                             {link}
                           </Text>

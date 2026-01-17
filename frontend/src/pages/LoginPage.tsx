@@ -20,7 +20,9 @@ import {
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IconChartPie, IconAlertTriangle, IconUsers, IconActivity, IconCalculator, IconLock, IconMail } from '@tabler/icons-react';
+// import LoginForm from '../components/auth/LoginForm';
+// import LoginFeaturesPanel from '../components/auth/LoginFeaturesPanel';
+import { TbChartPie, TbAlertTriangle, TbUsers, TbActivity, TbCalculator, TbLock, TbMail } from 'react-icons/tb';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { loginWithCredentials } from '../features/auth/authSlice';
@@ -33,11 +35,11 @@ export default function LoginPage() {
 
   const form = useForm({
     initialValues: {
-      email: '',
+      username: '',
       password: '',
     },
     validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+      username: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
       password: (value) => (value.length < 1 ? 'Password is required' : null),
     },
   });
@@ -124,7 +126,7 @@ export default function LoginPage() {
             <SimpleGrid cols={2} spacing="xl" verticalSpacing="xl">
               <Group gap="sm" align="flex-start" wrap="nowrap">
                 <ThemeIcon color="green" variant="light" size="lg" radius="md">
-                  <IconChartPie size={20} />
+                  <TbChartPie size={20} />
                 </ThemeIcon>
                 <Text size="sm" c="#1A1A1A" fw={600} style={{ lineHeight: 1.3 }}>
                   AI-Powered Analytics & Insights
@@ -133,7 +135,7 @@ export default function LoginPage() {
 
               <Group gap="sm" align="flex-start" wrap="nowrap">
                 <ThemeIcon color="green" variant="light" size="lg" radius="md">
-                  <IconActivity size={20} />
+                  <TbActivity size={20} />
                 </ThemeIcon>
                 <Text size="sm" c="#1A1A1A" fw={600} style={{ lineHeight: 1.3 }}>
                   Real-time Load Forecasting
@@ -142,7 +144,7 @@ export default function LoginPage() {
 
               <Group gap="sm" align="flex-start" wrap="nowrap">
                 <ThemeIcon color="green" variant="light" size="lg" radius="md">
-                  <IconAlertTriangle size={20} />
+                  <TbAlertTriangle size={20} />
                 </ThemeIcon>
                 <Text size="sm" c="#1A1A1A" fw={600} style={{ lineHeight: 1.3 }}>
                   Theft & Anomaly Detection
@@ -151,7 +153,7 @@ export default function LoginPage() {
 
               <Group gap="sm" align="flex-start" wrap="nowrap">
                 <ThemeIcon color="green" variant="light" size="lg" radius="md">
-                  <IconCalculator size={20} />
+                  <TbCalculator size={20} />
                 </ThemeIcon>
                 <Text size="sm" c="#1A1A1A" fw={600} style={{ lineHeight: 1.3 }}>
                   Smart Tariff Management
@@ -160,7 +162,7 @@ export default function LoginPage() {
 
               <Group gap="sm" align="flex-start" wrap="nowrap">
                 <ThemeIcon color="green" variant="light" size="lg" radius="md">
-                  <IconUsers size={20} />
+                  <TbUsers size={20} />
                 </ThemeIcon>
                 <Text size="sm" c="#1A1A1A" fw={600} style={{ lineHeight: 1.3 }}>
                   Predictive Defaulter Analysis
@@ -208,14 +210,14 @@ export default function LoginPage() {
                   required
                   size="md"
                   radius="md"
-                  leftSection={<IconMail size={18} />}
+                  leftSection={<TbMail size={18} />}
                   styles={{
                     input: {
                       backgroundColor: 'white',
                       color: 'black',
                     },
                   }}
-                  {...form.getInputProps('email')}
+                  {...form.getInputProps('username')}
                 />
 
                 <PasswordInput
@@ -224,7 +226,7 @@ export default function LoginPage() {
                   required
                   size="md"
                   radius="md"
-                  leftSection={<IconLock size={18} />}
+                  leftSection={<TbLock size={18} />}
                   styles={{
                     input: {
                       backgroundColor: 'white',

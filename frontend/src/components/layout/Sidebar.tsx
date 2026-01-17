@@ -6,26 +6,17 @@ import {
   ActionIcon,
   Collapse,
   Divider,
-  Menu,
   ScrollArea,
-  TextInput,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
-  IconChevronDown,
-  // IconChevronLeft,
-  IconChevronRight,
-  IconMenu2,
-  IconSearch,
-  IconDots,
-  // IconPlus,
-  // IconMessage,
-  IconPencil,
-  IconEdit,
-  IconTrash,
-  IconCheck,
-} from '@tabler/icons-react';
-// import { IconLayoutSidebarRightCollapse, IconLayoutSidebarRightExpand } from '@tabler/icons-react';
+  TbChevronRight,
+  TbMenu2,
+  TbSearch,
+  TbTrash,
+  TbEdit,
+  TbChevronDown,
+} from 'react-icons/tb';
 import { useState } from 'react';
 
 import UserMenu from './UserMenu';
@@ -34,7 +25,6 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   setActiveConversation,
   fetchMessages,
-  renameConversation,
   deleteConversation,
   startNewChat,
 } from '../../features/chat/chatSlice';
@@ -53,36 +43,18 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
 
   const [open, setOpen] = useState(true);
 
-  /* ================= INLINE RENAME STATE ================= */
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [draftTitle, setDraftTitle] = useState('');
-
-  const saveRename = (id: string) => {
-    const title = draftTitle.trim();
-    if (title) {
-      dispatch(renameConversation({ conversationId: id, title }));
-    }
-    setEditingId(null);
-    setDraftTitle('');
-  };
-
-  const cancelRename = () => {
-    setEditingId(null);
-    setDraftTitle('');
-  };
-
   const isMobile = useMediaQuery('(max-width: 768px)');
   const { toggleMobile } = useLayout();
 
   return (
     <Stack h="100%" p="sm" gap="sm" style={{ backgroundColor: '#ffffff' }}>
       {/* ================= TOP ================= */}
-      <Group justify={collapsed ? 'center' : 'space-between'}>
-
+      <Group justify={collapsed ? 'center' : 'space-between'} px="xs" mb="md">
         <ActionIcon
           variant="subtle"
-          radius="xl"
-          type="button"
+          color="gray"
+          radius="md"
+          size="lg"
           onClick={() => {
             if (isMobile) {
               toggleMobile();
@@ -91,15 +63,23 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
             }
           }}
         >
-          <IconMenu2 stroke={1.5} color="#000000" />
+          <TbMenu2 size={22} strokeWidth={1.5} color="#334155" />
         </ActionIcon>
+
         {!collapsed && (
-          <IconSearch color="#000000" size={20} />
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            radius="md"
+            size="lg"
+          >
+            <TbSearch size={22} strokeWidth={1.5} color="#334155" />
+          </ActionIcon>
         )}
       </Group>
 
       {/* ================= MIDDLE ================= */}
-      <Stack style={{ flex: 1, overflow: 'hidden' }}>
+      <Stack align={collapsed ? 'center' : 'stretch'} style={{ flex: 1, overflow: 'hidden' }}>
         {collapsed && (
           <ActionIcon
             style={{ backgroundColor: '#ffffff', color: '#000000', justifyContent: 'center' }}
@@ -109,7 +89,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
               if (isMobile) toggleMobile();
             }}
           >
-            <IconEdit stroke={1.5} />
+            <TbEdit size={18} />
           </ActionIcon>
         )}
 
@@ -117,7 +97,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
           <>
             <Button
               type="button"
-              leftSection={<IconEdit size={18} stroke={1.5} />}
+              leftSection={<TbEdit size={20} style={{ opacity: 0.8 }} />}
               variant="subtle"
               color="gray"
               fullWidth
@@ -128,16 +108,19 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
               }}
               styles={{
                 root: {
-                  height: 48,
-                  padding: '0 12px',
-                  marginBottom: 0,
-                  fontWeight: 600,
-                  fontSize: '15.5px',
-                  color: '#000000',
+                  height: 54,
+                  padding: '0 16px',
+                  marginBottom: 8,
+                  fontWeight: 700,
+                  fontSize: '17px',
+                  color: '#1e293b',
                   '&:hover': {
-                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.03)',
                   },
                 },
+                section: {
+                  marginRight: 16
+                }
               }}
             >
               New Chat
@@ -154,14 +137,14 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
               onClick={() => setOpen((o) => !o)}
               style={{ cursor: 'pointer' }}
             >
-              <Text size="xs" fw={700} style={{ letterSpacing: '0.08em', color: '#000000' }}>
+              <Text size="xs" fw={700} style={{ letterSpacing: '0.05em', color: '#94a3b8' }}>
                 CHATS
               </Text>
 
               {open ? (
-                <IconChevronDown size={14} color="#000000" />
+                <TbChevronDown size={14} color="#000000" />
               ) : (
-                <IconChevronRight size={14} color="#000000" />
+                <TbChevronRight size={14} color="#000000" />
               )}
             </Group>
           </>
@@ -178,7 +161,6 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                   )
                   .map((c: Conversation) => {
                     const isActive = c.id === activeConversationId;
-                    const isEditing = editingId === c.id;
 
                     return (
                       <Group
@@ -190,138 +172,72 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                         style={{
                           borderRadius: 22,
                           background: isActive
-                            ? 'linear-gradient(135deg, rgba(163, 230, 53, 0.1) 0%, rgba(132, 204, 22, 0.1) 100%)'
+                            ? '#f7fee7'
                             : 'transparent',
-                          border: isActive ? '1px solid rgba(132, 204, 22, 0.2)' : '1px solid transparent',
-                          transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
+                          border: 'none',
+                          transition: 'background-color 150ms ease',
                           cursor: 'pointer',
                         }}
+                        className="chat-item-group"
                         onMouseEnter={(e) => {
                           if (!isActive) {
-                            e.currentTarget.style.backgroundColor = 'var(--mantine-color-gray-0)';
+                            e.currentTarget.style.backgroundColor = 'var(--mantine-color-gray-1)';
                           }
+                          const delBtn = e.currentTarget.querySelector('.delete-chat-btn') as HTMLElement;
+                          if (delBtn) delBtn.style.opacity = '1';
                         }}
                         onMouseLeave={(e) => {
                           if (!isActive) {
                             e.currentTarget.style.backgroundColor = 'transparent';
                           }
+                          const delBtn = e.currentTarget.querySelector('.delete-chat-btn') as HTMLElement;
+                          if (delBtn) delBtn.style.opacity = '0';
                         }}
                       >
-                        {/* ================= TITLE / INPUT ================= */}
-                        {isEditing ? (
-                          <Group
-                            gap={6}
-                            style={{
-                              flex: 1,
-                              alignItems: 'center',
-                            }}
-                          >
-                            <TextInput
-                              value={draftTitle}
-                              autoFocus
-                              size="xs"
-                              variant="unstyled"
-                              onChange={(e) =>
-                                setDraftTitle(e.currentTarget.value)
-                              }
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter')
-                                  saveRename(c.id);
-                                if (e.key === 'Escape')
-                                  cancelRename();
-                              }}
-                              styles={{
-                                input: {
-                                  paddingLeft: 12,
-                                  paddingRight: 4,
-                                },
-                              }}
-                              style={{ flex: 1 }}
-                            />
+                        {/* ================= TITLE ================= */}
+                        <Button
+                          type="button"
+                          variant="subtle"
+                          radius="md"
+                          fullWidth
+                          justify="flex-start"
+                          onClick={() => {
+                            dispatch(setActiveConversation(c.id));
+                            dispatch(fetchMessages(c.id));
+                            if (isMobile) toggleMobile();
+                          }}
+                          styles={{
+                            root: {
+                              flexGrow: 1,
+                              background: 'transparent',
+                              color: '#1e293b',
+                              fontWeight: isActive ? 700 : 500,
+                              fontSize: '14px',
+                            },
+                          }}
+                        >
+                          {c.title}
+                        </Button>
 
-                            <ActionIcon
-                              size="sm"
-                              radius="xl"
-                              variant="subtle"
-                              type="button"
-                              onClick={() => saveRename(c.id)}
-                            >
-                              <IconCheck size={14} />
-                            </ActionIcon>
-                          </Group>
-                        ) : (
-                          <Button
-                            type="button"
-                            variant="subtle"
-                            radius="md"
-                            fullWidth
-                            justify="flex-start"
-                            onClick={() => {
-                              dispatch(setActiveConversation(c.id));
-                              dispatch(fetchMessages(c.id));
-                              if (isMobile) toggleMobile();
-                            }}
-                            styles={{
-                              root: {
-                                flexGrow: 1,
-                                background: 'transparent',
-                                color: '#000000',
-                                fontWeight: isActive ? 600 : 400,
-                              },
-                            }}
-                          >
-                            {c.title}
-                          </Button>
-                        )}
-
-                        {/* ================= MENU ================= */}
-                        {!isEditing && (
-                          <Menu position="right" withinPortal>
-                            <Menu.Target>
-                              <ActionIcon
-                                type="button"
-                                variant="subtle"
-                                radius="xl"
-                                size="sm"
-                                onClick={(e) =>
-                                  e.stopPropagation()
-                                }
-                              >
-                                <IconDots size={14} />
-                              </ActionIcon>
-                            </Menu.Target>
-
-                            <Menu.Dropdown>
-                              <Menu.Item
-                                leftSection={
-                                  <IconPencil size={14} />
-                                }
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setEditingId(c.id);
-                                  setDraftTitle(c.title);
-                                }}
-                              >
-                                Rename
-                              </Menu.Item>
-
-                              <Menu.Item
-                                color="red"
-                                leftSection={
-                                  <IconTrash size={14} />
-                                }
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  dispatch(
-                                    deleteConversation(c.id)
-                                  );
-                                }}
-                              >
-                                Delete
-                              </Menu.Item>
-                            </Menu.Dropdown>
-                          </Menu>
-                        )}
+                        {/* ================= DELETE BUTTON ================= */}
+                        <ActionIcon
+                          className="delete-chat-btn"
+                          type="button"
+                          variant="subtle"
+                          color="gray"
+                          radius="xl"
+                          size="sm"
+                          style={{
+                            opacity: 0,
+                            transition: 'opacity 150ms ease',
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch(deleteConversation(c.id));
+                          }}
+                        >
+                          <TbTrash size={16} />
+                        </ActionIcon>
                       </Group>
                     );
                   })}

@@ -1,7 +1,7 @@
 import { Box } from '@mantine/core';
-import DashboardHero from './DashboardHero';
-import ChatInput from './ChatInput';
-import QuickAccessCategories from './QuickAccessCategories';
+import DashboardHero from '../dashboard/DashboardHero';
+import ChatInput from '../chat/ChatInput';
+import QuickAccessCategories from '../dashboard/QuickAccessCategories';
 
 export default function DraftView() {
     return (

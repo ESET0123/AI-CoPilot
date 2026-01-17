@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 
 import DashboardLayout from '../components/layout/DashboardLayout';
 import HeaderBar from '../components/layout/HeaderBar';
-import DraftView from '../components/chat/DraftView';
-import ActiveConversationView from '../components/chat/ActiveConversationView';
+import DraftView from '../components/views/DraftView';
+import ActiveConversationView from '../components/views/ActiveConversationView';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import {
   fetchConversations,

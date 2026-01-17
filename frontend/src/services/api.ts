@@ -1,9 +1,10 @@
 import { axiosClient } from './axiosClient';
+import type { LoginCredentials } from '../types/types';
 
 /* ================= AUTH ================= */
 
 export const authApi = {
-  login(credentials: any) {
+  login(credentials: LoginCredentials) {
     return axiosClient.post('/auth/login', credentials);
   },
 
@@ -31,9 +32,7 @@ export const chatApi = {
     return axiosClient.post('/conversations', { title });
   },
 
-  renameConversation(conversationId: string, title: string) {
-    return axiosClient.patch(`/conversations/${conversationId}`, { title });
-  },
+
 
   deleteConversation(conversationId: string) {
     return axiosClient.delete(`/conversations/${conversationId}`);

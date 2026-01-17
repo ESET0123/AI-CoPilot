@@ -1,5 +1,5 @@
 import { Modal, Button, Text, Group, Stack } from '@mantine/core';
-import { IconAlertTriangle } from '@tabler/icons-react';
+import { TbAlertTriangle } from 'react-icons/tb';
 
 interface DeleteAllConversationsModalProps {
     opened: boolean;
@@ -27,7 +27,7 @@ export default function DeleteAllConversationsModal({
         >
             <Stack gap="md">
                 <Group align="flex-start" wrap="nowrap">
-                    <IconAlertTriangle size={32} color="var(--mantine-color-red-6)" style={{ flexShrink: 0 }} />
+                    <TbAlertTriangle size={32} color="var(--mantine-color-red-6)" style={{ flexShrink: 0 }} />
                     <Stack gap={4}>
                         <Text fw={500}>Are you absolutely sure?</Text>
                         <Text size="sm" c="dimmed">

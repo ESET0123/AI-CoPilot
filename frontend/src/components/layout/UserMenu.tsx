@@ -7,12 +7,12 @@ import {
   Tooltip,
 } from '@mantine/core';
 import {
-  IconLogout,
-  IconSettings,
-} from '@tabler/icons-react';
+  TbLogout,
+  TbSettings,
+  TbTrash,
+} from 'react-icons/tb';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout } from '../../features/auth/authSlice';
-import { IconTrash } from '@tabler/icons-react';
 import { deleteAllConversations } from '../../features/chat/chatSlice';
 import { useDisclosure } from '@mantine/hooks';
 import DeleteAllConversationsModal from '../modals/DeleteAllConversationsModal';
@@ -68,7 +68,7 @@ export default function UserMenu({ collapsed = false }: Props) {
             }}
           >
             <ActionIcon variant="subtle" radius="xl" size={collapsed ? 'lg' : 'md'}>
-              <IconSettings size={collapsed ? 22 : 18} color="#000000" />
+              <TbSettings size={collapsed ? 22 : 18} color="#000000" />
             </ActionIcon>
 
             {!collapsed && (
@@ -86,7 +86,7 @@ export default function UserMenu({ collapsed = false }: Props) {
 
         <Menu.Item
           // color="red"
-          leftSection={<IconTrash size={16} />}
+          leftSection={<TbTrash size={16} />}
           onClick={openDeleteModal}
         >
           Delete all chats
@@ -94,7 +94,7 @@ export default function UserMenu({ collapsed = false }: Props) {
 
         <Menu.Item
           color="red"
-          leftSection={<IconLogout size={16} />}
+          leftSection={<TbLogout size={16} />}
           onClick={() => {
             dispatch(logout());
           }}

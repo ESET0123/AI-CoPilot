@@ -1,8 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from '../pages/LoginPage';
 import DashboardPage from '../pages/DashboardPage';
-import ProtectedRoute from '../components/common/ProtectedRoute';
-import RoleProtectedRoute from '../components/common/RoleProtectedRoute';
+import ProtectedRoute from '../components/auth/ProtectedRoute';
+import RoleProtectedRoute from '../components/auth/RoleProtectedRoute';
 import TheftDetectionPage from '../pages/TheftDetectionPage';
 import LoadForecastingPage from '../pages/LoadForecastingPage';
 import SmartTariffPage from '../pages/SmartTariffPage';

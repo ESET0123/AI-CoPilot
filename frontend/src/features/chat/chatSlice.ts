@@ -3,11 +3,10 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { chatApi } from '../../services/api';
 import { logout } from '../auth/authSlice';
 import type { RootState } from '../../app/store';
+// import { MAX_CONVERSATION_TITLE_LENGTH } from '../../constants';
 
 /* ================= TYPES ================= */
 
-// const delay = (ms: number) =>
-//   new Promise(resolve => setTimeout(resolve, ms));
 
 
 export type Message = {
@@ -39,6 +38,8 @@ export type ChatState = {
   activeConversationId: string | null;
   draftMessageMode: boolean;
   sendingConversationIds: string[];
+  isLoadingConversations: boolean;
+  isDeletingConversationId: string | null;
 };
 
 /* ================= INITIAL STATE ================= */
@@ -48,6 +49,8 @@ const initialState: ChatState = {
   activeConversationId: null,
   draftMessageMode: true,
   sendingConversationIds: [],
+  isLoadingConversations: false,
+  isDeletingConversationId: null,
 };
 
 /* ================= THUNKS ================= */
@@ -91,35 +94,20 @@ export const createConversation = createAsyncThunk<
   return data;
 });
 
-export const stopGeneration = createAsyncThunk(
-  'chat/stopGeneration',
-  async (conversationId: string, { rejectWithValue }) => {
-    try {
-      console.info(`[Redux] Stopping generation for conversation ${conversationId}...`);
-      await chatApi.stopMessage(conversationId);
-      console.info(`[Redux] Stop signal sent.`);
-    } catch (error: any) {
-      console.error(`[Redux] Failed to stop generation:`, error);
-      return rejectWithValue(error.response?.data?.message || 'Failed to stop generation');
-    }
-  }
-);
-export const renameConversation = createAsyncThunk<
-  BackendConversation,
-  { conversationId: string; title: string },
-  { state: RootState }
->('chat/renameConversation', async (payload, { getState, rejectWithValue }) => {
-  if (!getState().auth.isAuthenticated) {
-    return rejectWithValue('Not authenticated');
-  }
+// export const stopGeneration = createAsyncThunk(
+//   'chat/stopGeneration',
+//   async (conversationId: string, { rejectWithValue }) => {
+//     try {
+//       console.info(`[Redux] Stopping generation for conversation ${conversationId}...`);
+//       await chatApi.stopMessage(conversationId);
+//       console.info(`[Redux] Stop signal sent.`);
+//     } catch (error: any) {
+//       console.error(`[Redux] Failed to stop generation:`, error);
+//       return rejectWithValue(error.response?.data?.message || 'Failed to stop generation');
+//     }
+//   }
+// );
 
-  const { data } = await chatApi.renameConversation(
-    payload.conversationId,
-    payload.title
-  );
-
-  return data;
-});
 
 export const deleteConversation = createAsyncThunk<
   string,
@@ -211,13 +199,21 @@ const chatSlice = createSlice({
     startNewChat(state) {
       state.activeConversationId = null;
       state.draftMessageMode = true;
-      localStorage.removeItem('activeConversationId');
+      try {
+        localStorage.removeItem('activeConversationId');
+      } catch (error) {
+        console.error('Failed to remove activeConversationId from localStorage:', error);
+      }
     },
 
     setActiveConversation(state, action) {
       state.activeConversationId = action.payload;
       state.draftMessageMode = false;
-      localStorage.setItem('activeConversationId', action.payload);
+      try {
+        localStorage.setItem('activeConversationId', action.payload);
+      } catch (error) {
+        console.error('Failed to save activeConversationId to localStorage:', error);
+      }
     },
 
     addUserMessage(state, action) {
@@ -323,7 +319,11 @@ const chatSlice = createSlice({
       })
 
       /* ===== FETCH CONVERSATIONS ===== */
+      .addCase(fetchConversations.pending, (state) => {
+        state.isLoadingConversations = true;
+      })
       .addCase(fetchConversations.fulfilled, (state, action) => {
+        state.isLoadingConversations = false;
         state.conversations = action.payload.map(c => ({
           id: c.id,
           title: c.title,
@@ -339,10 +339,17 @@ const chatSlice = createSlice({
         } else {
           state.activeConversationId = null;
           state.draftMessageMode = true;
-          localStorage.removeItem('activeConversationId');
+          try {
+            localStorage.removeItem('activeConversationId');
+          } catch (error) {
+            console.error('Failed to remove activeConversationId from localStorage:', error);
+          }
         }
       })
-      .addCase(fetchConversations.rejected, () => initialState)
+      .addCase(fetchConversations.rejected, (state) => {
+        state.isLoadingConversations = false;
+        return initialState;
+      })
 
       /* ===== FETCH MESSAGES ===== */
       .addCase(fetchMessages.fulfilled, (state, action) => {
@@ -370,16 +377,14 @@ const chatSlice = createSlice({
         state.draftMessageMode = false;
       })
 
-      /* ===== RENAME ===== */
-      .addCase(renameConversation.fulfilled, (state, action) => {
-        const convo = state.conversations.find(
-          c => c.id === action.payload.id
-        );
-        if (convo) convo.title = action.payload.title;
-      })
+
 
       /* ===== DELETE ===== */
+      .addCase(deleteConversation.pending, (state, action) => {
+        state.isDeletingConversationId = action.meta.arg;
+      })
       .addCase(deleteConversation.fulfilled, (state, action) => {
+        state.isDeletingConversationId = null;
         const wasActive = state.activeConversationId === action.payload;
         state.conversations = state.conversations.filter(
           c => c.id !== action.payload
@@ -388,12 +393,23 @@ const chatSlice = createSlice({
         if (state.conversations.length === 0) {
           state.activeConversationId = null;
           state.draftMessageMode = true;
-          localStorage.removeItem('activeConversationId');
+          try {
+            localStorage.removeItem('activeConversationId');
+          } catch (error) {
+            console.error('Failed to remove activeConversationId from localStorage:', error);
+          }
         } else if (wasActive) {
           state.activeConversationId = state.conversations[0].id;
           state.draftMessageMode = false;
-          localStorage.setItem('activeConversationId', state.activeConversationId);
+          try {
+            localStorage.setItem('activeConversationId', state.activeConversationId);
+          } catch (error) {
+            console.error('Failed to save activeConversationId to localStorage:', error);
+          }
         }
+      })
+      .addCase(deleteConversation.rejected, (state) => {
+        state.isDeletingConversationId = null;
       })
 
       /* ===== DELETE ALL ===== */
@@ -401,7 +417,11 @@ const chatSlice = createSlice({
 
       /* ===== LOGOUT RESET ===== */
       .addCase(logout, () => {
-        localStorage.removeItem('activeConversationId');
+        try {
+          localStorage.removeItem('activeConversationId');
+        } catch (error) {
+          console.error('Failed to remove activeConversationId from localStorage:', error);
+        }
         return initialState;
       });
   },

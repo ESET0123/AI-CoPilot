@@ -1,15 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosClient } from "../../services/axiosClient";
-
-// Keycloak Config
-// const KC_URL = import.meta.env.VITE_KEYCLOAK_URL;
-// const KC_REALM = import.meta.env.VITE_KEYCLOAK_REALM;
-// const KC_CLIENT_ID = import.meta.env.VITE_KEYCLOAK_CLIENT_ID;
-// const KC_TOKEN_URL = `${KC_URL}/realms/${KC_REALM}/protocol/openid-connect/token`;
+import type { User, LoginCredentials } from "../../types/types";
 
 export interface AuthState {
-  user: any | null;
+  user: User | null;
   access_token: string | null;
   refresh_token: string | null;
   roles: string[];
@@ -20,11 +15,11 @@ export interface AuthState {
 
 export const loginWithCredentials = createAsyncThunk(
   "auth/login",
-  async (payload: { email: string; password: string }, thunkAPI) => {
+  async (payload: LoginCredentials, thunkAPI) => {
     try {
       // Direct call to backend (BFF)
       const res = await axiosClient.post("/auth/login", {
-        username: payload.email,
+        username: payload.username,
         password: payload.password,
       });
 
@@ -57,11 +52,15 @@ export const refreshAccessToken = createAsyncThunk(
 const loadAuthFromStorage = (): AuthState => {
   try {
     // Clear legacy storage key if it exists
-    localStorage.removeItem("auth");
+    try {
+      localStorage.removeItem("auth");
+    } catch (storageError) {
+      console.error("Failed to clear legacy auth key:", storageError);
+    }
 
     const stored = localStorage.getItem("auth_user");
     if (stored) {
-      const user = JSON.parse(stored);
+      const user = JSON.parse(stored) as User;
       if (user) {
         return {
           user,
@@ -75,7 +74,7 @@ const loadAuthFromStorage = (): AuthState => {
       }
     }
   } catch (e) {
-    console.error("Failed to load auth from storage", e);
+    console.error("Failed to load auth from storage:", e);
   }
   return {
     user: null,
@@ -99,7 +98,13 @@ const authSlice = createSlice({
       state.roles = [];
       state.groups = [];
       state.isAuthenticated = false;
-      localStorage.removeItem("auth_user");
+
+      try {
+        localStorage.removeItem("auth_user");
+      } catch (error) {
+        console.error("Failed to remove auth_user from localStorage:", error);
+      }
+
       axiosClient.post("/auth/logout").catch(console.error);
     },
   },
@@ -110,7 +115,11 @@ const authSlice = createSlice({
       state.groups = action.payload.user.groups;
       state.isAuthenticated = true;
 
-      localStorage.setItem("auth_user", JSON.stringify(action.payload.user));
+      try {
+        localStorage.setItem("auth_user", JSON.stringify(action.payload.user));
+      } catch (error) {
+        console.error("Failed to save user to localStorage:", error);
+      }
     });
 
     builder.addCase(loginWithCredentials.rejected, (state, action) => {

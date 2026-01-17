@@ -1,9 +1,13 @@
 import { Stack } from '@mantine/core';
 import { useAppSelector } from '../../app/hooks';
 import MessageBubble from './MessageBubble';
-import { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 
-export default function ChatWindow() {
+interface ChatWindowProps {
+  scrollContainerRef: React.RefObject<HTMLDivElement | null>;
+}
+
+export default function ChatWindow({ scrollContainerRef }: ChatWindowProps) {
   const { conversations, activeConversationId } = useAppSelector(
     (s) => s.chat
   );
@@ -12,15 +16,16 @@ export default function ChatWindow() {
     (c) => c.id === activeConversationId
   );
 
-  const bottomRef = useRef<HTMLDivElement | null>(null);
-
   useEffect(() => {
-    if (!convo) return;
+    if (!convo || !scrollContainerRef.current) return;
 
-    bottomRef.current?.scrollIntoView({
+    // Use scrollTo on the container instead of scrollIntoView on an element
+    // This prevents the parent page from scrolling down
+    scrollContainerRef.current.scrollTo({
+      top: scrollContainerRef.current.scrollHeight,
       behavior: 'smooth',
     });
-  }, [convo]);
+  }, [convo, scrollContainerRef]);
 
   if (!convo) return null;
 
@@ -32,9 +37,6 @@ export default function ChatWindow() {
       {convo.messages.map((msg) => (
         <MessageBubble key={msg.id} {...msg} />
       ))}
-
-      {/* Scroll target */}
-      <div ref={bottomRef} />
     </Stack>
   );
 }

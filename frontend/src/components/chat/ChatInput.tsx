@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  Textarea, Group, ActionIcon, Paper, Tooltip, Box, Text
-  // ThemeIcon
-} from '@mantine/core';
-import { IconPlayerStop, IconMicrophone, IconSearch, IconBulb, IconWorld, IconPaperclip, IconWaveSine, IconX } from '@tabler/icons-react'; // Added IconX
+import { Textarea, Group, ActionIcon, Paper, Tooltip, Box, Text } from '@mantine/core';
+import { TbPlayerStop, TbMicrophone, TbWorld, TbPaperclip, TbX } from 'react-icons/tb';
+import { MdSavedSearch } from "react-icons/md";
+import { BsSoundwave } from 'react-icons/bs';
+import { GoLightBulb } from "react-icons/go";
 import { useEffect, useRef, useState } from 'react';
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
+import { MAX_CONVERSATION_TITLE_LENGTH } from '../../constants';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
@@ -92,7 +93,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
     try {
       if (draftMessageMode) {
         const convo = await dispatch(
-          createConversation(message.slice(0, 40))
+          createConversation(message.slice(0, MAX_CONVERSATION_TITLE_LENGTH))
         ).unwrap();
         dispatch(setActiveConversation(convo.id));
         targetConvoId = convo.id;
@@ -188,10 +189,10 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             border: '1px solid rgba(132, 204, 22, 0.2)',
             width: 'fit-content'
           }}>
-            <IconPaperclip size={16} color="#65a30d" />
+            <TbPaperclip size={16} color="#65a30d" />
             <Text size="sm" fw={600} style={{ color: '#1a1a1a' }}>{selectedFile.name}</Text>
             <ActionIcon size="xs" variant="subtle" color="gray" onClick={removeFile}>
-              <IconX size={14} />
+              <TbX size={14} />
             </ActionIcon>
           </Box>
         )}
@@ -261,7 +262,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                    Standard IconSearch is fine based on request "style like this" which shows a magnifying glass. 
                    The image has a star inside, IconMessageSearch or IconSparkles inside? 
                    I'll use IconSearch for now as it's cleaner. */}
-              <IconSearch size={18} stroke={2.5} />
+              <MdSavedSearch size={18}  />
             </ActionIcon>
 
             {/* Reasoning/Idea Mode */}
@@ -274,7 +275,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 border: '1px solid transparent',
               }}
             >
-              <IconBulb size={20} stroke={2} />
+              <GoLightBulb size={20} />
             </ActionIcon>
           </Box>
 
@@ -282,7 +283,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             {/* Globe & Attach Icons (Visual only for now) */}
             <Tooltip label="Search web">
               <ActionIcon variant="subtle" style={{ color: '#000000' }} radius="xl" size="lg">
-                <IconWorld size={18} />
+                <TbWorld size={18} />
               </ActionIcon>
             </Tooltip>
 
@@ -294,7 +295,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 size="lg"
                 onClick={() => fileInputRef.current?.click()}
               >
-                <IconPaperclip size={18} />
+                <TbPaperclip size={18} />
               </ActionIcon>
             </Tooltip>
 
@@ -312,7 +313,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 disabled={isCurrentSending || isTranscribing}
                 loading={isTranscribing}
               >
-                <IconMicrophone size={18} />
+                <TbMicrophone size={18} />
               </ActionIcon>
             </Tooltip>
 
@@ -332,10 +333,10 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 }}
               >
                 {isCurrentSending ? (
-                  <IconPlayerStop size={20} />
+                  <TbPlayerStop size={20} />
                 ) : (
                   // Use WaveSine for that specific "AI" feel in the design, or standard Send
-                  <IconWaveSine color='white' size={20} />)}
+                  <BsSoundwave  color='white' size={20} />)}
               </ActionIcon>
             </Tooltip>
           </Group>
