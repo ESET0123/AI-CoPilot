@@ -1,5 +1,5 @@
 import { BarChart, DonutChart } from '@mantine/charts';
-import { Paper, Title as MantineTitle, Grid, Group, Text } from '@mantine/core';
+import { Paper, Title as MantineTitle, Grid, Group, Text, Box } from '@mantine/core';
 import { ChartData as ChartDataType } from '../../services/theftService';
 
 interface TheftAdditionalChartsProps {
@@ -17,7 +17,7 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
     const caseStatusData = data.caseStatusDistribution.labels.map((label, index) => ({
         name: label,
         value: data.caseStatusDistribution.data?.[index] || 0,
-        color: index === 0 ? '#bef264' : '#fca5a5',
+        color: index === 0 ? '#bef264' : '#ff7171',
     }));
 
     const assessedLossData = data.assessedLossByCycle.labels.map((label, index) => ({
@@ -41,15 +41,15 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
             <Grid.Col span={{ base: 12, md: 4 }}>
                 <Paper p="md" radius="md" withBorder h="100%">
                     <MantineTitle order={4} size="h5" mb="xl">Case Status Distribution</MantineTitle>
-                    <div style={{ height: '220px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Box style={{ height: '220px', display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', width: '220px', margin: '0 auto' }}>
                         <DonutChart
                             data={caseStatusData}
                             withTooltip={false}
-                            size={200}
-                            thickness={25}
-                            chartLabel="91%" // Hardcoded in original, keeping it
+                            size={180}
+                            thickness={100}
+                            pieProps={{ cornerRadius: 5, paddingAngle: 5, strokeWidth: 0 }}
                         />
-                    </div>
+                    </Box>
                     <Grid mt="xl">
                         <Grid.Col span={6}>
                             <Group gap={4}>

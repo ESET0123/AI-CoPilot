@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Container, Title, Button, Group, Box, LoadingOverlay, Text, ThemeIcon, Grid } from '@mantine/core';
 import { TbArrowLeft, TbRobot, TbShieldCheck } from 'react-icons/tb';
+import { LuCloudAlert } from "react-icons/lu";
 import { Link } from 'react-router-dom';
 import TheftFilters from '../components/theft/TheftFilters';
 import TheftStatsGrid from '../components/theft/TheftStatsGrid';
@@ -65,8 +66,8 @@ export default function TheftDetectionPage() {
 
                         <Group justify="space-between" align="center">
                             <Group>
-                                <ThemeIcon size={32} radius="xl" color="green">
-                                    <TbShieldCheck size={20} />
+                                <ThemeIcon size={32} radius="l" color="green">
+                                    <LuCloudAlert size={20} />
                                 </ThemeIcon>
                                 <Title order={2} size="h2" fw={700}>Theft Detection- Real time analytics</Title>
                             </Group>

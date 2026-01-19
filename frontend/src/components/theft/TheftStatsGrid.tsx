@@ -1,5 +1,6 @@
 import { SimpleGrid, Paper, Text, Group, ThemeIcon, Stack, Grid, Box } from '@mantine/core';
-import { TbTarget, TbCircleCheck, TbActivity } from 'react-icons/tb';
+import { TbTarget, TbCircleCheck, TbAlertTriangle, TbActivity } from 'react-icons/tb';
+import { TfiTarget } from "react-icons/tfi";
 import { TheftStats } from '../../services/theftService';
 import { Link } from 'react-router-dom';
 
@@ -10,46 +11,45 @@ interface TheftStatsGridProps {
 export default function TheftStatsGrid({ stats }: TheftStatsGridProps) {
     // Helper for uniformity
     const StatItem = ({ icon: Icon, color, label, value }: { icon: any, color: string, label: string, value: string | number }) => (
-        <Group>
-            <ThemeIcon color={color} variant="light" size={48} radius="md" style={{ backgroundColor: `var(--mantine-color-${color}-1)` }}>
-                <Icon size={24} color={`var(--mantine-color-${color}-filled)`} />
-                {/* Note: In real app, might need accurate color mapping or just use specific hexes if theme is standard */}
+        <Group wrap="nowrap" gap="md">
+            <ThemeIcon size={48} radius="md" bg="#f0fdf4">
+                <Icon size={24} color="#22c55e" />
             </ThemeIcon>
-            <div>
-                <Text size="xs" c="dimmed" fw={500}>{label}</Text>
-                <Text fw={700} size="xl" lh={1}>{value}</Text>
-            </div>
+            <Box>
+                <Text size="xs" c="dimmed" fw={500} style={{ whiteSpace: 'nowrap' }}>{label}</Text>
+                <Text fw={700} size="xl" lh={1.2}>{value}</Text>
+            </Box>
         </Group>
     );
 
     return (
-        <Grid gutter="lg">
-            {/* Theft Cases Analytics - Spans full width or 2 cols */}
+        <Grid gutter="md">
+            {/* Theft Cases Analytics */}
             <Grid.Col span={12}>
                 <Paper p="lg" radius="md" withBorder>
                     <Text fw={600} size="md" mb="xl">Theft Cases Analytics</Text>
-                    <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="xl">
+                    <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl">
                         <StatItem
-                            icon={TbTarget}
-                            color="lime"
+                            icon={TfiTarget}
+                            color="green"
                             label="Suspected Cases"
                             value={stats.suspectedCases.toLocaleString()}
                         />
                         <StatItem
                             icon={TbCircleCheck}
-                            color="lime"
+                            color="green"
                             label="Cases without Theft"
                             value={stats.casesWithoutTheft}
                         />
                         <StatItem
-                            icon={TbCircleCheck}
-                            color="lime"
+                            icon={TbAlertTriangle}
+                            color="green"
                             label="Cases with Theft"
                             value={stats.casesWithTheft.toLocaleString()}
                         />
                         <StatItem
                             icon={TbActivity}
-                            color="lime"
+                            color="green"
                             label="Theft Rate"
                             value={stats.theftRate}
                         />
@@ -58,19 +58,19 @@ export default function TheftStatsGrid({ stats }: TheftStatsGridProps) {
             </Grid.Col>
 
             {/* Financial Impact Summary */}
-            <Grid.Col span={{ base: 12, md: 6 }}>
+            <Grid.Col span={{ base: 12, sm: 7 }}>
                 <Paper p="lg" radius="md" withBorder h="100%">
                     <Text fw={600} size="md" mb="xl">Financial Impact Summary</Text>
                     <Stack gap="xl">
                         <StatItem
                             icon={TbCircleCheck}
-                            color="lime"
+                            color="green"
                             label="Total Amount"
                             value={stats.totalAmount.toLocaleString()}
                         />
                         <StatItem
-                            icon={TbCircleCheck}
-                            color="lime"
+                            icon={TbAlertTriangle}
+                            color="green"
                             label="Highest Amount"
                             value={stats.highestAmount.toLocaleString()}
                         />
@@ -79,24 +79,24 @@ export default function TheftStatsGrid({ stats }: TheftStatsGridProps) {
             </Grid.Col>
 
             {/* Activity */}
-            <Grid.Col span={{ base: 12, md: 6 }}>
+            <Grid.Col span={{ base: 12, sm: 5 }}>
                 <Paper p="lg" radius="md" withBorder h="100%">
                     <Text fw={600} size="md" mb="xl">Activity</Text>
-                    <Stack gap="xl">
-                        <Group justify="space-between" align="center">
-                            <div>
-                                <Text size="sm" c="dimmed" mb={4}>Pending Cases</Text>
+                    <Stack gap="lg">
+                        <Box>
+                            <Text size="xs" c="dimmed" mb={4} fw={500}>Pending Cases</Text>
+                            <Group justify="space-between" align="flex-end">
                                 <Text fw={700} size="xl" lh={1}>{stats.pendingCases}</Text>
-                            </div>
-                            <Text component={Link} to="#" c="violet" fw={500} size="sm">View</Text>
-                        </Group>
-                        <Group justify="space-between" align="center">
-                            <div>
-                                <Text size="sm" c="dimmed" mb={4}>Pending Panchnama</Text>
+                                <Text component={Link} to="#" c="violet" fw={500} size="xs" style={{ textDecoration: 'none' }}>View</Text>
+                            </Group>
+                        </Box>
+                        <Box>
+                            <Text size="xs" c="dimmed" mb={4} fw={500}>Pending Panchnama</Text>
+                            <Group justify="space-between" align="flex-end">
                                 <Text fw={700} size="xl" lh={1}>{stats.pendingPanchnama}</Text>
-                            </div>
-                            <Text component={Link} to="#" c="violet" fw={500} size="sm">View</Text>
-                        </Group>
+                                <Text component={Link} to="#" c="violet" fw={500} size="xs" style={{ textDecoration: 'none' }}>View</Text>
+                            </Group>
+                        </Box>
                     </Stack>
                 </Paper>
             </Grid.Col>

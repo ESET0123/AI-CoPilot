@@ -25,11 +25,11 @@ export function CaseCheckedChart({ data }: SingleChartProps) {
                 <MantineTitle order={4} size="h5">Case Checked Vs Percent Confirmed</MantineTitle>
                 <Group gap="xl">
                     <Group gap={8}>
-                        <div style={{ width: 12, height: 12, borderRadius: 4, background: '#a78bfa' }} />
+                        <div style={{ width: 12, height: 12, borderRadius: 4, background: '#8b5cf6' }} />
                         <Text size="sm" c="dimmed">Consumption</Text>
                     </Group>
                     <Group gap={8}>
-                        <div style={{ width: 12, height: 12, borderRadius: 4, background: '#bef264' }} />
+                        <div style={{ width: 12, height: 12, borderRadius: 4, background: '#fbbf24' }} />
                         <Text size="sm" c="dimmed">Consumer Count</Text>
                     </Group>
                 </Group>
@@ -42,7 +42,7 @@ export function CaseCheckedChart({ data }: SingleChartProps) {
                     withLegend={false}
                     series={[
                         { name: 'consumption', label: 'Consumption', color: 'url(#purple-gradient)' },
-                        { name: 'consumerCount', label: 'Consumer Count', color: 'url(#lime-gradient)' },
+                        { name: 'consumerCount', label: 'Consumer Count', color: 'url(#orange-gradient)' },
                     ]}
                     gridAxis="xy"
                     gridProps={{ vertical: false, horizontal: true, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
@@ -55,7 +55,7 @@ export function CaseCheckedChart({ data }: SingleChartProps) {
                             <stop offset="0%" stopColor="#a78bfa" stopOpacity={1} />
                             <stop offset="100%" stopColor="#a78bfa" stopOpacity={0.1} />
                         </linearGradient>
-                        <linearGradient id="lime-gradient" x1="0" y1="0" x2="0" y2="1">
+                        <linearGradient id="orange-gradient" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="#bef264" stopOpacity={1} />
                             <stop offset="100%" stopColor="#bef264" stopOpacity={0.1} />
                         </linearGradient>
@@ -140,8 +140,8 @@ export function TheftByCaseTypeChart({ data }: SingleChartProps) {
                     data={chartData}
                     withTooltip={false}
                     size={200}
-                    thickness={25}
-                    chartLabel={`${percentage}%`}
+                    thickness={100}
+                    pieProps={{ cornerRadius: 5, paddingAngle: 5, strokeWidth: 0 }}
                 />
             </div>
             <Grid mt="xl">

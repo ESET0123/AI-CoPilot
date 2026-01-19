@@ -11,8 +11,9 @@ export default function TheftFilters() {
                             placeholder="Select"
                             data={['Last 7 days', 'Last 30 days']}
                             w={200}
+                            radius="xs"
                         />
-                        <Button variant="outline" color="red">Clear Days</Button>
+                        <Button variant="outline" color="red" radius="s">Clear Days</Button>
                     </Group>
                 </Box>
             </Group>
@@ -24,6 +25,7 @@ export default function TheftFilters() {
                         placeholder="Select"
                         data={['Circle A', 'Circle B']}
                         w={150}
+                        radius="xs"
                     />
                 </Box>
                 <Box>
@@ -33,8 +35,9 @@ export default function TheftFilters() {
                             placeholder="Select"
                             data={['Division X', 'Division Y']}
                             w={150}
+                            radius="xs"
                         />
-                        <Button variant="outline" color="red">Clear Circle/Division</Button>
+                        <Button variant="outline" color="red" radius="s">Clear Circle/Division</Button>
                     </Group>
                 </Box>
             </Group>
