@@ -53,8 +53,12 @@ export function useAccessControl() {
             allowedRoles.some(role => userRoles.includes(role));
 
         // Check if user belongs to any of the allowed groups
+        // Support hierarchical matching: a user in '/zones/ZONE_SOUTH/circles/BETA' 
+        // matches a requirement for '/zones/ZONE_SOUTH'
         const hasGroup = allowedGroups.length === 0 ||
-            normalizedAllowedGroups.some(group => normalizedUserGroups.includes(group));
+            normalizedAllowedGroups.some(allowedGroup =>
+                normalizedUserGroups.some(userGroup => userGroup === allowedGroup || userGroup.startsWith(allowedGroup + '/'))
+            );
 
         // Return based on requireAll flag
         if (requireAll) {

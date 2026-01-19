@@ -22,8 +22,8 @@ export default function QuickAccessCategories() {
                 description: "View Real Time data and detect anomalies",
                 icon: TbAlertTriangle,
                 onClick: () => { navigate("/theft-detection") },
-                allowedRoles: ['ROLE_FIELD_OFFICER'],
-                // allowedGroups: ['/Goa'],
+                allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_SUPERVISOR', 'ROLE_FIELD_OFFICER'],
+                allowedGroups: ['/zones/ZONE_SOUTH'],
                 requireAll: true
             },
             {
@@ -31,8 +31,8 @@ export default function QuickAccessCategories() {
                 description: "View Real Time data and detect patterns",
                 icon: TbActivity,
                 onClick: () => { navigate("/load-forecasting") },
-                allowedRoles: ['Executive'],
-                // allowedGroups: ['/Goa'],
+                allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_ASSISTANT_ENGINEER'],
+                allowedGroups: ['/zones/ZONE_SOUTH'],
                 requireAll: true
             },
             {
@@ -40,17 +40,17 @@ export default function QuickAccessCategories() {
                 description: "Optimize tariff structures",
                 icon: TbCalculator,
                 onClick: () => { navigate("/smart-tariff") },
-                allowedRoles: ['customer', 'Executive'],
-                // allowedGroups: ['/Jabalpur'],
-                requireAll: true
+                allowedRoles: ['ROLE_CUSTOMER', 'ROLE_ADMINISTRATOR'],
+                // No specific group restriction for customer-facing tariff
+                requireAll: false
             },
             {
                 title: "Defaulter Analysis",
                 description: "Predictive analysis for payments",
                 icon: TbUsers,
                 onClick: () => { navigate("/defaulter-analysis") },
-                allowedRoles: ['Executive', 'ROLE_FIELD_OFFICER'],
-                // allowedGroups: ['jabalpur'],
+                allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_SUPERVISOR', 'ROLE_FIELD_OFFICER'],
+                allowedGroups: ['/zones/ZONE_SOUTH'],
                 requireAll: true
             }
         ];
@@ -69,7 +69,7 @@ export default function QuickAccessCategories() {
     return (
         <Box w="100%" maw={900} mb="xl">
             <Text fw={600} size="lg" mb="md" c="#334155">Quick Access Categories</Text>
-            <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md">
+            <SimpleGrid cols={{ base: 1, xs: 2, sm: 2, md: 4 }} spacing="md">
                 {visibleActions.map((action) => (
                     <QuickActionCard
                         key={action.title}

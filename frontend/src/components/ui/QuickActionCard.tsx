@@ -15,17 +15,17 @@ export default function QuickActionCard({ title, description, icon: Icon, onClic
     return (
         <UnstyledButton onClick={onClick} style={{ width: '100%' }}>
             <Paper
-                p="lg"
+                p="md"
                 radius="lg"
                 style={{
                     backgroundColor: '#f7fee7',
-                    position: 'relative',
-                    height: '140px',
+                    minHeight: '130px',
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent: 'flex-end',
+                    justifyContent: 'space-between',
                     transition: 'all 0.2s ease',
                     border: '1px solid transparent',
+                    cursor: 'pointer'
                 }}
                 className="quick-action-card"
             >
@@ -49,7 +49,22 @@ export default function QuickActionCard({ title, description, icon: Icon, onClic
                     }
                 `}} />
 
-                <Box style={{ position: 'absolute', top: 16, right: 16 }}>
+                <Group justify="space-between" align="flex-start" mb="xs">
+                    <Box
+                        style={{
+                            width: 36,
+                            height: 36,
+                            backgroundColor: 'white',
+                            borderRadius: 8,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
+                        }}
+                    >
+                        <ActualIcon size={20} color="#334155" />
+                    </Box>
+
                     <ThemeIcon
                         radius="xl"
                         size="sm"
@@ -57,34 +72,16 @@ export default function QuickActionCard({ title, description, icon: Icon, onClic
                     >
                         <TbArrowUpRight size={14} />
                     </ThemeIcon>
-                </Box>
+                </Group>
 
-                <Box
-                    style={{
-                        position: 'absolute',
-                        top: 16,
-                        left: 16,
-                        width: 36,
-                        height: 36,
-                        backgroundColor: 'white',
-                        borderRadius: 8,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
-                    }}
-                >
-                    <ActualIcon size={20} color="#334155" />
-                </Box>
-
-                <Group align="flex-start" gap={4} style={{ flexDirection: 'column' }}>
-                    <Text fw={700} c="#1e293b" size="md">
+                <Box>
+                    <Text fw={700} c="#1e293b" size="md" mb={8} lineClamp={1}>
                         {title}
                     </Text>
-                    <Text size="sm" c="#64748b" style={{ lineHeight: 1.4, maxWidth: '90%' }}>
+                    <Text size="xs" c="#64748b" style={{ lineHeight: 1.5 }}>
                         {description}
                     </Text>
-                </Group>
+                </Box>
             </Paper>
         </UnstyledButton>
     );
