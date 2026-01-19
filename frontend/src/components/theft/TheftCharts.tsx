@@ -48,7 +48,7 @@ export function CaseCheckedChart({ data }: SingleChartProps) {
                     gridProps={{ vertical: false, horizontal: true, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
                     yAxisProps={{ domain: [0, 'auto'], tickSize: 0, tickMargin: 10, tickCount: 5, axisLine: false }}
                     xAxisProps={{ tickSize: 0, tickMargin: 10 }}
-                    barProps={{ radius: [7, 7, 0, 0] }}
+                    barProps={{ radius: [3, 3, 0, 0] }}
                 >
                     <defs>
                         <linearGradient id="purple-gradient" x1="0" y1="0" x2="0" y2="1">
@@ -103,7 +103,7 @@ export function CasesByDivisionChart({ data }: SingleChartProps) {
                     gridProps={{ vertical: false, horizontal: true, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
                     yAxisProps={{ domain: [0, 'auto'], tickSize: 0, tickMargin: 10, tickCount: 5, axisLine: false }}
                     xAxisProps={{ tickSize: 0, tickMargin: 10 }}
-                    barProps={{ radius: [7, 7, 0, 0] }}
+                    barProps={{ radius: [3, 3, 0, 0] }}
                 >
                     <defs>
                         <linearGradient id="purple-gradient-div" x1="0" y1="0" x2="0" y2="1">
