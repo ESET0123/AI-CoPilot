@@ -1,8 +1,12 @@
-import { Group, Title, Burger, Box, Image } from '@mantine/core';
+import { Group, Title, Burger, Box, Image, Avatar, Menu, UnstyledButton, rem } from '@mantine/core';
+import { TbLogout } from 'react-icons/tb';
 import { useLayout } from './LayoutContext';
+import { useAppDispatch } from '../../app/hooks';
+import { logout } from '../../features/auth/authSlice';
 
 export default function HeaderBar() {
   const { mobileOpened, toggleMobile, hasSidebar } = useLayout();
+  const dispatch = useAppDispatch();
 
   return (
     <Group h="100%" justify="space-between" align="center" style={{ width: '100%' }}>
@@ -22,6 +26,31 @@ export default function HeaderBar() {
           </Box>
         </Title>
       </Group>
+      <Menu shadow="md" width={200} position="bottom-end" transitionProps={{ transition: 'pop-top-right' }}>
+        <Menu.Target>
+          <UnstyledButton>
+            <Avatar
+              radius="xl"
+              src={null}
+              alt="User profile"
+              color="green"
+              style={{ cursor: 'pointer' }}
+            >
+              RS
+            </Avatar>
+          </UnstyledButton>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          <Menu.Item
+            color="red"
+            leftSection={<TbLogout style={{ width: rem(14), height: rem(14) }} />}
+            onClick={() => dispatch(logout())}
+          >
+            Logout
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
     </Group>
   );
 }

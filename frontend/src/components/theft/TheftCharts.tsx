@@ -34,7 +34,7 @@ export function CaseCheckedChart({ data }: SingleChartProps) {
                     </Group>
                 </Group>
             </Group>
-            <div style={{ height: CHART_HEIGHT, width: '100%', minHeight: 0 }}>
+            <div style={{ height: CHART_HEIGHT, width: '100%', minHeight: 0, minWidth: 0 }}>
                 <BarChart
                     h={CHART_HEIGHT}
                     data={chartData}
@@ -89,7 +89,7 @@ export function CasesByDivisionChart({ data }: SingleChartProps) {
                     </Group>
                 </Group>
             </Group>
-            <div style={{ height: CHART_HEIGHT, width: '100%', minHeight: 0 }}>
+            <div style={{ height: CHART_HEIGHT, width: '100%', minHeight: 0, minWidth: 0 }}>
                 <BarChart
                     h={CHART_HEIGHT}
                     data={chartData}
@@ -144,20 +144,16 @@ export function TheftByCaseTypeChart({ data }: SingleChartProps) {
                     pieProps={{ cornerRadius: 5, paddingAngle: 5, strokeWidth: 0 }}
                 />
             </div>
-            <Grid mt="xl">
-                <Grid.Col span={6}>
-                    <Group gap={4}>
-                        <div style={{ width: 12, height: 12, borderRadius: 2, backgroundColor: '#a78bfa' }} />
-                        <Text size="xs" c="dimmed">Abnormal Consumption</Text>
-                    </Group>
-                </Grid.Col>
-                <Grid.Col span={6}>
-                    <Group gap={4}>
-                        <div style={{ width: 12, height: 12, borderRadius: 2, backgroundColor: '#e2e8f0' }} />
-                        <Text size="xs" c="dimmed">Other</Text>
-                    </Group>
-                </Grid.Col>
-            </Grid>
+            <Group justify="center" mt="xl">
+                <Group gap={4}>
+                    <div style={{ width: 12, height: 12, borderRadius: 2, backgroundColor: '#a78bfa' }} />
+                    <Text size="xs" c="dimmed">Abnormal Consumption</Text>
+                </Group>
+                <Group gap={4}>
+                    <div style={{ width: 12, height: 12, borderRadius: 2, backgroundColor: '#e2e8f0' }} />
+                    <Text size="xs" c="dimmed">Other</Text>
+                </Group>
+            </Group>
         </Paper>
     );
 }

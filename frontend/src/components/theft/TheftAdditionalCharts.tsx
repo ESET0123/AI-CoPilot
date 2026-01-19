@@ -46,24 +46,20 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                             data={caseStatusData}
                             withTooltip={false}
                             size={180}
-                            thickness={100}
+                            thickness={90}
                             pieProps={{ cornerRadius: 5, paddingAngle: 5, strokeWidth: 0 }}
                         />
                     </Box>
-                    <Grid mt="xl">
-                        <Grid.Col span={6}>
-                            <Group gap={4}>
-                                <div style={{ width: 12, height: 12, borderRadius: 2, backgroundColor: '#bef264' }} />
-                                <Text size="xs" c="dimmed">Resolved</Text>
-                            </Group>
-                        </Grid.Col>
-                        <Grid.Col span={6}>
-                            <Group gap={4}>
-                                <div style={{ width: 12, height: 12, borderRadius: 2, backgroundColor: '#fca5a5' }} />
-                                <Text size="sm" c="dimmed">Pending</Text>
-                            </Group>
-                        </Grid.Col>
-                    </Grid>
+                    <Group justify="center" mt="xl">
+                        <Group gap={4}>
+                            <div style={{ width: 12, height: 12, borderRadius: 2, backgroundColor: '#bef264' }} />
+                            <Text size="xs" c="dimmed">Resolved</Text>
+                        </Group>
+                        <Group gap={4}>
+                            <div style={{ width: 12, height: 12, borderRadius: 2, backgroundColor: '#fca5a5' }} />
+                            <Text size="sm" c="dimmed">Pending</Text>
+                        </Group>
+                    </Group>
                 </Paper>
             </Grid.Col>
 
@@ -77,7 +73,7 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                             <Text size="sm" c="dimmed">Consumption</Text>
                         </Group>
                     </Group>
-                    <div style={{ height: 250, width: '100%', minHeight: 0 }}>
+                    <div style={{ height: 250, width: '100%', minHeight: 0, minWidth: 0 }}>
                         <BarChart
                             h={250}
                             data={assessedLossData}
@@ -110,7 +106,7 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                             <Text size="sm" c="dimmed" fw={500}>Consumer Survey Count</Text>
                         </Group>
                     </Group>
-                    <div style={{ height: 300, width: '100%', minHeight: 0 }}>
+                    <div style={{ height: 300, width: '100%', minHeight: 0, minWidth: 0 }}>
                         <BarChart
                             h={300}
                             data={panchnamaData}
@@ -144,7 +140,7 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                             <Text size="sm" c="dimmed" fw={500}>Consumer Survey Count</Text>
                         </Group>
                     </Group>
-                    <div style={{ height: 300, width: '100%', minHeight: 0 }}>
+                    <div style={{ height: 300, width: '100%', minHeight: 0, minWidth: 0 }}>
                         <BarChart
                             h={300}
                             data={theftIntensityData}
