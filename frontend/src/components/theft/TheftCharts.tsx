@@ -34,7 +34,7 @@ export function CaseCheckedChart({ data }: SingleChartProps) {
                     </Group>
                 </Group>
             </Group>
-            <div style={{ height: CHART_HEIGHT, width: '100%' }}>
+            <div style={{ height: CHART_HEIGHT, width: '100%', minHeight: 0 }}>
                 <BarChart
                     h={CHART_HEIGHT}
                     data={chartData}
@@ -44,11 +44,11 @@ export function CaseCheckedChart({ data }: SingleChartProps) {
                         { name: 'consumption', label: 'Consumption', color: 'url(#purple-gradient)' },
                         { name: 'consumerCount', label: 'Consumer Count', color: 'url(#lime-gradient)' },
                     ]}
-                    gridAxis="y"
-                    gridProps={{ vertical: false, horizontal: true, strokeDasharray: '0', stroke: '#f0f0f0' }}
-                    yAxisProps={{ domain: ['auto', 'auto'], tickSize: 0, tickMargin: 10 }}
+                    gridAxis="xy"
+                    gridProps={{ vertical: false, horizontal: true, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
+                    yAxisProps={{ domain: [0, 'auto'], tickSize: 0, tickMargin: 10, tickCount: 5, axisLine: false }}
                     xAxisProps={{ tickSize: 0, tickMargin: 10 }}
-                    barProps={{ radius: [10, 10, 0, 0] }}
+                    barProps={{ radius: [7, 7, 0, 0] }}
                 >
                     <defs>
                         <linearGradient id="purple-gradient" x1="0" y1="0" x2="0" y2="1">
@@ -89,7 +89,7 @@ export function CasesByDivisionChart({ data }: SingleChartProps) {
                     </Group>
                 </Group>
             </Group>
-            <div style={{ height: CHART_HEIGHT, width: '100%' }}>
+            <div style={{ height: CHART_HEIGHT, width: '100%', minHeight: 0 }}>
                 <BarChart
                     h={CHART_HEIGHT}
                     data={chartData}
@@ -99,11 +99,11 @@ export function CasesByDivisionChart({ data }: SingleChartProps) {
                         { name: 'consumption', label: 'Consumption', color: 'url(#purple-gradient-div)' },
                         { name: 'consumerCount', label: 'Consumer Count', color: 'url(#lime-gradient-div)' },
                     ]}
-                    gridAxis="y"
-                    gridProps={{ vertical: false, horizontal: true, strokeDasharray: '0', stroke: '#f0f0f0' }}
-                    yAxisProps={{ domain: ['auto', 'auto'], tickSize: 0, tickMargin: 10 }}
+                    gridAxis="xy"
+                    gridProps={{ vertical: false, horizontal: true, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
+                    yAxisProps={{ domain: [0, 'auto'], tickSize: 0, tickMargin: 10, tickCount: 5, axisLine: false }}
                     xAxisProps={{ tickSize: 0, tickMargin: 10 }}
-                    barProps={{ radius: [10, 10, 0, 0] }}
+                    barProps={{ radius: [7, 7, 0, 0] }}
                 >
                     <defs>
                         <linearGradient id="purple-gradient-div" x1="0" y1="0" x2="0" y2="1">

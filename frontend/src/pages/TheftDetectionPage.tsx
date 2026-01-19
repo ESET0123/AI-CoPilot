@@ -7,6 +7,8 @@ import TheftStatsGrid from '../components/theft/TheftStatsGrid';
 import { CaseCheckedChart, CasesByDivisionChart, TheftByCaseTypeChart } from '../components/theft/TheftCharts';
 import TheftAdditionalCharts from '../components/theft/TheftAdditionalCharts';
 import { theftService, TheftDashboardData } from '../services/theftService';
+import AppShellLayout from '../components/layout/AppShellLayout';
+import HeaderBar from '../components/layout/HeaderBar';
 
 export default function TheftDetectionPage() {
     const [data, setData] = useState<TheftDashboardData | null>(null);
@@ -38,69 +40,76 @@ export default function TheftDetectionPage() {
     }
 
     return (
-        <Container fluid px="xl" py="xs" pos="relative">
-            <LoadingOverlay visible={loading} />
+        <AppShellLayout>
+            <Box h="100%" display="flex" style={{ flexDirection: 'column' }}>
+                <Box h={60} px="md" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.05)', display: 'flex', alignItems: 'center' }}>
+                    <HeaderBar />
+                </Box>
+                <Container fluid px="xl" py="xs" pos="relative" style={{ flex: 1, overflowY: 'auto' }}>
+                    <LoadingOverlay visible={loading} />
 
-            {/* Header */}
-            <Box mb="xl">
-                <Button
-                    component={Link}
-                    to="/dashboard"
-                    variant="subtle"
-                    color="black"
-                    leftSection={<TbArrowLeft />}
-                    size="xs"
-                    mb="md"
-                    pl={0}
-                >
-                    Back to Home
-                </Button>
+                    {/* Header */}
+                    <Box mb="xl">
+                        <Button
+                            component={Link}
+                            to="/dashboard"
+                            variant="subtle"
+                            color="black"
+                            leftSection={<TbArrowLeft />}
+                            size="xs"
+                            mb="md"
+                            pl={0}
+                        >
+                            Back to Home
+                        </Button>
 
-                <Group justify="space-between" align="center">
-                    <Group>
-                        <ThemeIcon size={32} radius="xl" color="green">
-                            <TbShieldCheck size={20} />
-                        </ThemeIcon>
-                        <Title order={2} size="h2" fw={700}>Theft Detection- Real time analytics</Title>
-                    </Group>
-                    <Button
-                        bg="#1e1e1e"
-                        leftSection={<div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#84cc16' }} />}
-                        radius="xl"
-                    >
-                        Ask Ai
-                    </Button>
-                </Group>
-            </Box>
-
-            <TheftFilters />
-
-            {data && (
-                <>
-                    <Grid gutter="xl" mb="xl" align="stretch">
-                        <Grid.Col span={{ base: 12, md: 5 }}>
-                            <TheftStatsGrid stats={data.stats} />
-                        </Grid.Col>
-                        <Grid.Col span={{ base: 12, md: 7 }}>
-                            <CaseCheckedChart data={data.charts.caseCheckedVsConfirmed} />
-                        </Grid.Col>
-                    </Grid>
-
-                    <Grid gutter="xl" mb="xl">
-                        <Grid.Col span={{ base: 12, md: 8 }}>
-                            <CasesByDivisionChart data={data.charts.casesByDivision} />
-                        </Grid.Col>
-                        <Grid.Col span={{ base: 12, md: 4 }}>
-                            <TheftByCaseTypeChart data={data.charts.theftByCaseType} />
-                        </Grid.Col>
-                    </Grid>
-
-                    <Box mt="xl">
-                        <TheftAdditionalCharts data={data.charts} />
+                        <Group justify="space-between" align="center">
+                            <Group>
+                                <ThemeIcon size={32} radius="xl" color="green">
+                                    <TbShieldCheck size={20} />
+                                </ThemeIcon>
+                                <Title order={2} size="h2" fw={700}>Theft Detection- Real time analytics</Title>
+                            </Group>
+                            <Button
+                                bg="#1e1e1e"
+                                leftSection={<div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#84cc16' }} />}
+                                radius="xl"
+                            >
+                                Ask Ai
+                            </Button>
+                        </Group>
                     </Box>
-                </>
-            )}
-        </Container>
+
+                    <TheftFilters />
+
+                    {data && (
+                        <>
+                            <Grid gutter="xl" mb="xl" align="stretch">
+                                <Grid.Col span={{ base: 12, md: 5 }}>
+                                    <TheftStatsGrid stats={data.stats} />
+                                </Grid.Col>
+                                <Grid.Col span={{ base: 12, md: 7 }}>
+                                    <CaseCheckedChart data={data.charts.caseCheckedVsConfirmed} />
+                                </Grid.Col>
+                            </Grid>
+
+                            <Grid gutter="xl" mb="xl">
+                                <Grid.Col span={{ base: 12, md: 8 }}>
+                                    <CasesByDivisionChart data={data.charts.casesByDivision} />
+                                </Grid.Col>
+                                <Grid.Col span={{ base: 12, md: 4 }}>
+                                    <TheftByCaseTypeChart data={data.charts.theftByCaseType} />
+                                </Grid.Col>
+                            </Grid>
+
+                            <Box mt="xl">
+                                <TheftAdditionalCharts data={data.charts} />
+                            </Box>
+                        </>
+                    )}
+                </Container>
+            </Box>
+        </AppShellLayout>
     );
 }
 

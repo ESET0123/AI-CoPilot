@@ -17,7 +17,8 @@ export const env = {
   DB_PORT: Number(required('DB_PORT')),
   DB_NAME: required('DB_NAME'),
   DB_USER: required('DB_USER'),
-  DB_PASSWORD: required('DB_PASSWORD'),
+  DB_PASSWORD: process.env.DB_PASSWORD || '',
+  COOKIE_ENCRYPTION_KEY: process.env.COOKIE_ENCRYPTION_KEY || '',
 
   JWT_SECRET: required('JWT_SECRET'),
 

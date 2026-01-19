@@ -71,8 +71,6 @@ axiosClient.interceptors.response.use(
           console.error('[AxiosClient] Error processing failed queue:', queueError);
         }
 
-        localStorage.removeItem('auth_user');
-        localStorage.removeItem('auth'); // Clear legacy key too
         store.dispatch(logout());
         window.location.href = '/login';
         return Promise.reject(refreshError);

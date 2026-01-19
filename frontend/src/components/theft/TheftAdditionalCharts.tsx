@@ -60,7 +60,7 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                         <Grid.Col span={6}>
                             <Group gap={4}>
                                 <div style={{ width: 12, height: 12, borderRadius: 2, backgroundColor: '#fca5a5' }} />
-                                <Text size="xs" c="dimmed">Pending</Text>
+                                <Text size="sm" c="dimmed">Pending</Text>
                             </Group>
                         </Grid.Col>
                     </Grid>
@@ -77,17 +77,17 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                             <Text size="sm" c="dimmed">Consumption</Text>
                         </Group>
                     </Group>
-                    <div style={{ height: '250px', width: '80%' }}>
+                    <div style={{ height: 250, width: '100%', minHeight: 0 }}>
                         <BarChart
                             h={250}
                             data={assessedLossData}
                             dataKey="label"
                             series={[{ name: 'consumption', label: 'Consumption', color: 'url(#lime-gradient-add)' }]}
-                            gridAxis="y"
-                            gridProps={{ vertical: false, horizontal: true, strokeDasharray: '0', stroke: '#f0f0f0' }}
-                            yAxisProps={{ domain: ['auto', 'auto'] }}
-                            barProps={{ radius: [10, 10, 0, 0] }}
-                            withLegend={false}
+                            gridAxis="xy"
+                            gridProps={{ vertical: false, horizontal: true, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
+                            yAxisProps={{ domain: ['auto', 'auto'], tickLine: false, axisLine: false }}
+                            xAxisProps={{ tickLine: false, axisLine: false }}
+                            barProps={{ radius: [7, 7, 0, 0], label: { position: 'insideTop', fill: '#fff', fontSize: 10, offset: 10 } }}
                         >
                             <defs>
                                 <linearGradient id="lime-gradient-add" x1="0" y1="0" x2="0" y2="1">
@@ -107,20 +107,21 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                         <MantineTitle order={4} size="h5">Panchnama Billing Done Overtime</MantineTitle>
                         <Group gap={8}>
                             <div style={{ width: 12, height: 12, borderRadius: 4, background: '#a78bfa' }} />
-                            <Text size="sm" c="dimmed">Consumer Survey Count</Text>
+                            <Text size="sm" c="dimmed" fw={500}>Consumer Survey Count</Text>
                         </Group>
                     </Group>
-                    <div style={{ width: '80%' }}>
+                    <div style={{ height: 300, width: '100%', minHeight: 0 }}>
                         <BarChart
                             h={300}
                             data={panchnamaData}
                             dataKey="label"
-                            series={[{ name: 'count', label: 'Consumer Survey Count', color: 'url(#purple-gradient-panchnama)' }]}
-                            gridAxis="y"
-                            gridProps={{ vertical: false, horizontal: true, strokeDasharray: '0', stroke: '#f0f0f0' }}
-                            yAxisProps={{ domain: ['auto', 'auto'] }}
-                            barProps={{ radius: [10, 10, 0, 0] }}
                             withLegend={false}
+                            series={[{ name: 'count', label: 'Consumer Survey Count', color: 'url(#purple-gradient-panchnama)' }]}
+                            gridAxis="xy"
+                            gridProps={{ vertical: false, horizontal: true, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
+                            yAxisProps={{ domain: ['auto', 'auto'], tickLine: false, axisLine: false }}
+                            xAxisProps={{ tickLine: false, axisLine: false }}
+                            barProps={{ radius: [7, 7, 0, 0], label: { position: 'insideTop', fill: '#fff', fontSize: 10, offset: 10 } }}
                         >
                             <defs>
                                 <linearGradient id="purple-gradient-panchnama" x1="0" y1="0" x2="0" y2="1">
@@ -140,20 +141,21 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                         <MantineTitle order={4} size="h5">Theft Intensity by Zone</MantineTitle>
                         <Group gap={8}>
                             <div style={{ width: 12, height: 12, borderRadius: 4, background: '#a78bfa' }} />
-                            <Text size="sm" c="dimmed">Consumer Survey Count</Text>
+                            <Text size="sm" c="dimmed" fw={500}>Consumer Survey Count</Text>
                         </Group>
                     </Group>
-                    <div style={{ width: '80%' }}>
+                    <div style={{ height: 300, width: '100%', minHeight: 0 }}>
                         <BarChart
                             h={300}
                             data={theftIntensityData}
                             dataKey="label"
-                            series={[{ name: 'count', label: 'Consumer Survey Count', color: 'url(#purple-gradient-intensity)' }]}
-                            gridAxis="y"
-                            gridProps={{ vertical: false, horizontal: true, strokeDasharray: '0', stroke: '#f0f0f0' }}
-                            yAxisProps={{ domain: ['auto', 'auto'] }}
-                            barProps={{ radius: [10, 10, 0, 0] }}
                             withLegend={false}
+                            series={[{ name: 'count', label: 'Consumer Survey Count', color: 'url(#purple-gradient-intensity)' }]}
+                            gridAxis="xy"
+                            gridProps={{ vertical: false, horizontal: true, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
+                            yAxisProps={{ domain: ['auto', 'auto'], tickLine: false, axisLine: false }}
+                            xAxisProps={{ tickLine: false, axisLine: false }}
+                            barProps={{ radius: [10, 10, 0, 0], label: { position: 'insideTop', fill: '#fff', fontSize: 10, offset: 10 } }}
                         >
                             <defs>
                                 <linearGradient id="purple-gradient-intensity" x1="0" y1="0" x2="0" y2="1">

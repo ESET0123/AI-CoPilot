@@ -71,7 +71,7 @@ export default function DashboardPage() {
             background: 'transparent'
           }}>
 
-          <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%', overflowY: 'auto' }}>
+          <Box px="xl" style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%', overflowY: 'auto' }}>
 
             {isEmpty ? (
               <DraftView />

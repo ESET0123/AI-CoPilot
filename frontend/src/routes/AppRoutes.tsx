@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { LoadingOverlay, Box } from '@mantine/core';
 import LoginPage from '../pages/LoginPage';
 import DashboardPage from '../pages/DashboardPage';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
@@ -10,7 +11,15 @@ import DefaulterAnalysisPage from '../pages/DefaulterAnalysisPage';
 import { useAppSelector } from '../app/hooks';
 
 export default function AppRoutes() {
-  const user = useAppSelector((s) => s.auth.user);
+  const { user, isInitialLoading } = useAppSelector((s) => s.auth);
+
+  if (isInitialLoading) {
+    return (
+      <Box h="100vh" pos="relative">
+        <LoadingOverlay visible={true} />
+      </Box>
+    );
+  }
 
   return (
     <Routes>

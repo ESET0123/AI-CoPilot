@@ -11,6 +11,7 @@ export interface AuthState {
   groups: string[];
   isAuthenticated: boolean;
   error: string | null;
+  isInitialLoading: boolean;
 }
 
 export const loginWithCredentials = createAsyncThunk(
@@ -36,6 +37,18 @@ export const loginWithCredentials = createAsyncThunk(
   }
 );
 
+export const checkAuthStatus = createAsyncThunk(
+  "auth/checkStatus",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axiosClient.get("/auth/me");
+      return res.data; // Expected { user: { ... } }
+    } catch (err) {
+      return thunkAPI.rejectWithValue("Not authenticated");
+    }
+  }
+);
+
 export const refreshAccessToken = createAsyncThunk(
   "auth/refresh",
   async (_, thunkAPI) => {
@@ -49,34 +62,9 @@ export const refreshAccessToken = createAsyncThunk(
   }
 );
 
-const loadAuthFromStorage = (): AuthState => {
-  try {
-    // Clear legacy storage key if it exists
-    try {
-      localStorage.removeItem("auth");
-    } catch (storageError) {
-      console.error("Failed to clear legacy auth key:", storageError);
-    }
-
-    const stored = localStorage.getItem("auth_user");
-    if (stored) {
-      const user = JSON.parse(stored) as User;
-      if (user) {
-        return {
-          user,
-          access_token: null, // Tokens are in HttpOnly cookies
-          refresh_token: null,
-          roles: user.roles || [],
-          groups: user.groups || [],
-          isAuthenticated: true,
-          error: null,
-        };
-      }
-    }
-  } catch (e) {
-    console.error("Failed to load auth from storage:", e);
-  }
-  return {
+const authSlice = createSlice({
+  name: "auth",
+  initialState: {
     user: null,
     access_token: null,
     refresh_token: null,
@@ -84,12 +72,8 @@ const loadAuthFromStorage = (): AuthState => {
     groups: [],
     isAuthenticated: false,
     error: null,
-  };
-};
-
-const authSlice = createSlice({
-  name: "auth",
-  initialState: loadAuthFromStorage() as AuthState,
+    isInitialLoading: true, // New flag for initial session check
+  } as AuthState,
   reducers: {
     logout(state) {
       state.user = null;
@@ -98,12 +82,7 @@ const authSlice = createSlice({
       state.roles = [];
       state.groups = [];
       state.isAuthenticated = false;
-
-      try {
-        localStorage.removeItem("auth_user");
-      } catch (error) {
-        console.error("Failed to remove auth_user from localStorage:", error);
-      }
+      state.error = null;
 
       axiosClient.post("/auth/logout").catch(console.error);
     },
@@ -114,12 +93,7 @@ const authSlice = createSlice({
       state.roles = action.payload.user.roles;
       state.groups = action.payload.user.groups;
       state.isAuthenticated = true;
-
-      try {
-        localStorage.setItem("auth_user", JSON.stringify(action.payload.user));
-      } catch (error) {
-        console.error("Failed to save user to localStorage:", error);
-      }
+      state.error = null;
     });
 
     builder.addCase(loginWithCredentials.rejected, (state, action) => {
@@ -127,9 +101,30 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
     });
 
+    builder.addCase(loginWithCredentials.pending, (state) => {
+      state.error = null;
+    });
+
     builder.addCase(refreshAccessToken.fulfilled, (state) => {
       // Nothing to update in state, tokens are in cookies
       state.isAuthenticated = true;
+    });
+
+    builder.addCase(checkAuthStatus.pending, (state) => {
+      state.isInitialLoading = true;
+    });
+
+    builder.addCase(checkAuthStatus.fulfilled, (state, action) => {
+      state.user = action.payload.user;
+      state.roles = action.payload.user.roles;
+      state.groups = action.payload.user.groups;
+      state.isAuthenticated = true;
+      state.isInitialLoading = false;
+    });
+
+    builder.addCase(checkAuthStatus.rejected, (state) => {
+      state.isAuthenticated = false;
+      state.isInitialLoading = false;
     });
   },
 });

@@ -6,6 +6,8 @@ import {
     keycloakClientId,
     keycloakClientSecret,
 } from "../config/keycloak.config";
+import { CryptoUtil } from "../utils/crypto";
+import { requireAuth } from "../middleware/auth";
 
 const router = Router();
 
@@ -40,14 +42,16 @@ const setTokenCookies = (res: Response, tokens: TokenResponse) => {
     };
 
     if (tokens.access_token) {
-        res.cookie("access_token", tokens.access_token, {
+        const encryptedAccess = CryptoUtil.encrypt(tokens.access_token);
+        res.cookie("access_token", encryptedAccess, {
             ...cookieOptions,
             maxAge: tokens.expires_in * 1000,
         });
     }
 
     if (tokens.refresh_token) {
-        res.cookie("refresh_token", tokens.refresh_token, {
+        const encryptedRefresh = CryptoUtil.encrypt(tokens.refresh_token);
+        res.cookie("refresh_token", encryptedRefresh, {
             ...cookieOptions,
             maxAge: (tokens.refresh_expires_in || 86400 * 30) * 1000, // Default 30 days
         });
@@ -102,13 +106,14 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/refresh", async (req, res) => {
-    const refreshToken = req.cookies?.refresh_token;
+    const encryptedRefreshToken = req.cookies?.refresh_token;
 
-    if (!refreshToken) {
+    if (!encryptedRefreshToken) {
         return res.status(401).json({ message: "No refresh token" });
     }
 
     try {
+        const refreshToken = CryptoUtil.decrypt(encryptedRefreshToken);
         const params = new URLSearchParams();
         params.append("client_id", keycloakClientId);
         if (keycloakClientSecret) {
@@ -138,10 +143,11 @@ router.post("/refresh", async (req, res) => {
 });
 
 router.post("/logout", async (req, res) => {
-    const refreshToken = req.cookies?.refresh_token;
+    const encryptedRefreshToken = req.cookies?.refresh_token;
 
-    if (refreshToken) {
+    if (encryptedRefreshToken) {
         try {
+            const refreshToken = CryptoUtil.decrypt(encryptedRefreshToken);
             const params = new URLSearchParams();
             params.append("client_id", keycloakClientId);
             if (keycloakClientSecret) {
@@ -164,6 +170,20 @@ router.post("/logout", async (req, res) => {
     res.clearCookie("access_token");
     res.clearCookie("refresh_token");
     res.json({ message: "Logged out" });
+});
+
+router.get("/me", requireAuth, async (req: any, res) => {
+    // requireAuth middleware populates req.userId, req.userEmail, req.userRoles
+    // We can also fetch groups if we store them or refresh from Keycloak
+    // For now, return what we have in req
+    res.json({
+        user: {
+            id: req.userId,
+            email: req.userEmail,
+            roles: req.userRoles || [],
+            groups: req.userGroups || [], // We should make sure requireAuth sets this
+        }
+    });
 });
 
 export default router;

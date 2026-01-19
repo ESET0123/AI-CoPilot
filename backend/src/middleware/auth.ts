@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import { keycloakServerUrl, keycloakRealm } from '../config/keycloak.config';
 import { AuthService } from '../services/auth.service';
+import { CryptoUtil } from '../utils/crypto';
 
 interface JwtPayload {
   sub: string;
@@ -11,6 +12,7 @@ interface JwtPayload {
   realm_access?: {
     roles: string[];
   };
+  groups?: string[];
 }
 
 // JWKS client for Keycloak public key verification
@@ -42,7 +44,12 @@ export function requireAuth(
   if (header && header.startsWith('Bearer ')) {
     token = header.replace('Bearer ', '');
   } else if (req.cookies?.access_token) {
-    token = req.cookies.access_token;
+    try {
+      token = CryptoUtil.decrypt(req.cookies.access_token);
+    } catch (err) {
+      console.error('[AUTH] Cookie decryption failed:', err);
+      return res.status(401).json({ message: 'Invalid session' });
+    }
   }
 
   if (!token) {
@@ -97,6 +104,7 @@ export function requireAuth(
       }
 
       req.userRoles = payload.realm_access?.roles || [];
+      (req as any).userGroups = payload.groups || [];
 
       next();
     } catch (dbErr: any) {
