@@ -29,7 +29,7 @@ export function CaseCheckedChart({ data }: SingleChartProps) {
                         <Text size="sm" c="dimmed">Consumption</Text>
                     </Group>
                     <Group gap={8}>
-                        <div style={{ width: 12, height: 12, borderRadius: 4, background: '#fbbf24' }} />
+                        <div style={{ width: 12, height: 12, borderRadius: 4, background: '#bef264' }} />
                         <Text size="sm" c="dimmed">Consumer Count</Text>
                     </Group>
                 </Group>
