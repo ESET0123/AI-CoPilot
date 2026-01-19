@@ -83,7 +83,7 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                             gridProps={{ vertical: false, horizontal: true, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
                             yAxisProps={{ domain: ['auto', 'auto'], tickLine: false, axisLine: false }}
                             xAxisProps={{ tickLine: false, axisLine: false }}
-                            barProps={{ radius: [7, 7, 0, 0], label: { position: 'insideTop', fill: '#fff', fontSize: 10, offset: 10 } }}
+                            barProps={{ radius: [7, 7, 0, 0] }}
                         >
                             <defs>
                                 <linearGradient id="lime-gradient-add" x1="0" y1="0" x2="0" y2="1">
