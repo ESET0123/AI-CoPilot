@@ -67,6 +67,21 @@ body,
     }
 }
 
+@keyframes glowOrb {
+    0% {
+        box-shadow: 0 0 0 0 rgba(132, 204, 22, 0.7);
+        transform: scale(0.95);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(132, 204, 22, 0);
+        transform: scale(1);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(132, 204, 22, 0);
+        transform: scale(0.95);
+    }
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 *::-webkit-scrollbar {
     display: none;

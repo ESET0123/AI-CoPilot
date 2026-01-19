@@ -67,20 +67,12 @@ export default function MessageBubble({ role, text, loading }: Props) {
       {!isUser && (
         <Box
           style={{
-            // position: 'absolute',
-            // top: '50%',
-            // left: '50%',
-            // padding: '14px',
-            // transform: 'translate(-50%, -50%)',
             width: 20,
             height: 20,
             borderRadius: '50%',
             marginTop: 4,
             flexShrink: 0,
-            background: 'linear-gradient(135deg, #4ade80 0%, #ece019 100%)',
-            // boxShadow: '0 20px 25px -5px rgba(74, 222, 128, 0.3), inset 0 -4px 6px -1px rgba(0,0,0,0.05)',
-
-            // zIndex: 0,
+            background: 'linear-gradient(135deg, #4ade80 0%, #ece019 100%)'
           }}
         />
       )}

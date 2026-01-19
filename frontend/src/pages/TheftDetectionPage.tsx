@@ -73,7 +73,17 @@ export default function TheftDetectionPage() {
                             </Group>
                             <Button
                                 bg="#1e1e1e"
-                                leftSection={<div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#84cc16' }} />}
+                                leftSection={
+                                    <Box
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            borderRadius: '50%',
+                                            flexShrink: 0,
+                                            background: 'linear-gradient(135deg, #4ade80 0%, #ece019 100%)'
+                                        }}
+                                    />
+                                }
                                 radius="xl"
                             >
                                 Ask Ai
