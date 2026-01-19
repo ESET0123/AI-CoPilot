@@ -1,17 +1,55 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
-export const useVoiceRecorder = (onTranscriptionComplete: (text: string) => void) => {
+// Define types for Web Speech API since they might not be in the default TS types
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+  resultIndex: number;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+  message: string;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  onend: () => void;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
+export const useVoiceRecorder = (
+  onTranscriptionComplete: (text: string) => void,
+  onInterimTranscription?: (text: string) => void
+) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const finalTranscriptRef = useRef('');
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
       }
     };
   }, []);
@@ -20,7 +58,44 @@ export const useVoiceRecorder = (onTranscriptionComplete: (text: string) => void
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
-      
+
+      // 1. Setup Web Speech API for real-time results
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+        finalTranscriptRef.current = '';
+
+        recognition.onresult = (event: SpeechRecognitionEvent) => {
+          let interimTranscript = '';
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              finalTranscriptRef.current += event.results[i][0].transcript;
+            } else {
+              interimTranscript += event.results[i][0].transcript;
+            }
+          }
+
+          if (onInterimTranscription) {
+            onInterimTranscription(finalTranscriptRef.current + interimTranscript);
+          }
+        };
+
+        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+          console.error('Speech recognition error:', event.error);
+        };
+
+        recognition.onend = () => {
+          console.log('Speech recognition ended');
+        };
+
+        recognition.start();
+        recognitionRef.current = recognition;
+      }
+
+      // 2. Setup MediaRecorder for fallback/persistence
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
@@ -32,13 +107,24 @@ export const useVoiceRecorder = (onTranscriptionComplete: (text: string) => void
       };
 
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' });
-        await handleTranscription(audioBlob);
-        
-        // Cleanup stream
+        // cleanup stream
         if (streamRef.current) {
           streamRef.current.getTracks().forEach(track => track.stop());
           streamRef.current = null;
+        }
+
+        // Logic check:
+        // If we have a recognition instance AND we got some final transcript,
+        // we consider the Web Speech API successful.
+        // otherwise, if we have recorded chunks, we try fallback.
+
+        if (recognitionRef.current && finalTranscriptRef.current.trim()) {
+          // Successfully used Web Speech API
+          onTranscriptionComplete(finalTranscriptRef.current);
+        } else if (chunksRef.current.length > 0) {
+          // Fallback to server-side Whisper
+          const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' });
+          await handleTranscription(audioBlob);
         }
       };
 
@@ -48,9 +134,14 @@ export const useVoiceRecorder = (onTranscriptionComplete: (text: string) => void
       console.error('Error accessing microphone:', err);
       alert('Could not access microphone. Please ensure you have granted permission.');
     }
-  }, []);
+  }, [onInterimTranscription, onTranscriptionComplete]);
 
   const stopRecording = useCallback(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
@@ -63,7 +154,6 @@ export const useVoiceRecorder = (onTranscriptionComplete: (text: string) => void
       const formData = new FormData();
       formData.append('file', blob, 'voice.wav');
 
-      // Use environment variable for API URL
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       const response = await fetch(`${apiUrl}/api/transcribe`, {
         method: 'POST',
@@ -75,16 +165,14 @@ export const useVoiceRecorder = (onTranscriptionComplete: (text: string) => void
       }
 
       const data = await response.json();
-      
+
       if (data.text) {
         onTranscriptionComplete(data.text);
       } else if (data.error) {
         console.error('Transcription error:', data.error);
-        alert(`Transcription failed: ${data.error}`);
       }
     } catch (err) {
       console.error('Failed to transcribe audio:', err);
-      alert('Failed to transcribe audio. Please try again.');
     } finally {
       setIsLoading(false);
     }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Textarea, Group, ActionIcon, Paper, Tooltip, Box, Text } from '@mantine/core';
-import { TbPlayerStop, TbMicrophone, TbWorld, TbPaperclip, TbX } from 'react-icons/tb';
+import { TbPlayerStopFilled , TbMicrophone, TbWorld, TbPaperclip, TbX, TbCheck } from 'react-icons/tb';
 import { MdSavedSearch } from "react-icons/md";
 import { BsSoundwave } from 'react-icons/bs';
 import { GoLightBulb } from "react-icons/go";
@@ -41,11 +41,31 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
     ? sendingConversationIds.includes(activeConversationId)
     : false;
 
+  const [baseValue, setBaseValue] = useState('');
+
   const { isRecording, isLoading: isTranscribing, startRecording, stopRecording } =
-    useVoiceRecorder((text) => {
-      setValue((prev) => (prev ? prev + ' ' + text : text));
-      inputRef.current?.focus();
-    });
+    useVoiceRecorder(
+      (text) => {
+        // Final result - append to base and focus
+        const newValue = baseValue ? `${baseValue.trim()} ${text}` : text;
+        setValue(newValue);
+        inputRef.current?.focus();
+      },
+      (interimText) => {
+        // Live update while speaking - append to base
+        const newValue = baseValue ? `${baseValue.trim()} ${interimText}` : interimText;
+        setValue(newValue);
+      }
+    );
+
+  const handleToggleRecording = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      setBaseValue(value);
+      startRecording();
+    }
+  };
 
   useEffect(() => {
     if (draftMessageMode && !isCurrentSending) {
@@ -81,6 +101,11 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
     if (isCurrentSending) {
       handleStop();
       return;
+    }
+
+    // If recording, stop recording before sending
+    if (isRecording) {
+      stopRecording();
     }
 
     const message = value.trim();
@@ -203,9 +228,11 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             value={value}
             onChange={(e) => setValue(e.currentTarget.value)}
             placeholder={
-              isHeroMode
-                ? "𝗔𝗦𝗞 𝗔𝗡𝗬𝗧𝗛𝗜𝗡𝗚. TYPE @ FOR MENTIONS AND / FOR SHORTCUTS"
-                : (isCurrentSending ? "Waiting for response..." : "Message...")
+              isRecording
+                ? "LISTENING"
+                : isHeroMode
+                  ? "𝗔𝗦𝗞 𝗔𝗡𝗬𝗧𝗛𝗜𝗡𝗚. TYPE @ FOR MENTIONS AND / FOR SHORTCUTS"
+                  : (isCurrentSending ? "Waiting for response..." : "Message...")
             }
             autosize
             minRows={isHeroMode ? 3 : 1}
@@ -262,7 +289,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                    Standard IconSearch is fine based on request "style like this" which shows a magnifying glass. 
                    The image has a star inside, IconMessageSearch or IconSparkles inside? 
                    I'll use IconSearch for now as it's cleaner. */}
-              <MdSavedSearch size={18}  />
+              <MdSavedSearch size={18} />
             </ActionIcon>
 
             {/* Reasoning/Idea Mode */}
@@ -271,7 +298,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
               size="lg"
               radius="xl"
               style={{
-                color: '#000000', // Was #1a1a1a, making pure black
+                color: '#000000', 
                 border: '1px solid transparent',
               }}
             >
@@ -280,63 +307,84 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
           </Box>
 
           <Group gap="xs">
-            {/* Globe & Attach Icons (Visual only for now) */}
-            <Tooltip label="Search web">
-              <ActionIcon variant="subtle" style={{ color: '#000000' }} radius="xl" size="lg">
-                <TbWorld size={18} />
-              </ActionIcon>
-            </Tooltip>
+            {!isRecording && (
+              <>
+                <Tooltip label="Search web">
+                  <ActionIcon variant="subtle" style={{ color: '#000000' }} radius="xl" size="lg">
+                    <TbWorld size={18} />
+                  </ActionIcon>
+                </Tooltip>
 
-            <Tooltip label="Attach file">
-              <ActionIcon
-                variant="subtle"
-                style={{ color: '#000000' }}
-                radius="xl"
-                size="lg"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <TbPaperclip size={18} />
-              </ActionIcon>
-            </Tooltip>
+                <Tooltip label="Attach file">
+                  <ActionIcon
+                    variant="subtle"
+                    style={{ color: '#000000' }}
+                    radius="xl"
+                    size="lg"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <TbPaperclip size={18} />
+                  </ActionIcon>
+                </Tooltip>
+                <Tooltip label={isRecording ? 'Stop recording' : 'Record voice'}>
+                  <ActionIcon
+                    onClick={handleToggleRecording}
+                    style={{
+                      color: isRecording ? 'red' : '#000000',
+                      transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
+                      transform: isRecording ? 'scale(1.1)' : 'scale(1)',
+                    }}
+                    variant={isRecording ? 'filled' : 'subtle'}
+                    radius="xl"
+                    size="lg"
+                    disabled={isCurrentSending || isTranscribing}
+                    loading={isTranscribing}
+                  >
+                    <TbMicrophone size={18} />
+                  </ActionIcon>
+                </Tooltip>
+              </>
+            )}
 
-            <Tooltip label={isRecording ? 'Stop recording' : 'Record voice'}>
+            {isRecording && (
               <ActionIcon
-                onClick={isRecording ? stopRecording : startRecording}
+                onClick={handleToggleRecording}
+                variant="filled"
+                color="gray.2"
+                radius="md"
+                size="xl"
                 style={{
-                  color: isRecording ? 'red' : '#000000',
-                  transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
-                  transform: isRecording ? 'scale(1.1)' : 'scale(1)',
+                  backgroundColor: '#f1f3f5',
+                  color: '#000000'
                 }}
-                variant={isRecording ? 'filled' : 'subtle'}
-                radius="xl"
-                size="lg"
-                disabled={isCurrentSending || isTranscribing}
-                loading={isTranscribing}
               >
-                <TbMicrophone size={18} />
+                <TbPlayerStopFilled  stroke='1.5' size={20} />
               </ActionIcon>
-            </Tooltip>
+            )}
 
-            <Tooltip label={isCurrentSending ? 'Stop generating' : 'Send message'}>
+            <Tooltip label={isCurrentSending ? 'Stop generating' : (isRecording ? 'Finish recording' : 'Send message')}>
               <ActionIcon
                 type="submit"
-                color={isCurrentSending ? 'red' : '#000000'}
+                color={isCurrentSending ? 'red' : (isRecording ? 'green' : '#000000')}
                 variant="filled"
                 radius="md"
                 size="xl"
-                disabled={!isCurrentSending && !value.trim()}
+                disabled={!isCurrentSending && !isRecording && !value.trim()}
                 style={{
                   transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
-                  boxShadow: !isCurrentSending && value.trim()
+                  boxShadow: !isCurrentSending && (value.trim() || isRecording)
                     ? '0 4px 12px rgba(0, 0, 0, 0.1)'
                     : 'none',
                 }}
               >
                 {isCurrentSending ? (
-                  <TbPlayerStop size={20} />
+                  <TbPlayerStopFilled  size={20} />
+                ) : isRecording ? (
+                  <TbCheck size={24} />
                 ) : (
                   // Use WaveSine for that specific "AI" feel in the design, or standard Send
-                  <BsSoundwave  color='white' size={20} />)}
+                  <BsSoundwave color='white' size={20} />
+                )}
               </ActionIcon>
             </Tooltip>
           </Group>
