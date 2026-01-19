@@ -38,10 +38,6 @@ export const chatApi = {
     return axiosClient.delete(`/conversations/${conversationId}`);
   },
 
-  editMessage(messageId: string, content: string) {
-    return axiosClient.patch(`/messages/${messageId}`, { content });
-  },
-
   deleteAllConversations() {
     return axiosClient.delete('/conversations');
   },
@@ -55,6 +51,20 @@ export const chatApi = {
 
   stopMessage(conversationId: string) {
     return axiosClient.post('/stop', { conversation_id: conversationId });
+  },
+};
+
+/* ================= OCR ================= */
+
+export const ocrApi = {
+  extractText(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return axiosClient.post('/api/ocr/extract-text', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
 };
 

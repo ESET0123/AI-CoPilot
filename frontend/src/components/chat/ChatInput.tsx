@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Textarea, Group, ActionIcon, Paper, Tooltip, Box, Text } from '@mantine/core';
-import { TbPlayerStopFilled , TbMicrophone, TbWorld, TbPaperclip, TbX, TbCheck } from 'react-icons/tb';
+import { Textarea, Group, ActionIcon, Paper, Tooltip, Box, Text, Loader } from '@mantine/core';
+import { TbPlayerStopFilled, TbMicrophone, TbWorld, TbPaperclip, TbX, TbCheck } from 'react-icons/tb';
 import { MdSavedSearch } from "react-icons/md";
 import { BsSoundwave } from 'react-icons/bs';
 import { GoLightBulb } from "react-icons/go";
@@ -17,13 +17,13 @@ import {
   setActiveConversation,
   stopMessage,
 } from '../../features/chat/chatSlice';
+import { ocrApi } from '../../services/api';
 
 interface ChatInputProps {
   isHeroMode?: boolean;
 }
 
 // Keep track of active requests globally to handle component unmounting/remounting
-// (e.g. when switching from DashboardHero to ChatWindow)
 const activeRequests = new Map<string, { abort: () => void }>();
 
 export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
@@ -31,7 +31,11 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [ocrText, setOcrText] = useState<string>('');
+  const [isProcessingOcr, setIsProcessingOcr] = useState(false);
+
   const pendingThunkRef = useRef<any>(null);
 
   const { activeConversationId, draftMessageMode, sendingConversationIds } =
@@ -46,13 +50,11 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   const { isRecording, isLoading: isTranscribing, startRecording, stopRecording } =
     useVoiceRecorder(
       (text) => {
-        // Final result - append to base and focus
         const newValue = baseValue ? `${baseValue.trim()} ${text}` : text;
         setValue(newValue);
         inputRef.current?.focus();
       },
       (interimText) => {
-        // Live update while speaking - append to base
         const newValue = baseValue ? `${baseValue.trim()} ${interimText}` : interimText;
         setValue(newValue);
       }
@@ -76,7 +78,6 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   const handleStop = () => {
     if (!isCurrentSending) return;
 
-    // Try to find the active request in the global map first (handles remounting)
     if (activeConversationId) {
       const globalPromise = activeRequests.get(activeConversationId);
       if (globalPromise) {
@@ -85,7 +86,6 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
       }
     }
 
-    // Fallback to local ref if needed
     if (pendingThunkRef.current) {
       pendingThunkRef.current.abort();
       pendingThunkRef.current = null;
@@ -97,45 +97,49 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   };
 
   const handleSend = async () => {
-    // If already sending, stop instead
     if (isCurrentSending) {
       handleStop();
       return;
     }
 
-    // If recording, stop recording before sending
     if (isRecording) {
       stopRecording();
     }
 
-    const message = value.trim();
-    if (!message) return;
+    const messageContent = value.trim();
+    if (!messageContent && !ocrText) return;
+
+    // Construct final message with OCR text if available
+    const finalMessage = ocrText
+      ? `${messageContent}${messageContent ? '\n\n' : ''}[Extracted from ${selectedFile?.name}]:\n${ocrText}`
+      : messageContent;
 
     setValue('');
+    setOcrText('');
+    setSelectedFile(null);
 
     let targetConvoId = activeConversationId;
 
     try {
       if (draftMessageMode) {
         const convo = await dispatch(
-          createConversation(message.slice(0, MAX_CONVERSATION_TITLE_LENGTH))
+          createConversation(messageContent.slice(0, MAX_CONVERSATION_TITLE_LENGTH) || 'New Chat')
         ).unwrap();
         dispatch(setActiveConversation(convo.id));
         targetConvoId = convo.id;
       }
 
       if (targetConvoId) {
-        dispatch(addUserMessage(message));
+        dispatch(addUserMessage(messageContent || `Attached: ${selectedFile?.name}`));
         dispatch(addAssistantLoading());
 
         const promise = dispatch(
           sendMessage({
             conversationId: targetConvoId,
-            message,
+            message: finalMessage,
           })
         );
 
-        // Store promise globally and locally
         pendingThunkRef.current = promise;
         activeRequests.set(targetConvoId, promise);
 
@@ -154,15 +158,28 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
+      setIsProcessingOcr(true);
+      setOcrText('');
+
+      try {
+        const response = await ocrApi.extractText(file);
+        setOcrText(response.data.text);
+      } catch (error) {
+        console.error('Failed to process file:', error);
+        // Optionally show error to user
+      } finally {
+        setIsProcessingOcr(false);
+      }
     }
   };
 
   const removeFile = () => {
     setSelectedFile(null);
+    setOcrText('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -186,10 +203,6 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
         flexDirection: 'column',
       }}
     >
-
-
-
-
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -202,6 +215,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
           ref={fileInputRef}
           style={{ display: 'none' }}
           onChange={handleFileChange}
+          accept="image/*,application/pdf,text/plain"
         />
 
         {selectedFile && (
@@ -215,7 +229,11 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             width: 'fit-content'
           }}>
             <TbPaperclip size={16} color="#65a30d" />
-            <Text size="sm" fw={600} style={{ color: '#1a1a1a' }}>{selectedFile.name}</Text>
+            <Box style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Text size="sm" fw={600} style={{ color: '#1a1a1a' }}>{selectedFile.name}</Text>
+              {isProcessingOcr && <Loader size="xs" color="lime" />}
+              {!isProcessingOcr && ocrText && <TbCheck size={14} color="#65a30d" />}
+            </Box>
             <ActionIcon size="xs" variant="subtle" color="gray" onClick={removeFile}>
               <TbX size={14} />
             </ActionIcon>
@@ -245,7 +263,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 padding: '8px 4px',
                 fontSize: '16px',
                 lineHeight: 1.6,
-                color: '#000000', // Force black text
+                color: '#000000',
               },
             }}
             autoFocus
@@ -259,11 +277,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
         </Box>
 
         <Group justify="space-between" align="center" mt="xs">
-          {/* Left Actions (Search Toggle, etc) - Only in Hero Mode for now as per design */}
-
-          {/* Search / Reason Toggle */}
           <Box
-
             style={{
               backgroundColor: '#ecfccb',
               padding: '4px',
@@ -273,7 +287,6 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
               border: '1px solid #d9f99d',
             }}
           >
-            {/* Search Mode (Active by default for now) */}
             <ActionIcon
               variant="transparent"
               size="lg"
@@ -285,20 +298,15 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 color: '#000000',
               }}
             >
-              {/* Use IconZoomExclamation or similar if available, or just IconSearch with a small badge if needed. 
-                   Standard IconSearch is fine based on request "style like this" which shows a magnifying glass. 
-                   The image has a star inside, IconMessageSearch or IconSparkles inside? 
-                   I'll use IconSearch for now as it's cleaner. */}
               <MdSavedSearch size={18} />
             </ActionIcon>
 
-            {/* Reasoning/Idea Mode */}
             <ActionIcon
               variant="transparent"
               size="lg"
               radius="xl"
               style={{
-                color: '#000000', 
+                color: '#000000',
                 border: '1px solid transparent',
               }}
             >
@@ -322,10 +330,12 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                     radius="xl"
                     size="lg"
                     onClick={() => fileInputRef.current?.click()}
+                    disabled={isProcessingOcr}
                   >
                     <TbPaperclip size={18} />
                   </ActionIcon>
                 </Tooltip>
+
                 <Tooltip label={isRecording ? 'Stop recording' : 'Record voice'}>
                   <ActionIcon
                     onClick={handleToggleRecording}
@@ -358,31 +368,30 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                   color: '#000000'
                 }}
               >
-                <TbPlayerStopFilled  stroke='1.5' size={20} />
+                <TbPlayerStopFilled stroke='1.5' size={20} />
               </ActionIcon>
             )}
 
             <Tooltip label={isCurrentSending ? 'Stop generating' : (isRecording ? 'Finish recording' : 'Send message')}>
               <ActionIcon
-                type="submit"
+                onClick={handleSend}
                 color={isCurrentSending ? 'red' : (isRecording ? 'green' : '#000000')}
                 variant="filled"
                 radius="md"
                 size="xl"
-                disabled={!isCurrentSending && !isRecording && !value.trim()}
+                disabled={(!isCurrentSending && !isRecording && !value.trim() && !ocrText) || isProcessingOcr}
                 style={{
                   transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
-                  boxShadow: !isCurrentSending && (value.trim() || isRecording)
+                  boxShadow: !isCurrentSending && (value.trim() || isRecording || ocrText)
                     ? '0 4px 12px rgba(0, 0, 0, 0.1)'
                     : 'none',
                 }}
               >
                 {isCurrentSending ? (
-                  <TbPlayerStopFilled  size={20} />
+                  <TbPlayerStopFilled size={20} />
                 ) : isRecording ? (
                   <TbCheck size={24} />
                 ) : (
-                  // Use WaveSine for that specific "AI" feel in the design, or standard Send
                   <BsSoundwave color='white' size={20} />
                 )}
               </ActionIcon>

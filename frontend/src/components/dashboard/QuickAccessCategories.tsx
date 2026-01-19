@@ -22,8 +22,8 @@ export default function QuickAccessCategories() {
                 description: "View Real Time data and detect anomalies",
                 icon: TbAlertTriangle,
                 onClick: () => { navigate("/theft-detection") },
-                allowedRoles: ['Executive'],
-                allowedGroups: ['/Goa'],
+                allowedRoles: ['ROLE_FIELD_OFFICER'],
+                // allowedGroups: ['/Goa'],
                 requireAll: true
             },
             {
@@ -32,7 +32,7 @@ export default function QuickAccessCategories() {
                 icon: TbActivity,
                 onClick: () => { navigate("/load-forecasting") },
                 allowedRoles: ['Executive'],
-                allowedGroups: ['/Goa'],
+                // allowedGroups: ['/Goa'],
                 requireAll: true
             },
             {
@@ -41,7 +41,7 @@ export default function QuickAccessCategories() {
                 icon: TbCalculator,
                 onClick: () => { navigate("/smart-tariff") },
                 allowedRoles: ['customer', 'Executive'],
-                allowedGroups: ['/Jabalpur'],
+                // allowedGroups: ['/Jabalpur'],
                 requireAll: true
             },
             {
@@ -49,8 +49,8 @@ export default function QuickAccessCategories() {
                 description: "Predictive analysis for payments",
                 icon: TbUsers,
                 onClick: () => { navigate("/defaulter-analysis") },
-                allowedRoles: ['Executive'],
-                allowedGroups: ['jabalpur'],
+                allowedRoles: ['Executive', 'ROLE_FIELD_OFFICER'],
+                // allowedGroups: ['jabalpur'],
                 requireAll: true
             }
         ];

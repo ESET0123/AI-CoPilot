@@ -7,6 +7,8 @@ import authRoutes from './routes/auth.routes';
 import conversationsRoutes from './routes/conversations.routes';
 import messagesRoutes from './routes/messages.routes';
 import transcribeRoutes from './routes/transcribe.routes';
+import ocrRoutes from './routes/ocr.routes';
+import theftRoutes from './routes/theft';
 import { requireAuth } from './middleware/auth';
 
 const app = express();
@@ -32,6 +34,8 @@ app.use('/auth', authRoutes);
 app.use('/conversations', conversationsRoutes);
 app.use('/messages', messagesRoutes);
 app.use('/api/transcribe', transcribeRoutes);
+app.use('/api/ocr', ocrRoutes);
+app.use('/api/theft', requireAuth, theftRoutes);
 
 app.post('/stop', requireAuth, MessagesController.stop);
 

@@ -36,7 +36,7 @@ export default function AppRoutes() {
       <Route
         path="/theft-detection"
         element={
-          <RoleProtectedRoute roles={['Executive']}>
+          <RoleProtectedRoute roles={['Executive', 'ROLE_FIELD_OFFICER']}>
             <TheftDetectionPage />
           </RoleProtectedRoute>
         }
@@ -63,7 +63,7 @@ export default function AppRoutes() {
       <Route
         path="/defaulter-analysis"
         element={
-          <RoleProtectedRoute roles={['Executive']}>
+          <RoleProtectedRoute roles={['Executive', 'ROLE_FIELD_OFFICER']}>
             <DefaulterAnalysisPage />
           </RoleProtectedRoute>
         }

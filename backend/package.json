@@ -14,6 +14,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@types/pdf-parse": "^1.1.5",
     "axios": "^1.13.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -23,11 +24,12 @@
     "jwks-rsa": "^3.2.0",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.11",
+    "pdf-parse": "^2.4.5",
     "pg": "^8.16.3",
+    "tesseract.js": "^7.0.0",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
