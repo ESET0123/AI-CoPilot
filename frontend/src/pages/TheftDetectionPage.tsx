@@ -46,7 +46,7 @@ export default function TheftDetectionPage() {
                 <Box h={60} px="md" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.05)', display: 'flex', alignItems: 'center' }}>
                     <HeaderBar />
                 </Box>
-                <Container fluid px="xl" py="xs" pos="relative" style={{ flex: 1, overflowY: 'auto' }}>
+                <Container fluid px="xl" bg="gray.0" py="xs" pos="relative" style={{ flex: 1, overflowY: 'auto' }}>
                     <LoadingOverlay visible={loading} />
 
                     {/* Header */}
@@ -85,7 +85,7 @@ export default function TheftDetectionPage() {
 
                     {data && (
                         <>
-                            <Grid gutter="xl" mb="xl" align="stretch">
+                            <Grid gutter="md" mb="s" align="stretch">
                                 <Grid.Col span={{ base: 12, md: 5 }}>
                                     <TheftStatsGrid stats={data.stats} />
                                 </Grid.Col>
@@ -94,7 +94,7 @@ export default function TheftDetectionPage() {
                                 </Grid.Col>
                             </Grid>
 
-                            <Grid gutter="xl" mb="xl">
+                            <Grid gutter="xl" mb="s">
                                 <Grid.Col span={{ base: 12, md: 8 }}>
                                     <CasesByDivisionChart data={data.charts.casesByDivision} />
                                 </Grid.Col>
@@ -103,7 +103,7 @@ export default function TheftDetectionPage() {
                                 </Grid.Col>
                             </Grid>
 
-                            <Box mt="xl">
+                            <Box mt="s">
                                 <TheftAdditionalCharts data={data.charts} />
                             </Box>
                         </>

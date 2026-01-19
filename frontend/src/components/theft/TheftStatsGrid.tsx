@@ -26,8 +26,8 @@ export default function TheftStatsGrid({ stats }: TheftStatsGridProps) {
         <Grid gutter="md">
             {/* Theft Cases Analytics */}
             <Grid.Col span={12}>
-                <Paper p="lg" radius="md" withBorder>
-                    <Text fw={600} size="md" mb="xl">Theft Cases Analytics</Text>
+                <Paper p="md" radius="md" withBorder>
+                    <Text fw={600} size="md" mb="md">Theft Cases Analytics</Text>
                     <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl">
                         <StatItem
                             icon={TfiTarget}
@@ -60,7 +60,7 @@ export default function TheftStatsGrid({ stats }: TheftStatsGridProps) {
             {/* Financial Impact Summary */}
             <Grid.Col span={{ base: 12, sm: 7 }}>
                 <Paper p="lg" radius="md" withBorder h="100%">
-                    <Text fw={600} size="md" mb="xl">Financial Impact Summary</Text>
+                    <Text fw={600} size="md" mb="md">Financial Impact Summary</Text>
                     <Stack gap="xl">
                         <StatItem
                             icon={TbCircleCheck}
@@ -81,7 +81,7 @@ export default function TheftStatsGrid({ stats }: TheftStatsGridProps) {
             {/* Activity */}
             <Grid.Col span={{ base: 12, sm: 5 }}>
                 <Paper p="lg" radius="md" withBorder h="100%">
-                    <Text fw={600} size="md" mb="xl">Activity</Text>
+                    <Text fw={600} size="md" mb="md">Activity</Text>
                     <Stack gap="lg">
                         <Box>
                             <Text size="xs" c="dimmed" mb={4} fw={500}>Pending Cases</Text>
