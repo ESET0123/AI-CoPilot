@@ -72,7 +72,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
-    if (isFocused && value.trim().length >= 0 && !isCurrentSending && !isRecording) {
+    if (isFocused && value.trim().length === 0 && !isCurrentSending && !isRecording) {
       setShowSuggestions(true);
     } else {
       setShowSuggestions(false);
@@ -80,9 +80,8 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   }, [isFocused, value, isCurrentSending, isRecording]);
 
   const handleSuggestionClick = (suggestion: string) => {
-    setValue(suggestion);
     setShowSuggestions(false);
-    inputRef.current?.focus();
+    handleSend(suggestion);
   };
 
   const handleToggleRecording = () => {
@@ -94,11 +93,6 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
     }
   };
 
-  useEffect(() => {
-    if (draftMessageMode && !isCurrentSending) {
-      inputRef.current?.focus();
-    }
-  }, [draftMessageMode, isCurrentSending]);
 
   const handleStop = () => {
     if (!isCurrentSending) return;
@@ -121,7 +115,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
     }
   };
 
-  const handleSend = async () => {
+  const handleSend = async (overrideMessage?: string) => {
     if (isCurrentSending) {
       handleStop();
       return;
@@ -131,7 +125,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
       stopRecording();
     }
 
-    const messageContent = value.trim();
+    const messageContent = overrideMessage !== undefined ? overrideMessage.trim() : value.trim();
     if (!messageContent && !ocrText) return;
 
     const finalMessage = ocrText
@@ -302,7 +296,6 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 },
               },
             }}
-            autoFocus
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -374,7 +367,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
 
             <Tooltip label={isCurrentSending ? 'Stop generating' : (isRecording ? 'Finish recording' : 'Send message')}>
               <ActionIcon
-                onClick={handleSend}
+                onClick={() => handleSend()}
                 color={isCurrentSending ? 'red' : (isRecording ? 'green' : '#000000')}
                 variant="filled"
                 radius="md"
@@ -413,7 +406,10 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             {DEFAULT_SUGGESTIONS.map((suggestion, index) => (
               <Box
                 key={index}
-                onClick={() => handleSuggestionClick(suggestion)}
+                onMouseDown={(e) => {
+                  e.preventDefault(); // Prevent blurring the input before the click fires
+                  handleSuggestionClick(suggestion);
+                }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -422,15 +418,13 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                   borderRadius: '10px',
                   cursor: 'pointer',
                   transition: 'background-color 0.2s ease',
-                  backgroundColor: index === 0 ? 'rgba(132, 204, 22, 0.08)' : 'transparent',
+                  backgroundColor: 'transparent',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = 'rgba(132, 204, 22, 0.08)';
                 }}
                 onMouseLeave={(e) => {
-                  if (index !== 0) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }}
               >
                 <Group gap="sm">
