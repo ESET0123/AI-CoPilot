@@ -76,7 +76,7 @@ export function CasesByDivisionChart({ data }: SingleChartProps) {
         <Paper p="md" radius="md" withBorder h="100%">
             <Group justify="space-between" mb="xl">
                 <MantineTitle order={4} size="h5">Cases by Division</MantineTitle>
-                <Group gap="xl">
+                <Group gap="md">
                     <Group gap={8}>
                         <div style={{ width: 12, height: 12, borderRadius: 4, background: '#a78bfa' }} />
                         <Text size="sm" c="dimmed">Consumption</Text>
