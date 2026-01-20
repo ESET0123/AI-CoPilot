@@ -1,8 +1,8 @@
 import { Textarea, Group, ActionIcon, Paper, Tooltip, Box, Text, Loader } from '@mantine/core';
 import {
   TbPlayerStopFilled, TbMicrophone,
-  // TbWorld, 
-  TbPaperclip, TbX, TbCheck
+  // TbWorld, TbBulb, 
+  TbPaperclip, TbX, TbCheck, TbArrowUpRight, TbSearch,
 } from 'react-icons/tb';
 // import { MdSavedSearch } from "react-icons/md";
 import { BsSoundwave } from 'react-icons/bs';
@@ -61,6 +61,29 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
         setValue(newValue);
       }
     );
+
+  const DEFAULT_SUGGESTIONS = [
+    "What was my recent bill?",
+    "How do I pay my invoice?",
+    "Check my power usage trends",
+  ];
+
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    if (isFocused && value.trim().length >= 0 && !isCurrentSending && !isRecording) {
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
+  }, [isFocused, value, isCurrentSending, isRecording]);
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setValue(suggestion);
+    setShowSuggestions(false);
+    inputRef.current?.focus();
+  };
 
   const handleToggleRecording = () => {
     if (isRecording) {
@@ -204,7 +227,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
         border: '1px solid rgba(0, 0, 0, 0.05)',
         position: 'relative',
         transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
-        minHeight: isHeroMode ? 140 : 'auto',
+        minHeight: 'auto',
         display: 'flex',
         flexDirection: 'column',
       }}
@@ -259,7 +282,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                   : (isCurrentSending ? "Waiting for response..." : "Message...")
             }
             autosize
-            minRows={isHeroMode ? 3 : 1}
+            minRows={isHeroMode ? 2 : 1}
             maxRows={8}
             variant="unstyled"
             disabled={isCurrentSending}
@@ -268,7 +291,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
               input: {
                 padding: '8px 4px',
                 fontSize: '16px',
-                lineHeight: 1.6,
+                lineHeight: 1,
                 color: '#000000',
                 backgroundColor: 'transparent',
                 '&:disabled': {
@@ -286,56 +309,20 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 handleSend();
               }
             }}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => {
+              // Delay slightly to allow click event on suggestions to fire first
+              setTimeout(() => setIsFocused(false), 200);
+            }}
           />
         </Box>
 
-        <Group justify="space-between" align="center" mt="xs">
-          <Box
-            style={{
-              // backgroundColor: '#ecfccb',
-              padding: '4px',
-              borderRadius: 8,
-              display: 'flex',
-              gap: '4px',
-              // border: '1px solid #d9f99d',
-            }}
-          >
-            {/* <ActionIcon
-              variant="transparent"
-              size="lg"
-              radius="l"
-              style={{
-                backgroundColor: '#ffffff',
-                border: '1px solid #84cc16',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                color: '#000000',
-              }}
-            >
-              <MdSavedSearch size={18} />
-            </ActionIcon>
 
-            <ActionIcon
-              variant="transparent"
-              size="lg"
-              radius="xl"
-              style={{
-                color: '#000000',
-                border: '1px solid transparent',
-              }}
-            >
-              <GoLightBulb size={20} />
-            </ActionIcon> */}
-          </Box>
 
+        <Group justify="end" align="center" mt="xs">
           <Group gap="xs">
             {!isRecording && (
               <>
-                {/* <Tooltip label="Search web">
-                  <ActionIcon variant="subtle" style={{ color: '#000000' }} radius="xl" size="lg">
-                    <TbWorld size={18} />
-                  </ActionIcon>
-                </Tooltip> */}
-
                 <Tooltip label="Attach file">
                   <ActionIcon
                     variant="subtle"
@@ -411,7 +398,51 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             </Tooltip>
           </Group>
         </Group>
-      </form>
-    </Paper>
+
+        {showSuggestions && (
+          <Box
+            style={{
+              borderTop: '1px solid rgba(0, 0, 0, 0.05)',
+              paddingTop: '12px',
+              marginTop: '8px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '4px',
+            }}
+          >
+            {DEFAULT_SUGGESTIONS.map((suggestion, index) => (
+              <Box
+                key={index}
+                onClick={() => handleSuggestionClick(suggestion)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 12px',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s ease',
+                  backgroundColor: index === 0 ? 'rgba(132, 204, 22, 0.08)' : 'transparent',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(132, 204, 22, 0.08)';
+                }}
+                onMouseLeave={(e) => {
+                  if (index !== 0) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
+              >
+                <Group gap="sm">
+                  <TbSearch />
+                  <Text size="sm" style={{ color: '#495057' }}>{suggestion}</Text>
+                </Group>
+                <TbArrowUpRight />
+              </Box>
+            ))}
+          </Box>
+        )}
+      </form >
+    </Paper >
   );
 }
