@@ -30,7 +30,7 @@ import { loginWithCredentials } from '../features/auth/authSlice';
 export default function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { user, error, isAuthenticated } = useAppSelector((s) => s.auth);
+  const { user, error, isAuthenticated, isInitialLoading, isInitialized } = useAppSelector((s) => s.auth);
   const [loading, setLoading] = useState(false);
 
   const form = useForm({
@@ -45,10 +45,10 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
-    if (isAuthenticated || user) {
+    if (isInitialized && (isAuthenticated || user)) {
       navigate('/dashboard', { replace: true });
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, navigate, isInitialized]);
 
   const handleSubmit = (values: typeof form.values) => {
     setLoading(true);
@@ -67,7 +67,7 @@ export default function LoginPage() {
 
   return (
     <Box style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ blur: 2 }} />
+      <LoadingOverlay visible={loading || (isInitialLoading && !isInitialized)} zIndex={1000} overlayProps={{ blur: 2 }} />
 
       {/* ================= LEFT PANEL (Features) ================= */}
       <Box

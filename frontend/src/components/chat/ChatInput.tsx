@@ -1,8 +1,8 @@
 import { Textarea, Group, ActionIcon, Paper, Tooltip, Box, Text, Loader } from '@mantine/core';
 import { TbPlayerStopFilled, TbMicrophone, TbWorld, TbPaperclip, TbX, TbCheck } from 'react-icons/tb';
-import { MdSavedSearch } from "react-icons/md";
+// import { MdSavedSearch } from "react-icons/md";
 import { BsSoundwave } from 'react-icons/bs';
-import { GoLightBulb } from "react-icons/go";
+// import { GoLightBulb } from "react-icons/go";
 import { useEffect, useRef, useState } from 'react';
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
 import { MAX_CONVERSATION_TITLE_LENGTH } from '../../constants';
@@ -278,15 +278,15 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
         <Group justify="space-between" align="center" mt="xs">
           <Box
             style={{
-              backgroundColor: '#ecfccb',
+              // backgroundColor: '#ecfccb',
               padding: '4px',
               borderRadius: 8,
               display: 'flex',
               gap: '4px',
-              border: '1px solid #d9f99d',
+              // border: '1px solid #d9f99d',
             }}
           >
-            <ActionIcon
+            {/* <ActionIcon
               variant="transparent"
               size="lg"
               radius="l"
@@ -310,17 +310,17 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
               }}
             >
               <GoLightBulb size={20} />
-            </ActionIcon>
+            </ActionIcon> */}
           </Box>
 
           <Group gap="xs">
             {!isRecording && (
               <>
-                <Tooltip label="Search web">
+                {/* <Tooltip label="Search web">
                   <ActionIcon variant="subtle" style={{ color: '#000000' }} radius="xl" size="lg">
                     <TbWorld size={18} />
                   </ActionIcon>
-                </Tooltip>
+                </Tooltip> */}
 
                 <Tooltip label="Attach file">
                   <ActionIcon

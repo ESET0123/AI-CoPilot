@@ -68,6 +68,7 @@ export function requireAuth(
     }
 
     const payload = decoded as JwtPayload;
+    // console.log('[AUTH] Token verified for user:', payload.sub);
 
     try {
       // Resolve internal DB ID from Keycloak ID (sub)
