@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, SimpleGrid, Text } from '@mantine/core';
 import { TbAlertTriangle, TbActivity, TbCalculator, TbUsers } from 'react-icons/tb';
+import { IconType } from 'react-icons';
 import QuickActionCard from '../ui/QuickActionCard';
 import { useAccessControl, type AccessControlConfig } from '../../hooks/useAccessControl';
 
@@ -14,7 +14,7 @@ export default function QuickAccessCategories() {
     const QUICK_ACTIONS: (AccessControlConfig & {
         title: string;
         description: string;
-        icon: any;
+        icon: IconType;
         onClick: () => void;
     })[] = [
             {

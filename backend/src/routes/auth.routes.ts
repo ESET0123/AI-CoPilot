@@ -76,9 +76,6 @@ router.post("/login", async (req, res) => {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
 
-        if (process.env.NODE_ENV !== 'production') {
-            console.log("[Backend Auth] Keycloak Token Response:", JSON.stringify(response.data, null, 2));
-        }
 
         setTokenCookies(res, response.data);
 
@@ -126,9 +123,6 @@ router.post("/refresh", async (req, res) => {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
 
-        if (process.env.NODE_ENV !== 'production') {
-            console.log("[Backend Auth] Keycloak Refresh Token Response:", JSON.stringify(response.data, null, 2));
-        }
 
         setTokenCookies(res, response.data);
 
@@ -158,9 +152,6 @@ router.post("/logout", async (req, res) => {
             await axios.post(keycloakEndpoints.logout, params, {
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
             });
-            if (process.env.NODE_ENV !== 'production') {
-                console.log("[Backend Auth] Keycloak session terminated successfully");
-            }
         } catch (error: any) {
             console.error("[Backend Auth] Keycloak logout failed:", error.response?.data || error.message);
             // We still proceed to clear cookies locally even if Keycloak logout fails

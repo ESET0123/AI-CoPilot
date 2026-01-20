@@ -12,7 +12,6 @@ interface TheftAdditionalChartsProps {
 }
 
 export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsProps) {
-    // --- Data Prep ---
 
     const caseStatusData = data.caseStatusDistribution.labels.map((label, index) => ({
         name: label,
@@ -35,6 +34,24 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
         count: data.theftIntensityByZone.consumption?.[index] || 0,
     }));
 
+    const CustomTooltip = ({ active, payload }: any) => {
+        if (active && payload && payload.length) {
+            return (
+                <div style={{
+                    backgroundColor: '#000000',
+                    color: '#ffffff',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    fontWeight: 600
+                }}>
+                    {payload[0].value}
+                </div>
+            );
+        }
+        return null;
+    };
+
     return (
         <Grid>
             {/* Case Status Distribution */}
@@ -44,9 +61,10 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                     <Box style={{ height: '220px', display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', width: '220px', margin: '0 auto' }}>
                         <DonutChart
                             data={caseStatusData}
-                            withTooltip={false}
                             size={180}
                             thickness={90}
+                            tooltipDataSource="segment"
+                            tooltipProps={{ content: <CustomTooltip /> }}
                             pieProps={{ cornerRadius: 5, paddingAngle: 5, strokeWidth: 0 }}
                         />
                     </Box>

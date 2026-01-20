@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosClient } from "../../services/axiosClient";
 import type { User, LoginCredentials } from "../../types/types";
@@ -18,8 +17,7 @@ export const loginWithCredentials = createAsyncThunk(
   "auth/login",
   async (payload: LoginCredentials, thunkAPI) => {
     try {
-      // Direct call to backend (BFF)
-      const res = await axiosClient.post("/auth/login", {
+      const res = await axiosClient.post("/api/auth/login", {
         username: payload.username,
         password: payload.password,
       });
@@ -29,9 +27,10 @@ export const loginWithCredentials = createAsyncThunk(
       return {
         user: data.user,
       };
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Login error:", err);
-      const msg = err.response?.data?.error_description || err.response?.data?.error || "Login failed";
+      const axiosError = err as any;
+      const msg = axiosError.response?.data?.error_description || axiosError.response?.data?.error || "Login failed";
       return thunkAPI.rejectWithValue(msg);
     }
   }
@@ -41,7 +40,7 @@ export const checkAuthStatus = createAsyncThunk(
   "auth/checkStatus",
   async (_, thunkAPI) => {
     try {
-      const res = await axiosClient.get("/auth/me");
+      const res = await axiosClient.get("/api/auth/me");
       return res.data; // Expected { user: { ... } }
     } catch (err) {
       return thunkAPI.rejectWithValue("Not authenticated");
@@ -53,7 +52,7 @@ export const refreshAccessToken = createAsyncThunk(
   "auth/refresh",
   async (_, thunkAPI) => {
     try {
-      const res = await axiosClient.post("/auth/refresh");
+      const res = await axiosClient.post("/api/auth/refresh");
       return res.data;
     } catch (err) {
       console.error("Refresh error:", err);
@@ -72,7 +71,7 @@ const authSlice = createSlice({
     groups: [],
     isAuthenticated: false,
     error: null,
-    isInitialLoading: true, // New flag for initial session check
+    isInitialLoading: false,
   } as AuthState,
   reducers: {
     logout(state) {

@@ -84,11 +84,11 @@ export const useVoiceRecorder = (
         };
 
         recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-          console.error('Speech recognition error:', event.error);
+          console.error('[VoiceRecorder] Speech recognition error:', event.error);
         };
 
         recognition.onend = () => {
-          console.log('Speech recognition ended');
+          // End of recognition
         };
 
         recognition.start();
@@ -113,16 +113,9 @@ export const useVoiceRecorder = (
           streamRef.current = null;
         }
 
-        // Logic check:
-        // If we have a recognition instance AND we got some final transcript,
-        // we consider the Web Speech API successful.
-        // otherwise, if we have recorded chunks, we try fallback.
-
         if (recognitionRef.current && finalTranscriptRef.current.trim()) {
-          // Successfully used Web Speech API
           onTranscriptionComplete(finalTranscriptRef.current);
         } else if (chunksRef.current.length > 0) {
-          // Fallback to server-side Whisper
           const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' });
           await handleTranscription(audioBlob);
         }
@@ -131,7 +124,7 @@ export const useVoiceRecorder = (
       mediaRecorder.start();
       setIsRecording(true);
     } catch (err) {
-      console.error('Error accessing microphone:', err);
+      console.error('[VoiceRecorder] Error accessing microphone:', err);
       alert('Could not access microphone. Please ensure you have granted permission.');
     }
   }, [onInterimTranscription, onTranscriptionComplete]);
@@ -154,8 +147,7 @@ export const useVoiceRecorder = (
       const formData = new FormData();
       formData.append('file', blob, 'voice.wav');
 
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${apiUrl}/api/transcribe`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/transcribe`, {
         method: 'POST',
         body: formData,
       });
@@ -168,11 +160,9 @@ export const useVoiceRecorder = (
 
       if (data.text) {
         onTranscriptionComplete(data.text);
-      } else if (data.error) {
-        console.error('Transcription error:', data.error);
       }
     } catch (err) {
-      console.error('Failed to transcribe audio:', err);
+      console.error('[VoiceRecorder] Failed to transcribe audio:', err);
     } finally {
       setIsLoading(false);
     }

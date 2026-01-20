@@ -32,7 +32,7 @@ axiosClient.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
-      if (originalRequest.url?.startsWith('/auth')) {
+      if (originalRequest.url?.startsWith('/api/auth')) {
         return Promise.reject(error);
       }
 
@@ -48,9 +48,6 @@ axiosClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        if (import.meta.env.MODE !== 'production') {
-          console.log('[AxiosClient] Token expired, attempting refresh...');
-        }
         await store.dispatch(refreshAccessToken()).unwrap();
 
         // Process queued requests after successful refresh
@@ -61,9 +58,7 @@ axiosClient.interceptors.response.use(
         }
 
         return axiosClient(originalRequest);
-      } catch (refreshError) {
-        console.error('[AxiosClient] Token refresh failed, logging out...');
-
+      } catch (refreshError: any) {
         // Process queued requests with error
         try {
           processQueue(refreshError);

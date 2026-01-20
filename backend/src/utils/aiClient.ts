@@ -12,7 +12,6 @@ export async function callAIService(
   },
   signal?: AbortSignal
 ): Promise<string> {
-  console.log(`[${new Date().toISOString()}] [AIClient] Sending request to AI service...`);
   const { data } = await aiClient.post(
     '/chat',
     {
@@ -23,8 +22,6 @@ export async function callAIService(
       signal,
     }
   );
-
-  console.log(`[${new Date().toISOString()}] [AIClient] Received response (${data.content.length} chars)`);
 
   return data.content;
 }

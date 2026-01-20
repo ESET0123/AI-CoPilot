@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Textarea, Group, ActionIcon, Paper, Tooltip, Box, Text, Loader } from '@mantine/core';
 import { TbPlayerStopFilled, TbMicrophone, TbWorld, TbPaperclip, TbX, TbCheck } from 'react-icons/tb';
 import { MdSavedSearch } from "react-icons/md";
@@ -23,7 +22,6 @@ interface ChatInputProps {
   isHeroMode?: boolean;
 }
 
-// Keep track of active requests globally to handle component unmounting/remounting
 const activeRequests = new Map<string, { abort: () => void }>();
 
 export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
@@ -109,7 +107,6 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
     const messageContent = value.trim();
     if (!messageContent && !ocrText) return;
 
-    // Construct final message with OCR text if available
     const finalMessage = ocrText
       ? `${messageContent}${messageContent ? '\n\n' : ''}[Extracted from ${selectedFile?.name}]:\n${ocrText}`
       : messageContent;
@@ -170,7 +167,6 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
         setOcrText(response.data.text);
       } catch (error) {
         console.error('Failed to process file:', error);
-        // Optionally show error to user
       } finally {
         setIsProcessingOcr(false);
       }

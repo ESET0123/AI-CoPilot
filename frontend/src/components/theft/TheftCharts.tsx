@@ -2,10 +2,8 @@ import { BarChart, DonutChart } from '@mantine/charts';
 import { Paper, Title as MantineTitle, Group, Text } from '@mantine/core';
 import { ChartData as ChartDataType } from '../../services/theftService';
 
-// --- Shared Configuration ---
 const CHART_HEIGHT = 300;
 
-// --- Components ---
 
 interface SingleChartProps {
     data: ChartDataType;
@@ -130,7 +128,24 @@ export function TheftByCaseTypeChart({ data }: SingleChartProps) {
 
     // Calculate percentage (assuming 2 data points: Theft vs Other)
     const total = chartData.reduce((acc, curr) => acc + curr.value, 0);
-    const percentage = total > 0 ? Math.round((chartData[0].value / total) * 100) : 0;
+
+    const CustomTooltip = ({ active, payload }: any) => {
+        if (active && payload && payload.length) {
+            return (
+                <div style={{
+                    backgroundColor: '#000000',
+                    color: '#ffffff',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    fontWeight: 600
+                }}>
+                    {payload[0].value}
+                </div>
+            );
+        }
+        return null;
+    };
 
     return (
         <Paper p="md" radius="md" withBorder h="100%">
@@ -138,9 +153,10 @@ export function TheftByCaseTypeChart({ data }: SingleChartProps) {
             <div style={{ height: '220px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <DonutChart
                     data={chartData}
-                    withTooltip={false}
                     size={200}
                     thickness={100}
+                    tooltipDataSource="segment"
+                    tooltipProps={{ content: <CustomTooltip /> }}
                     pieProps={{ cornerRadius: 5, paddingAngle: 5, strokeWidth: 0 }}
                 />
             </div>

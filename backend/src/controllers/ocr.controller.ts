@@ -16,7 +16,7 @@ export class OcrController {
                 mimetype: req.file.mimetype
             });
         } catch (error: any) {
-            console.error('OCR Controller Error:', error);
+            console.error('[OcrController] Error processing file:', error);
             res.status(500).json({ message: error.message || 'Error processing file' });
         }
     }

@@ -48,7 +48,6 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
 
   return (
     <Stack h="100%" p="sm" gap="sm" style={{ backgroundColor: '#ffffff' }}>
-      {/* ================= TOP ================= */}
       <Group justify={collapsed ? 'center' : 'space-between'} px="xs" >
         <ActionIcon
           variant="subtle"
@@ -78,7 +77,6 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
         )}
       </Group>
 
-      {/* ================= MIDDLE ================= */}
       <Stack align={collapsed ? 'center' : 'stretch'} style={{ flex: 1, overflow: 'hidden' }}>
         {collapsed && (
           <ActionIcon
@@ -110,7 +108,6 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                 root: {
                   height: 24,
                   padding: '0 16px',
-                  // marginBottom: 8,
                   fontWeight: 700,
                   fontSize: '15px',
                   color: '#1e293b',
@@ -150,7 +147,6 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
           </>
         )}
 
-        {/* ================= CHAT LIST ================= */}
         {!collapsed && (
           <ScrollArea style={{ flex: 1 }} scrollbarSize={0}>
             <Collapse in={open}>
@@ -194,7 +190,6 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                           if (delBtn) delBtn.style.opacity = '0';
                         }}
                       >
-                        {/* ================= TITLE ================= */}
                         <Button
                           type="button"
                           variant="subtle"
@@ -219,7 +214,6 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                           {c.title}
                         </Button>
 
-                        {/* ================= DELETE BUTTON ================= */}
                         <ActionIcon
                           className="delete-chat-btn"
                           type="button"
@@ -247,7 +241,6 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
         )}
       </Stack>
 
-      {/* ================= BOTTOM ================= */}
       {!collapsed && (
         <Divider />
       )}

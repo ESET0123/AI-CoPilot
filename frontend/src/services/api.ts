@@ -1,60 +1,57 @@
 import { axiosClient } from './axiosClient';
 import type { LoginCredentials } from '../types/types';
 
-/* ================= AUTH ================= */
 
 export const authApi = {
   login(credentials: LoginCredentials) {
-    return axiosClient.post('/auth/login', credentials);
+    return axiosClient.post('/api/auth/login', credentials);
   },
 
   refreshToken() {
-    return axiosClient.post('/auth/refresh');
+    return axiosClient.post('/api/auth/refresh');
   },
 
   logout() {
-    return axiosClient.post('/auth/logout');
+    return axiosClient.post('/api/auth/logout');
   },
 };
 
-/* ================= CHAT ================= */
 
 export const chatApi = {
   fetchConversations() {
-    return axiosClient.get('/conversations');
+    return axiosClient.get('/api/conversations');
   },
 
   fetchMessages(conversationId: string) {
-    return axiosClient.get(`/messages/${conversationId}`);
+    return axiosClient.get(`/api/messages/${conversationId}`);
   },
 
   createConversation(title: string) {
-    return axiosClient.post('/conversations', { title });
+    return axiosClient.post('/api/conversations', { title });
   },
 
 
 
   deleteConversation(conversationId: string) {
-    return axiosClient.delete(`/conversations/${conversationId}`);
+    return axiosClient.delete(`/api/conversations/${conversationId}`);
   },
 
   deleteAllConversations() {
-    return axiosClient.delete('/conversations');
+    return axiosClient.delete('/api/conversations');
   },
 
   sendMessage(conversationId: string, message: string, signal?: AbortSignal) {
-    return axiosClient.post('/messages', {
+    return axiosClient.post('/api/messages', {
       conversationId,
       message,
     }, { signal });
   },
 
   stopMessage(conversationId: string) {
-    return axiosClient.post('/stop', { conversation_id: conversationId });
+    return axiosClient.post('/api/messages/stop', { conversation_id: conversationId });
   },
 };
 
-/* ================= OCR ================= */
 
 export const ocrApi = {
   extractText(file: File) {

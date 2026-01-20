@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { chatApi } from '../../services/api';
 import { logout } from '../auth/authSlice';
 import type { RootState } from '../../app/store';
 // import { MAX_CONVERSATION_TITLE_LENGTH } from '../../constants';
 
-/* ================= TYPES ================= */
 
 
 
@@ -42,7 +40,6 @@ export type ChatState = {
   isDeletingConversationId: string | null;
 };
 
-/* ================= INITIAL STATE ================= */
 
 const initialState: ChatState = {
   conversations: [],
@@ -53,7 +50,6 @@ const initialState: ChatState = {
   isDeletingConversationId: null,
 };
 
-/* ================= THUNKS ================= */
 
 export const fetchConversations = createAsyncThunk<
   BackendConversation[],
@@ -94,19 +90,6 @@ export const createConversation = createAsyncThunk<
   return data;
 });
 
-// export const stopGeneration = createAsyncThunk(
-//   'chat/stopGeneration',
-//   async (conversationId: string, { rejectWithValue }) => {
-//     try {
-//       console.info(`[Redux] Stopping generation for conversation ${conversationId}...`);
-//       await chatApi.stopMessage(conversationId);
-//       console.info(`[Redux] Stop signal sent.`);
-//     } catch (error: any) {
-//       console.error(`[Redux] Failed to stop generation:`, error);
-//       return rejectWithValue(error.response?.data?.message || 'Failed to stop generation');
-//     }
-//   }
-// );
 
 
 export const deleteConversation = createAsyncThunk<
@@ -134,7 +117,6 @@ export const deleteAllConversations = createAsyncThunk<
   await chatApi.deleteAllConversations();
 });
 
-/* ================= SEND MESSAGE (FIXED) ================= */
 
 export const sendMessage = createAsyncThunk<
   {
@@ -161,11 +143,12 @@ export const sendMessage = createAsyncThunk<
       user: data.user,
       assistant: data.assistant,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as any;
     if (
-      error?.name === 'CanceledError' ||
-      error?.name === 'AbortError' ||
-      error?.code === 'ERR_CANCELED'
+      err?.name === 'CanceledError' ||
+      err?.name === 'AbortError' ||
+      err?.code === 'ERR_CANCELED'
     ) {
       return rejectWithValue('Request cancelled');
     }
@@ -190,7 +173,6 @@ export const stopMessage = createAsyncThunk<
   }
 });
 
-/* ================= SLICE ================= */
 
 const chatSlice = createSlice({
   name: 'chat',
@@ -427,7 +409,6 @@ const chatSlice = createSlice({
   },
 });
 
-/* ================= EXPORTS ================= */
 
 export const {
   startNewChat,

@@ -59,9 +59,6 @@ export function requireAuth(
     return res.status(401).json({ message: 'Missing token' });
   }
 
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('[AUTH] Token received length:', token.length);
-  }
 
   // Verify token with Keycloak's public key
   jwt.verify(token, getKey, { algorithms: ['RS256'] }, async (err, decoded) => {
@@ -71,29 +68,18 @@ export function requireAuth(
     }
 
     const payload = decoded as JwtPayload;
-    if (process.env.NODE_ENV !== 'production') {
-      //Payload sent by Keycloak
-      console.log('[AUTH] Full token payload:', JSON.stringify(payload, null, 2));
-      console.log('[AUTH] Token verified successfully for Keycloak user:', payload.email || payload.sub);
-    }
 
     try {
       // Resolve internal DB ID from Keycloak ID (sub)
       const user = await AuthService.findUserByKeycloakId(payload.sub);
 
       if (!user) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.log('[AUTH] User not found in database, performing JIT provisioning for:', payload.sub);
-        }
         const email = payload.email || payload.preferred_username || "";
 
         try {
           const newUser = await AuthService.upsertUserFromKeycloak(payload.sub, email);
           req.userId = newUser.id;
           req.userEmail = newUser.email;
-          if (process.env.NODE_ENV !== 'production') {
-            console.log('[AUTH] JIT provisioning successful. Resolved ID:', newUser.id);
-          }
         } catch (jitError: any) {
           console.error('[AUTH] JIT provisioning failed:', jitError.message);
           return res.status(500).json({ message: 'User provisioning failed' });

@@ -7,7 +7,6 @@ import AnimatedGlowOrb from '../ui/AnimatedGlowOrb';
 
 export default function DashboardHero() {
     const user = useAppSelector((s) => s.auth.user);
-    // console.log('User in DashboardHero:', user);
     const firstName = user?.given_name || user?.name?.split(' ')[0] || user?.email?.split('@')[0] || 'User';
 
     const getGreeting = () => {

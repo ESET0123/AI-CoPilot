@@ -30,14 +30,14 @@ app.get('/', (_req, res) => {
 import { MessagesController } from './controllers/messages.controller';
 
 app.use('/health', healthRoutes);
-app.use('/auth', authRoutes);
-app.use('/conversations', conversationsRoutes);
-app.use('/messages', messagesRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/conversations', conversationsRoutes);
+app.use('/api/messages', messagesRoutes);
 app.use('/api/transcribe', transcribeRoutes);
 app.use('/api/ocr', ocrRoutes);
 app.use('/api/theft', requireAuth, theftRoutes);
 
-app.post('/stop', requireAuth, MessagesController.stop);
+app.post('/api/messages/stop', requireAuth, MessagesController.stop);
 
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);

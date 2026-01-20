@@ -14,7 +14,6 @@ export class ConversationsController {
     static async create(req: Request, res: Response) {
         try {
             const { title } = req.body;
-            console.log('[ConversationsController] Creating conversation for userId:', req.userId);
             const conversation = await ConversationsService.createConversation(req.userId!, title);
             res.status(201).json(conversation);
         } catch (err: any) {
@@ -35,6 +34,7 @@ export class ConversationsController {
             const updated = await ConversationsService.renameConversation(req.params.id, req.userId!, title);
             res.json(updated);
         } catch (err: any) {
+            console.error('[ConversationsController] Rename error:', err);
             if (err.message === 'NOT_FOUND') {
                 return res.status(404).json({ message: 'Conversation not found' });
             }
