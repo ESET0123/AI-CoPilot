@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Container, Title, Button, Group, Box, LoadingOverlay, Text, ThemeIcon, Grid } from '@mantine/core';
-import { TbArrowLeft, TbRobot, TbShieldCheck } from 'react-icons/tb';
+import { TbRobot, TbShieldCheck } from 'react-icons/tb';
+import { FaAngleLeft } from "react-icons/fa6";
 import { LuCloudAlert } from "react-icons/lu";
 import { Link } from 'react-router-dom';
 import TheftFilters from '../components/theft-detection-module/TheftFilters';
@@ -56,7 +57,7 @@ export default function TheftDetectionPage() {
                             to="/dashboard"
                             variant="subtle"
                             color="black"
-                            leftSection={<TbArrowLeft />}
+                            leftSection={<FaAngleLeft />}
                             size="xs"
                             mb="md"
                             pl={0}

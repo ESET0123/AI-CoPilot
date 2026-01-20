@@ -1,6 +1,7 @@
 import { Divider } from '@mantine/core';
 import { Paper, Text, Group, Box, ThemeIcon, ActionIcon } from '@mantine/core';
-import { TbBroadcast, TbDotsVertical } from 'react-icons/tb';
+import { TbDotsVertical } from 'react-icons/tb';
+import { LiaBroadcastTowerSolid } from "react-icons/lia";
 import { MdFilterList } from "react-icons/md";
 
 interface ForecastStatsCardProps {
@@ -18,12 +19,12 @@ export default function ForecastStatsCard({
     subtitle,
     liveValue,
     liveLabel,
-    icon: Icon = TbBroadcast
+    icon: Icon = LiaBroadcastTowerSolid
 }: ForecastStatsCardProps) {
     return (
-        <Paper p="lg" radius="md" withBorder h="100%" pos="relative" style={{ backgroundColor: '#ffffff' }}>
+        <Paper p="md" radius="md" withBorder h="100%" pos="relative" style={{ backgroundColor: '#ffffff' }}>
             <Group justify="space-between" mb="xs">
-                <Text fw={600} size="md" c="dimmed">{title}</Text>
+                <Text fw={600} size="14px" c="#5c6a7e">{title}</Text>
                 <Group gap={4}>
                     <ActionIcon variant="subtle" color="gray" size="sm">
                         <MdFilterList size={18} />
@@ -38,22 +39,23 @@ export default function ForecastStatsCard({
                 <Text size="xs" c="dimmed" mb={4}>{subtitle}</Text>
             )}
 
-            <Text fw={700} size="32px" mb="lg" lh={1.2}>
+            <Text fw={700} size="32px" mb={liveValue !== undefined ? "md" : 0} lh={1.2}>
                 {value}
             </Text>
 
-            <Divider my="sm" variant="dashed" />
-
             {liveValue !== undefined && (
-                <Group gap="md" mt="md">
-                    <ThemeIcon size={44} radius="md" variant="light" color="green">
-                        <Icon size={24} />
-                    </ThemeIcon>
-                    <Box>
-                        <Text size="xs" c="dimmed" fw={500}>{liveLabel || 'Live'}</Text>
-                        <Text fw={700} size="xl" lh={1.2}>{liveValue}</Text>
-                    </Box>
-                </Group>
+                <>
+                    <Divider my="sm" />
+                    <Group gap="md" mt="md">
+                        <ThemeIcon size={44} radius="md" variant="light" color="green">
+                            <Icon size={24} />
+                        </ThemeIcon>
+                        <Box>
+                            <Text size="xs" c="dimmed" fw={500}>{liveLabel || 'Live'}</Text>
+                            <Text fw={700} size="xl" lh={1.2}>{liveValue}</Text>
+                        </Box>
+                    </Group>
+                </>
             )}
         </Paper>
     );

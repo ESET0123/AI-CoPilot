@@ -9,20 +9,10 @@ interface ModelComparisonChartProps {
 
 export default function ModelComparisonChart({ data }: ModelComparisonChartProps) {
     return (
-        <Paper p="lg" radius="md" withBorder h="100%" style={{ backgroundColor: '#ffffff' }}>
-            <Group justify="space-between" mb="xl">
-                <Text fw={600} size="md">Model Comparison Test</Text>
+        <Paper p="md" radius="md" withBorder h="100%" style={{ backgroundColor: '#ffffff' }}>
+            <Group justify="space-between" mb="xs">
+                <Text fw={700} size="15px" c="#454b54">Model Comparison Test</Text>
                 <Group gap="xl">
-                    <Group gap="xl">
-                        <Group gap={8}>
-                            <div style={{ width: 12, height: 12, borderRadius: 4, background: '#bef264' }} />
-                            <Text size="sm" c="dimmed">Esya model</Text>
-                        </Group>
-                        <Group gap={8}>
-                            <div style={{ width: 12, height: 12, borderRadius: 4, background: '#8b5cf6' }} />
-                            <Text size="sm" c="dimmed">Demand</Text>
-                        </Group>
-                    </Group>
                     <Group gap={4}>
                         <ActionIcon variant="subtle" color="gray" size="sm">
                             <MdFilterList size={18} />
@@ -33,10 +23,20 @@ export default function ModelComparisonChart({ data }: ModelComparisonChartProps
                     </Group>
                 </Group>
             </Group>
+            <Group gap="xl" justify="flex-end" px="xs">
+                    <Group gap={8}>
+                        <div style={{ width: 12, height: 12, borderRadius: 4, background: '#bef264' }} />
+                        <Text size="13px" c="#5c6a7e" fw={500}>Esya model</Text>
+                    </Group>
+                    <Group gap={8}>
+                        <div style={{ width: 12, height: 12, borderRadius: 4, background: '#8b5cf6' }} />
+                        <Text size="13px" c="#5c6a7e" fw={500}>Demand</Text>
+                    </Group>
+                </Group>
 
-            <div style={{ height: 350, width: '100%' }}>
+            <div style={{ height: 280, width: '100%' }}>
                 <LineChart
-                    h={350}
+                    h={280}
                     data={data}
                     dataKey="timestamp"
                     withLegend={false}
@@ -50,8 +50,20 @@ export default function ModelComparisonChart({ data }: ModelComparisonChartProps
                     activeDotProps={{ r: 4, strokeWidth: 2, fill: '#fff' }}
                     gridAxis="y"
                     gridProps={{ vertical: false, strokeDasharray: '0', stroke: '#f1f5f9' }}
-                    yAxisProps={{ domain: [0, 1000], tickSize: 0, tickMargin: 10, tickCount: 6, axisLine: false }}
-                    xAxisProps={{ hide: false, tickSize: 0, tickMargin: 15 }}
+                    yAxisProps={{
+                        domain: [0, 1000],
+                        tickSize: 0,
+                        tickMargin: 10,
+                        tickCount: 6,
+                        axisLine: false,
+                        style: { fontSize: '11px', fill: '#94a3b8' }
+                    }}
+                    xAxisProps={{
+                        hide: false,
+                        tickSize: 0,
+                        tickMargin: 15,
+                        style: { fontSize: '11px', fill: '#94a3b8' }
+                    }}
                 />
             </div>
         </Paper>

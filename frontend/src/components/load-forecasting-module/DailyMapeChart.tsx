@@ -9,28 +9,30 @@ interface DailyMapeChartProps {
 
 export default function DailyMapeChart({ data }: DailyMapeChartProps) {
     return (
-        <Paper p="lg" radius="md" withBorder h="100%" style={{ backgroundColor: '#ffffff' }}>
-            <Group justify="space-between" mb="xl">
-                <Text fw={600} size="md">Daily Mape</Text>
-                <Group gap="xl">
-                    <Group gap={8}>
-                        <div style={{ width: 12, height: 12, borderRadius: 4, background: '#8b5cf6' }} />
-                        <Text size="sm" c="dimmed">Mape</Text>
-                    </Group>
-                    <Group gap={4}>
-                        <ActionIcon variant="subtle" color="gray" size="sm">
-                            <MdFilterList size={18} />
-                        </ActionIcon>
-                        <ActionIcon variant="subtle" color="gray" size="sm">
-                            <TbDotsVertical size={16} />
-                        </ActionIcon>
-                    </Group>
+        <Paper p="md" radius="md" withBorder h="100%" style={{ backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column' }}>
+            <Group justify="space-between" align="start" mb="xs">
+                <Text fw={700} size="15px" c="#454b54">Daily Mape</Text>
+                <Group gap={4} align="center">
+                    <ActionIcon variant="subtle" color="gray" size="sm">
+                        <MdFilterList size={18} />
+                    </ActionIcon>
+                    <ActionIcon variant="subtle" color="gray" size="sm">
+                        <TbDotsVertical size={16} />
+                    </ActionIcon>
                 </Group>
             </Group>
 
-            <div style={{ height: 280, width: '100%' }}>
+            {/* Legend - shifted to right and slightly down */}
+            <Group justify="flex-end" px="xs" mb="xs">
+                <Group gap={6}>
+                    <div style={{ width: 14, height: 14, borderRadius: 4, background: '#8b5cf6' }} />
+                    <Text size="13px" c="#5c6a7e" fw={500}>Mape</Text>
+                </Group>
+            </Group>
+
+            <div style={{ flex: 1, width: '100%', minHeight: 0 }}>
                 <BarChart
-                    h={280}
+                    h="100%"
                     data={data}
                     dataKey="day"
                     withLegend={false}
@@ -39,15 +41,36 @@ export default function DailyMapeChart({ data }: DailyMapeChartProps) {
                     ]}
                     gridAxis="y"
                     gridProps={{ vertical: false, strokeDasharray: '0', stroke: '#f1f5f9' }}
-                    yAxisProps={{ domain: [0, 7], tickSize: 0, tickMargin: 10, tickCount: 8, axisLine: false }}
-                    xAxisProps={{ tickSize: 0, tickMargin: 10 }}
-                    barProps={{ radius: [4, 4, 0, 0], barSize: 32 }}
+                    yAxisProps={{
+                        domain: [0, 7],
+                        tickSize: 0,
+                        tickMargin: 10,
+                        tickCount: 8,
+                        axisLine: false,
+                        style: { fontSize: '11px', fill: '#94a3b8' }
+                    }}
+                    xAxisProps={{
+                        tickSize: 0,
+                        tickMargin: 8,
+                        style: { fontSize: '11px', fill: '#94a3b8' }
+                    }}
+                    barProps={{
+                        radius: [8, 8, 8, 8],
+                        barSize: 28,
+                    }}
                     withBarValueLabel
+                    valueLabelProps={{
+                        position: 'top',
+                        fill: '#8b5cf6',
+                        fontSize: 10,
+                        fontWeight: 700,
+                        offset: 4
+                    }}
                 >
                     <defs>
                         <linearGradient id="daily-mape-gradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.8} />
-                            <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0.1} />
+                            <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.7} />
+                            <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0.05} />
                         </linearGradient>
                     </defs>
                 </BarChart>

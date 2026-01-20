@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Container, Title, Button, Group, Box, LoadingOverlay, Text, ThemeIcon, Grid } from '@mantine/core';
-import { TbArrowLeft, TbRefresh } from 'react-icons/tb';
+import { TbRefresh } from 'react-icons/tb';
+import { FaAngleLeft } from "react-icons/fa6";
 import { Link } from 'react-router-dom';
 import AppShellLayout from '../components/layout/AppShellLayout';
 import HeaderBar from '../components/layout/HeaderBar';
@@ -46,7 +47,7 @@ export default function LoadForecastingPage() {
                 <Box h={60} px="md" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.05)', display: 'flex', alignItems: 'center' }}>
                     <HeaderBar />
                 </Box>
-                <Container fluid px="xl" bg="#f8fafc" py="xs" pos="relative" style={{ flex: 1, overflowY: 'auto' }}>
+                <Container fluid px="xl" bg="#f8fafc" py="xs" pos="relative" style={{ flex: 1, overflowY: 'auto', width: '100%' }}>
                     <LoadingOverlay visible={loading} />
 
                     {/* Header Section */}
@@ -55,12 +56,11 @@ export default function LoadForecastingPage() {
                             component={Link}
                             to="/dashboard"
                             variant="subtle"
-                            color="gray"
-                            leftSection={<TbArrowLeft />}
+                            color="black"
+                            leftSection={<FaAngleLeft />}
                             size="xs"
                             mb="md"
                             pl={0}
-                            style={{ fontWeight: 500 }}
                         >
                             Back to Home
                         </Button>
@@ -70,7 +70,7 @@ export default function LoadForecastingPage() {
                                 <ThemeIcon size={32} radius="md" color="green" variant="filled">
                                     <TbRefresh size={20} />
                                 </ThemeIcon>
-                                <Title order={2} size="h2" fw={700}>Load Forecasting- Real time analytics</Title>
+                                <Title order={2} size="h4" fw={700}>Load Forecasting- Real time analytics</Title>
                             </Group>
                             <Button
                                 component={Link}
