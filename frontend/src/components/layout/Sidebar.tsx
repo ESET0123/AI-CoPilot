@@ -49,7 +49,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
   return (
     <Stack h="100%" p="sm" gap="sm" style={{ backgroundColor: '#ffffff' }}>
       {/* ================= TOP ================= */}
-      <Group justify={collapsed ? 'center' : 'space-between'} px="xs" mb="md">
+      <Group justify={collapsed ? 'center' : 'space-between'} px="xs" >
         <ActionIcon
           variant="subtle"
           color="gray"
@@ -108,11 +108,11 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
               }}
               styles={{
                 root: {
-                  height: 54,
+                  height: 24,
                   padding: '0 16px',
-                  marginBottom: 8,
+                  // marginBottom: 8,
                   fontWeight: 700,
-                  fontSize: '17px',
+                  fontSize: '15px',
                   color: '#1e293b',
                   '&:hover': {
                     backgroundColor: 'rgba(0, 0, 0, 0.03)',
@@ -133,7 +133,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
               align="center"
               px="xs"
               mt="xs"
-              mb={4}
+              mb={1}
               onClick={() => setOpen((o) => !o)}
               style={{ cursor: 'pointer' }}
             >
