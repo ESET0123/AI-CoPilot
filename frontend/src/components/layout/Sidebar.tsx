@@ -112,7 +112,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                   fontSize: '15px',
                   color: '#1e293b',
                   '&:hover': {
-                    backgroundColor: 'rgba(0, 0, 0, 0.03)',
+                    backgroundColor: 'rgba(132, 204, 22, 0.08)',
                   },
                 },
                 section: {
@@ -168,7 +168,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                         style={{
                           borderRadius: 22,
                           background: isActive
-                            ? '#f7fee7'
+                            ? '#ecfccb'
                             : 'transparent',
                           border: 'none',
                           transition: 'background-color 150ms ease',
@@ -177,7 +177,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                         className="chat-item-group"
                         onMouseEnter={(e) => {
                           if (!isActive) {
-                            e.currentTarget.style.backgroundColor = 'var(--mantine-color-gray-1)';
+                            e.currentTarget.style.backgroundColor = 'rgba(132, 204, 22, 0.08)';
                           }
                           const delBtn = e.currentTarget.querySelector('.delete-chat-btn') as HTMLElement;
                           if (delBtn) delBtn.style.opacity = '1';
