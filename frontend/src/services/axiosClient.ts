@@ -32,7 +32,7 @@ axiosClient.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
-      if (originalRequest.url?.startsWith('/api/auth')) {
+      if (originalRequest.url?.startsWith('/api/auth/login') || originalRequest.url?.startsWith('/api/auth/refresh')) {
         return Promise.reject(error);
       }
 

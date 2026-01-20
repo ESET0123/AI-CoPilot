@@ -45,7 +45,7 @@ const setTokenCookies = (res: Response, tokens: TokenResponse) => {
         const encryptedAccess = CryptoUtil.encrypt(tokens.access_token);
         res.cookie("access_token", encryptedAccess, {
             ...cookieOptions,
-            maxAge: tokens.expires_in * 1000,
+            maxAge: (tokens.expires_in + 60) * 1000, // Buffer 60s
         });
     }
 

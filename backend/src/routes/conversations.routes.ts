@@ -8,7 +8,6 @@ router.use(requireAuth);
 
 router.get('/', ConversationsController.list);
 router.post('/', ConversationsController.create);
-router.patch('/:id', ConversationsController.rename);
 router.delete('/:id', ConversationsController.delete);
 router.delete('/', ConversationsController.deleteAll);
 

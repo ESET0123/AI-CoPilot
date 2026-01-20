@@ -83,7 +83,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.error = null;
 
-      axiosClient.post("/auth/logout").catch(console.error);
+      axiosClient.post("/api/auth/logout").catch(console.error);
     },
   },
   extraReducers: (builder) => {

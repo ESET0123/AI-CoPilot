@@ -25,22 +25,6 @@ export class ConversationsController {
         }
     }
 
-    static async rename(req: Request, res: Response) {
-        try {
-            const { title } = req.body;
-            if (!title?.trim()) {
-                return res.status(400).json({ message: 'Title required' });
-            }
-            const updated = await ConversationsService.renameConversation(req.params.id, req.userId!, title);
-            res.json(updated);
-        } catch (err: any) {
-            console.error('[ConversationsController] Rename error:', err);
-            if (err.message === 'NOT_FOUND') {
-                return res.status(404).json({ message: 'Conversation not found' });
-            }
-            res.status(500).json({ message: 'Internal Server Error' });
-        }
-    }
 
     static async delete(req: Request, res: Response) {
         try {

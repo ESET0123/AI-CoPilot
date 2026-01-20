@@ -46,6 +46,18 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                     fontWeight: 600
                 }}>
                     {payload[0].value}
+                    {/* Tooltip arrow */}
+                    <div style={{
+                        position: 'absolute',
+                        bottom: '-6px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: 0,
+                        height: 0,
+                        borderLeft: '6px solid transparent',
+                        borderRight: '6px solid transparent',
+                        borderTop: '6px solid #000000',
+                    }} />
                 </div>
             );
         }

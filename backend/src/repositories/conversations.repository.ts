@@ -43,23 +43,6 @@ export class ConversationsRepository {
         }
     }
 
-    static async updateTitle(id: string, userId: string, title: string): Promise<StoredConversation | null> {
-        try {
-            const result = await pool.query(
-                `
-                UPDATE conversations
-                SET title = $1
-                WHERE id = $2 AND user_id = $3
-                RETURNING id, title, created_at
-                `,
-                [title, id, userId]
-            );
-            return result.rows[0] || null;
-        } catch (error) {
-            console.error('[ConversationsRepository] Failed to update conversation title:', error);
-            throw new Error('Failed to update conversation title in database');
-        }
-    }
 
     static async delete(id: string, userId: string): Promise<boolean> {
         try {

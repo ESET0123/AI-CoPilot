@@ -9,13 +9,6 @@ export class ConversationsService {
         return ConversationsRepository.create(userId, title || 'New Chat');
     }
 
-    static async renameConversation(id: string, userId: string, title: string): Promise<StoredConversation> {
-        const updated = await ConversationsRepository.updateTitle(id, userId, title.trim());
-        if (!updated) {
-            throw new Error('NOT_FOUND');
-        }
-        return updated;
-    }
 
     static async deleteConversation(id: string, userId: string): Promise<void> {
         const deleted = await ConversationsRepository.delete(id, userId);
