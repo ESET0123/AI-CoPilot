@@ -33,8 +33,8 @@ app.use('/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/conversations', conversationsRoutes);
 app.use('/api/messages', messagesRoutes);
-app.use('/api/transcribe', transcribeRoutes);
-app.use('/api/ocr', ocrRoutes);
+app.use('/api/transcribe', requireAuth, transcribeRoutes);
+app.use('/api/ocr', requireAuth, ocrRoutes);
 app.use('/api/theft', requireAuth, theftRoutes);
 
 app.post('/api/messages/stop', requireAuth, MessagesController.stop);

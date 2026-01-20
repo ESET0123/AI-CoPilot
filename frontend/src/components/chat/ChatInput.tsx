@@ -1,5 +1,9 @@
 import { Textarea, Group, ActionIcon, Paper, Tooltip, Box, Text, Loader } from '@mantine/core';
-import { TbPlayerStopFilled, TbMicrophone, TbWorld, TbPaperclip, TbX, TbCheck } from 'react-icons/tb';
+import {
+  TbPlayerStopFilled, TbMicrophone,
+  // TbWorld, 
+  TbPaperclip, TbX, TbCheck
+} from 'react-icons/tb';
 // import { MdSavedSearch } from "react-icons/md";
 import { BsSoundwave } from 'react-icons/bs';
 // import { GoLightBulb } from "react-icons/go";
@@ -263,6 +267,13 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 fontSize: '16px',
                 lineHeight: 1.6,
                 color: '#000000',
+                backgroundColor: 'transparent',
+                '&:disabled': {
+                  backgroundColor: 'transparent',
+                  color: '#000000',
+                  opacity: 1,
+                  cursor: 'not-allowed',
+                },
               },
             }}
             autoFocus

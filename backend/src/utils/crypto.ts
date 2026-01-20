@@ -1,10 +1,11 @@
 import crypto from 'crypto';
+import { env } from '../config/env';
 
 /**
  * Secret key for encryption/decryption. 
  * MUST be 32 bytes (256 bits) for aes-256-gcm.
  */
-const ENCRYPTION_KEY = process.env.COOKIE_ENCRYPTION_KEY || 'default_secret_key_32_chars_long!!';
+const ENCRYPTION_KEY = env.COOKIE_ENCRYPTION_KEY;
 const IV_LENGTH = 12; // GCM recommended IV length
 const AUTH_TAG_LENGTH = 16;
 

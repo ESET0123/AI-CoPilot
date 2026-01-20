@@ -1,10 +1,9 @@
-import { config } from "dotenv";
-config();
+import { env } from "./env";
 
-export const keycloakServerUrl = process.env.KEYCLOAK_URL || "http://localhost:8080";
-export const keycloakRealm = process.env.KEYCLOAK_REALM || "my_realm";
-export const keycloakClientId = process.env.KEYCLOAK_CLIENT_ID || "my_client";
-export const keycloakClientSecret = process.env.KEYCLOAK_CLIENT_SECRET || "my_secret";
+export const keycloakServerUrl = env.KEYCLOAK_URL;
+export const keycloakRealm = env.KEYCLOAK_REALM;
+export const keycloakClientId = env.KEYCLOAK_CLIENT_ID;
+export const keycloakClientSecret = env.KEYCLOAK_CLIENT_SECRET;
 
 /**
  * Token endpoints used by AuthService

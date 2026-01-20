@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { env } from '../config/env';
 
 const aiClient = axios.create({
-  baseURL: 'http://localhost:8001',
+  baseURL: env.AI_SERVICE_URL,
   timeout: 120000,
 });
 
