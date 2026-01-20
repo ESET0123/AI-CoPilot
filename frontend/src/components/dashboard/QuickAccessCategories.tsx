@@ -31,7 +31,7 @@ export default function QuickAccessCategories() {
                 description: "View Real Time data and detect patterns",
                 icon: TbActivity,
                 onClick: () => { navigate("/load-forecasting") },
-                allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_ASSISTANT_ENGINEER'],
+                allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_FIELD_OFFICER'],
                 allowedGroups: ['/zones/ZONE_SOUTH'],
                 requireAll: true
             },

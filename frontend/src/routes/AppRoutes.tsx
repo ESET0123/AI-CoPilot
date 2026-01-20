@@ -45,7 +45,7 @@ export default function AppRoutes() {
       <Route
         path="/theft-detection"
         element={
-          <RoleProtectedRoute roles={['Executive', 'ROLE_FIELD_OFFICER']}>
+          <RoleProtectedRoute roles={['ROLE_ADMINISTRATOR', 'ROLE_FIELD_OFFICER']}>
             <TheftDetectionPage />
           </RoleProtectedRoute>
         }
@@ -54,7 +54,7 @@ export default function AppRoutes() {
       <Route
         path="/load-forecasting"
         element={
-          <RoleProtectedRoute roles={['Executive']}>
+          <RoleProtectedRoute roles={['ROLE_FIELD_OFFICER', 'ROLE_ADMINISTRATOR']}>
             <LoadForecastingPage />
           </RoleProtectedRoute>
         }
@@ -63,7 +63,7 @@ export default function AppRoutes() {
       <Route
         path="/smart-tariff"
         element={
-          <RoleProtectedRoute roles={['customer', 'Executive']}>
+          <RoleProtectedRoute roles={['ROLE_CUSTOMER', 'ROLE_ADMINISTRATOR']}>
             <SmartTariffPage />
           </RoleProtectedRoute>
         }
@@ -72,7 +72,7 @@ export default function AppRoutes() {
       <Route
         path="/defaulter-analysis"
         element={
-          <RoleProtectedRoute roles={['Executive', 'ROLE_FIELD_OFFICER']}>
+          <RoleProtectedRoute roles={[ 'ROLE_ADMINISTRATOR', 'ROLE_FIELD_OFFICER']}>
             <DefaulterAnalysisPage />
           </RoleProtectedRoute>
         }
