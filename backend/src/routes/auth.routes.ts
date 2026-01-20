@@ -72,6 +72,8 @@ router.post("/login", async (req, res) => {
         params.append("password", password);
         params.append("scope", "openid profile email");
 
+        console.log(`[Backend Auth] Attempting login for user: ${username} at ${keycloakEndpoints.token}`);
+
         const response = await axios.post(keycloakEndpoints.token, params, {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
@@ -97,8 +99,15 @@ router.post("/login", async (req, res) => {
             expires_in: response.data.expires_in,
         });
     } catch (error: any) {
-        console.error("[Backend Auth] Login failed:", error.response?.data || error.message);
-        res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal server error" });
+        const errorData = error.response?.data;
+        const status = error.response?.status || 500;
+        console.error(`[Backend Auth] Login failed (${status}):`, errorData || error.message);
+
+        if (typeof errorData === 'string' && errorData.includes('<!DOCTYPE HTML')) {
+            console.warn('[Backend Auth] Received HTML response instead of JSON. This often indicates a 404 Not Found from the server or proxy.');
+        }
+
+        res.status(status).json(errorData || { message: "Internal server error" });
     }
 });
 
@@ -131,8 +140,10 @@ router.post("/refresh", async (req, res) => {
             expires_in: response.data.expires_in,
         });
     } catch (error: any) {
-        console.error("[Backend Auth] Refresh failed:", error.response?.data || error.message);
-        res.status(error.response?.status || 500).json(error.response?.data || { message: "Internal server error" });
+        const errorData = error.response?.data;
+        const status = error.response?.status || 500;
+        console.error(`[Backend Auth] Refresh failed (${status}):`, errorData || error.message);
+        res.status(status).json(errorData || { message: "Internal server error" });
     }
 });
 

@@ -3,10 +3,10 @@ import { Container, Title, Button, Group, Box, LoadingOverlay, Text, ThemeIcon, 
 import { TbArrowLeft, TbRobot, TbShieldCheck } from 'react-icons/tb';
 import { LuCloudAlert } from "react-icons/lu";
 import { Link } from 'react-router-dom';
-import TheftFilters from '../components/theft/TheftFilters';
-import TheftStatsGrid from '../components/theft/TheftStatsGrid';
-import { CaseCheckedChart, CasesByDivisionChart, TheftByCaseTypeChart } from '../components/theft/TheftCharts';
-import TheftAdditionalCharts from '../components/theft/TheftAdditionalCharts';
+import TheftFilters from '../components/theft-detection-module/TheftFilters';
+import TheftStatsGrid from '../components/theft-detection-module/TheftStatsGrid';
+import { CaseCheckedChart, CasesByDivisionChart, TheftByCaseTypeChart } from '../components/theft-detection-module/TheftCharts';
+import TheftAdditionalCharts from '../components/theft-detection-module/TheftAdditionalCharts';
 import { theftService, TheftDashboardData } from '../services/theftService';
 import AppShellLayout from '../components/layout/AppShellLayout';
 import HeaderBar from '../components/layout/HeaderBar';

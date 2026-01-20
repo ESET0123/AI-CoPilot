@@ -9,7 +9,8 @@ import conversationsRoutes from './routes/conversations.routes';
 import messagesRoutes from './routes/messages.routes';
 import transcribeRoutes from './routes/transcribe.routes';
 import ocrRoutes from './routes/ocr.routes';
-import theftRoutes from './routes/theft';
+import theftRoutes from './theft-detection-module/theft.routes';
+import forecastingRoutes from './load-forecasting-module/forecasting.routes';
 import { requireAuth } from './middleware/auth';
 
 const app = express();
@@ -37,6 +38,7 @@ app.use('/api/messages', messagesRoutes);
 app.use('/api/transcribe', requireAuth, transcribeRoutes);
 app.use('/api/ocr', requireAuth, ocrRoutes);
 app.use('/api/theft', requireAuth, theftRoutes);
+app.use('/api/forecasting', requireAuth, forecastingRoutes);
 
 app.post('/api/messages/stop', requireAuth, MessagesController.stop);
 

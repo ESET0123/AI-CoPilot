@@ -4,9 +4,9 @@ import { TbArrowLeft, TbRefresh } from 'react-icons/tb';
 import { Link } from 'react-router-dom';
 import AppShellLayout from '../components/layout/AppShellLayout';
 import HeaderBar from '../components/layout/HeaderBar';
-import ForecastStatsCard from '../components/forecasting/ForecastStatsCard';
-import DailyMapeChart from '../components/forecasting/DailyMapeChart';
-import ModelComparisonChart from '../components/forecasting/ModelComparisonChart';
+import ForecastStatsCard from '../components/load-forecasting-module/ForecastStatsCard';
+import DailyMapeChart from '../components/load-forecasting-module/DailyMapeChart';
+import ModelComparisonChart from '../components/load-forecasting-module/ModelComparisonChart';
 import { forecastingService, ForecastDashboardData } from '../services/forecastingService';
 
 export default function LoadForecastingPage() {

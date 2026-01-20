@@ -7,7 +7,7 @@ function required(name: string): string {
   if (!value) {
     throw new Error(`Environment variable ${name} is required`);
   }
-  return value;
+  return value.trim();
 }
 
 export const env = {
@@ -22,11 +22,11 @@ export const env = {
 
   JWT_SECRET: required('JWT_SECRET'),
 
-  AI_SERVICE_URL: process.env.AI_SERVICE_URL || 'http://localhost:8001',
+  AI_SERVICE_URL: (process.env.AI_SERVICE_URL || 'http://localhost:8001').trim(),
   KEYCLOAK_CLIENT_SECRET: required('KEYCLOAK_CLIENT_SECRET'),
-  KEYCLOAK_URL: process.env.KEYCLOAK_URL || 'http://localhost:8080',
-  KEYCLOAK_REALM: process.env.KEYCLOAK_REALM || 'my_realm',
-  KEYCLOAK_CLIENT_ID: process.env.KEYCLOAK_CLIENT_ID || 'my_client',
-  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
-  NODE_ENV: process.env.NODE_ENV || 'development',
+  KEYCLOAK_URL: (process.env.KEYCLOAK_URL || 'http://localhost:8080').trim(),
+  KEYCLOAK_REALM: (process.env.KEYCLOAK_REALM || 'my_realm').trim(),
+  KEYCLOAK_CLIENT_ID: (process.env.KEYCLOAK_CLIENT_ID || 'my_client').trim(),
+  FRONTEND_URL: (process.env.FRONTEND_URL || 'http://localhost:5173').trim(),
+  NODE_ENV: (process.env.NODE_ENV || 'development').trim(),
 };
