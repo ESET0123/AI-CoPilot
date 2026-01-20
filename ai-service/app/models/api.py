@@ -34,13 +34,3 @@ class ChatResponse(BaseModel):
     sql: str | None = None
     insight: Dict[str, Any] | None = None
     plot_json: str | None = None
-
-# --- Legacy Models ---
-class LegacyChatRequest(BaseModel):
-    """Request format expected by ai-service-2 clients"""
-    conversation_id: str
-    message: str
-
-class LegacyChatResponse(BaseModel):
-    """Response format expected by ai-service-2 clients"""
-    content: str  # JSON string containing {text, type, data, extras}

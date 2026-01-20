@@ -72,7 +72,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
-    if (isFocused && value.trim().length === 0 && !isCurrentSending && !isRecording) {
+    if (isFocused && value.trim().length >= 0 && !isCurrentSending && !isRecording) {
       setShowSuggestions(true);
     } else {
       setShowSuggestions(false);
@@ -160,7 +160,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
           sendMessage({
             conversationId: targetConvoId,
             message: finalMessage,
-            optimisticId, // Pass the same ID here
+            optimisticId, 
           })
         );
 
