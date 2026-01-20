@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
+import { env } from '../config/env';
 import { keycloakServerUrl, keycloakRealm } from '../config/keycloak.config';
 import { AuthService } from '../services/auth.service';
 import { CryptoUtil } from '../utils/crypto';
@@ -22,7 +23,7 @@ const client = jwksClient({
   cacheMaxAge: 86400000, // 24 hours
 });
 
-function getKey(header: any, callback: any) {
+function getKey(header: jwt.JwtHeader, callback: (err: Error | null, key?: string) => void) {
   client.getSigningKey(header.kid, (err, key) => {
     if (err) {
       callback(err);
@@ -34,7 +35,7 @@ function getKey(header: any, callback: any) {
 }
 
 export function requireAuth(
-  req: Request & { userId?: string; userEmail?: string; userRoles?: string[] },
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
@@ -53,7 +54,7 @@ export function requireAuth(
   }
 
   if (!token) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (env.NODE_ENV !== 'production') {
       console.warn('[AUTH] Missing token (no header or cookie)');
     }
     return res.status(401).json({ message: 'Missing token' });
@@ -103,7 +104,7 @@ export function requireAuth(
 
 export function requireRole(role: string) {
   return (
-    req: Request & { userRoles?: string[] },
+    req: Request,
     res: Response,
     next: NextFunction
   ) => {

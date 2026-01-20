@@ -27,4 +27,6 @@ export const env = {
   KEYCLOAK_URL: process.env.KEYCLOAK_URL || 'http://localhost:8080',
   KEYCLOAK_REALM: process.env.KEYCLOAK_REALM || 'my_realm',
   KEYCLOAK_CLIENT_ID: process.env.KEYCLOAK_CLIENT_ID || 'my_client',
+  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
+  NODE_ENV: process.env.NODE_ENV || 'development',
 };

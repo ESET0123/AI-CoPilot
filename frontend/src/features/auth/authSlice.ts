@@ -56,7 +56,6 @@ export const refreshAccessToken = createAsyncThunk(
       const res = await axiosClient.post("/api/auth/refresh");
       return res.data;
     } catch (err) {
-      console.error("Refresh error:", err);
       return thunkAPI.rejectWithValue("Token refresh failed");
     }
   }

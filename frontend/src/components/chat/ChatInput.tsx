@@ -131,7 +131,9 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
       }
 
       if (targetConvoId) {
+        const optimisticId = crypto.randomUUID();
         dispatch(addUserMessage({
+          id: optimisticId, // Pass the ID here
           text: messageContent,
           attachment: selectedFile ? { name: selectedFile.name } : undefined
         }));
@@ -141,6 +143,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
           sendMessage({
             conversationId: targetConvoId,
             message: finalMessage,
+            optimisticId, // Pass the same ID here
           })
         );
 
@@ -340,7 +343,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                     radius="xl"
                     size="lg"
                     onClick={() => fileInputRef.current?.click()}
-                    disabled={isProcessingOcr}
+                    disabled={isProcessingOcr || isCurrentSending}
                   >
                     <TbPaperclip size={18} />
                   </ActionIcon>

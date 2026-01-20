@@ -6,8 +6,9 @@ export class MessagesController {
         try {
             const messages = await MessagesService.getMessages(req.params.conversationId, req.userId!);
             res.json(messages);
-        } catch (err: any) {
-            if (err.message === 'ACCESS_DENIED') {
+        } catch (err: unknown) {
+            const error = err as Error;
+            if (error.message === 'ACCESS_DENIED') {
                 return res.status(403).json({ message: 'Access denied' });
             }
             res.status(500).json({ message: 'Internal Server Error' });
@@ -23,14 +24,15 @@ export class MessagesController {
 
             const result = await MessagesService.sendMessage(conversationId, req.userId!, message);
             res.json(result);
-        } catch (err: any) {
-            if (err.message === 'ABORTED') {
+        } catch (err: unknown) {
+            const error = err as Error;
+            if (error.message === 'ABORTED') {
                 return res.status(204).end();
             }
-            if (err.message === 'ACCESS_DENIED') {
+            if (error.message === 'ACCESS_DENIED') {
                 return res.status(403).json({ message: 'Access denied' });
             }
-            console.error('SEND MESSAGE ERROR:', err);
+            console.error('SEND MESSAGE ERROR:', error);
             res.status(500).json({ message: 'Failed to send message' });
         }
     }
@@ -44,8 +46,9 @@ export class MessagesController {
 
             const updated = await MessagesService.editMessage(req.params.messageId, req.userId!, content);
             res.json(updated);
-        } catch (err: any) {
-            switch (err.message) {
+        } catch (err: unknown) {
+            const error = err as Error;
+            switch (error.message) {
                 case 'NOT_FOUND':
                     return res.status(404).json({ message: 'Message not found' });
                 case 'ACCESS_DENIED':
@@ -55,7 +58,7 @@ export class MessagesController {
                 case 'NOT_LAST':
                     return res.status(403).json({ message: 'Only the latest message can be edited' });
                 default:
-                    console.error('EDIT MESSAGE ERROR:', err);
+                    console.error('EDIT MESSAGE ERROR:', error);
                     return res.status(500).json({ message: 'Failed to edit message' });
             }
         }

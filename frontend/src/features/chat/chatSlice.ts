@@ -123,8 +123,9 @@ export const sendMessage = createAsyncThunk<
     conversationId: string;
     user: BackendMessage;
     assistant: BackendMessage;
+    optimisticId: string;
   },
-  { conversationId: string; message: string },
+  { conversationId: string; message: string; optimisticId: string },
   { state: RootState }
 >('chat/sendMessage', async (payload, { getState, rejectWithValue, signal }) => {
   if (!getState().auth.isAuthenticated) {
@@ -142,9 +143,10 @@ export const sendMessage = createAsyncThunk<
       conversationId: payload.conversationId,
       user: data.user,
       assistant: data.assistant,
+      optimisticId: payload.optimisticId,
     };
   } catch (error: unknown) {
-    const err = error as any;
+    const err = error as Error & { name?: string; code?: string };
     if (
       err?.name === 'CanceledError' ||
       err?.name === 'AbortError' ||
@@ -198,7 +200,7 @@ const chatSlice = createSlice({
       }
     },
 
-    addUserMessage(state, action: { payload: string | { text: string; attachment?: { name: string } } }) {
+    addUserMessage(state, action: { payload: string | { id?: string; text: string; attachment?: { name: string } } }) {
       if (!state.activeConversationId) return;
 
       const convo = state.conversations.find(
@@ -214,7 +216,7 @@ const chatSlice = createSlice({
         });
       } else {
         convo.messages.push({
-          id: crypto.randomUUID(),
+          id: action.payload.id || crypto.randomUUID(),
           role: 'user',
           text: action.payload.text,
           attachment: action.payload.attachment,
@@ -259,13 +261,10 @@ const chatSlice = createSlice({
           m => !(m.role === 'assistant' && m.loading)
         );
 
-        // Replace optimistic user message ID
-        const lastUser = [...convo.messages]
-          .reverse()
-          .find(m => m.role === 'user');
-
-        if (lastUser) {
-          lastUser.id = action.payload.user.id;
+        // Replace optimistic user message ID using the unique optimisticId
+        const optUser = convo.messages.find(m => m.id === action.payload.optimisticId);
+        if (optUser) {
+          optUser.id = action.payload.user.id;
         }
 
         // Add assistant reply

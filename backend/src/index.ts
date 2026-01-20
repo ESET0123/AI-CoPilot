@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
+import { env } from './config/env';
 import healthRoutes from './routes/health';
 import authRoutes from './routes/auth.routes';
 import conversationsRoutes from './routes/conversations.routes';
@@ -12,10 +13,10 @@ import theftRoutes from './routes/theft';
 import { requireAuth } from './middleware/auth';
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = env.PORT;
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: env.FRONTEND_URL,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
