@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { chatApi } from '../../services/api';
 import { logout } from '../auth/authSlice';
 import type { RootState } from '../../app/store';
-// import { MAX_CONVERSATION_TITLE_LENGTH } from '../../constants';
 
 
 
@@ -12,6 +11,7 @@ export type Message = {
   role: 'user' | 'assistant';
   text: string;
   loading?: boolean;
+  attachment?: { name: string };
 };
 
 type BackendMessage = {
@@ -198,7 +198,7 @@ const chatSlice = createSlice({
       }
     },
 
-    addUserMessage(state, action) {
+    addUserMessage(state, action: { payload: string | { text: string; attachment?: { name: string } } }) {
       if (!state.activeConversationId) return;
 
       const convo = state.conversations.find(
@@ -206,11 +206,20 @@ const chatSlice = createSlice({
       );
       if (!convo) return;
 
-      convo.messages.push({
-        id: crypto.randomUUID(),
-        role: 'user',
-        text: action.payload,
-      });
+      if (typeof action.payload === 'string') {
+        convo.messages.push({
+          id: crypto.randomUUID(),
+          role: 'user',
+          text: action.payload,
+        });
+      } else {
+        convo.messages.push({
+          id: crypto.randomUUID(),
+          role: 'user',
+          text: action.payload.text,
+          attachment: action.payload.attachment,
+        });
+      }
     },
 
     addAssistantLoading(state) {

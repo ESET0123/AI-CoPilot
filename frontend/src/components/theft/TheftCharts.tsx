@@ -43,7 +43,7 @@ export function CaseCheckedChart({ data }: SingleChartProps) {
                         { name: 'consumerCount', label: 'Consumer Count', color: 'url(#orange-gradient)' },
                     ]}
                     gridAxis="xy"
-                    gridProps={{ vertical: false, horizontal: true, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
+                    gridProps={{ vertical: false, horizontal: false, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
                     yAxisProps={{ domain: [0, 'auto'], tickSize: 0, tickMargin: 10, tickCount: 5, axisLine: false }}
                     xAxisProps={{ tickSize: 0, tickMargin: 10 }}
                     barProps={{ radius: [3, 3, 0, 0] }}
@@ -98,7 +98,7 @@ export function CasesByDivisionChart({ data }: SingleChartProps) {
                         { name: 'consumerCount', label: 'Consumer Count', color: 'url(#lime-gradient-div)' },
                     ]}
                     gridAxis="xy"
-                    gridProps={{ vertical: false, horizontal: true, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
+                    gridProps={{ vertical: false, horizontal: false, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
                     yAxisProps={{ domain: [0, 'auto'], tickSize: 0, tickMargin: 10, tickCount: 5, axisLine: false }}
                     xAxisProps={{ tickSize: 0, tickMargin: 10 }}
                     barProps={{ radius: [3, 3, 0, 0] }}
@@ -119,6 +119,41 @@ export function CasesByDivisionChart({ data }: SingleChartProps) {
     );
 }
 
+interface CustomTooltipProps {
+    active?: boolean;
+    payload?: Array<{ value: number | string }>;
+}
+
+const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
+    if (active && payload && payload.length) {
+        return (
+            <div style={{
+                backgroundColor: '#000000',
+                color: '#ffffff',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                fontSize: '12px',
+                fontWeight: 600
+            }}>
+                {payload[0].value}
+                {/* Tooltip arrow */}
+                <div style={{
+                    position: 'absolute',
+                    bottom: '-6px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: 0,
+                    height: 0,
+                    borderLeft: '6px solid transparent',
+                    borderRight: '6px solid transparent',
+                    borderTop: '6px solid #000000',
+                }} />
+            </div>
+        );
+    }
+    return null;
+};
+
 export function TheftByCaseTypeChart({ data }: SingleChartProps) {
     // Transform data for Mantine DonutChart
     const chartData = [
@@ -127,37 +162,7 @@ export function TheftByCaseTypeChart({ data }: SingleChartProps) {
     ];
 
     // Calculate percentage (assuming 2 data points: Theft vs Other)
-    const total = chartData.reduce((acc, curr) => acc + curr.value, 0);
-
-    const CustomTooltip = ({ active, payload }: any) => {
-        if (active && payload && payload.length) {
-            return (
-                <div style={{
-                    backgroundColor: '#000000',
-                    color: '#ffffff',
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    fontWeight: 600
-                }}>
-                    {payload[0].value}
-                    {/* Tooltip arrow */}
-                    <div style={{
-                        position: 'absolute',
-                        bottom: '-6px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: 0,
-                        height: 0,
-                        borderLeft: '6px solid transparent',
-                        borderRight: '6px solid transparent',
-                        borderTop: '6px solid #000000',
-                    }} />
-                </div>
-            );
-        }
-        return null;
-    };
+    // const total = chartData.reduce((acc, curr) => acc + curr.value, 0);
 
     return (
         <Paper p="md" radius="md" withBorder h="100%">

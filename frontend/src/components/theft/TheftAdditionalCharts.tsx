@@ -11,6 +11,37 @@ interface TheftAdditionalChartsProps {
     };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div style={{
+                backgroundColor: '#000000',
+                color: '#ffffff',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                fontSize: '12px',
+                fontWeight: 600
+            }}>
+                {payload[0].value}
+                {/* Tooltip arrow */}
+                <div style={{
+                    position: 'absolute',
+                    bottom: '-6px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: 0,
+                    height: 0,
+                    borderLeft: '6px solid transparent',
+                    borderRight: '6px solid transparent',
+                    borderTop: '6px solid #000000',
+                }} />
+            </div>
+        );
+    }
+    return null;
+};
+
 export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsProps) {
 
     const caseStatusData = data.caseStatusDistribution.labels.map((label, index) => ({
@@ -33,36 +64,6 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
         label,
         count: data.theftIntensityByZone.consumption?.[index] || 0,
     }));
-
-    const CustomTooltip = ({ active, payload }: any) => {
-        if (active && payload && payload.length) {
-            return (
-                <div style={{
-                    backgroundColor: '#000000',
-                    color: '#ffffff',
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    fontWeight: 600
-                }}>
-                    {payload[0].value}
-                    {/* Tooltip arrow */}
-                    <div style={{
-                        position: 'absolute',
-                        bottom: '-6px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: 0,
-                        height: 0,
-                        borderLeft: '6px solid transparent',
-                        borderRight: '6px solid transparent',
-                        borderTop: '6px solid #000000',
-                    }} />
-                </div>
-            );
-        }
-        return null;
-    };
 
     return (
         <Grid>
@@ -110,7 +111,7 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                             dataKey="label"
                             series={[{ name: 'consumption', label: 'Consumption', color: 'url(#lime-gradient-add)' }]}
                             gridAxis="xy"
-                            gridProps={{ vertical: false, horizontal: true, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
+                            gridProps={{ vertical: false, horizontal: false, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
                             yAxisProps={{ domain: ['auto', 'auto'], tickLine: false, axisLine: false }}
                             xAxisProps={{ tickLine: false, axisLine: false }}
                             barProps={{ radius: [7, 7, 0, 0] }}
@@ -136,7 +137,7 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                             <Text size="sm" c="dimmed" fw={500}>Consumer Survey Count</Text>
                         </Group>
                     </Group>
-                    <div style={{ height: 300, width: '100%', minHeight: 0, minWidth: 0 }}>
+                    <div style={{ height: 300, width: '85%', minHeight: 0, minWidth: 0 }}>
                         <BarChart
                             h={300}
                             data={panchnamaData}
@@ -144,7 +145,7 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                             withLegend={false}
                             series={[{ name: 'count', label: 'Consumer Survey Count', color: 'url(#purple-gradient-panchnama)' }]}
                             gridAxis="xy"
-                            gridProps={{ vertical: false, horizontal: true, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
+                            gridProps={{ vertical: false, horizontal: false, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
                             yAxisProps={{ domain: ['auto', 'auto'], tickLine: false, axisLine: false }}
                             xAxisProps={{ tickLine: false, axisLine: false }}
                             barProps={{ radius: [7, 7, 0, 0], label: { position: 'insideTop', fill: '#fff', fontSize: 10, offset: 10 } }}
@@ -170,7 +171,7 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                             <Text size="sm" c="dimmed" fw={500}>Consumer Survey Count</Text>
                         </Group>
                     </Group>
-                    <div style={{ height: 300, width: '100%', minHeight: 0, minWidth: 0 }}>
+                    <div style={{ height: 300, width: '85%', minHeight: 0, minWidth: 0 }}>
                         <BarChart
                             h={300}
                             data={theftIntensityData}

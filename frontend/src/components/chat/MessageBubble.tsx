@@ -1,7 +1,7 @@
 import {
   Paper, Text, Loader, Box, Alert, Group, ActionIcon, Stack, Title
 } from '@mantine/core';
-import { TbAlertCircle, TbDownload, TbCopy, TbRefresh, TbCornerDownRight } from 'react-icons/tb';
+import { TbAlertCircle, TbDownload, TbCopy, TbRefresh, TbCornerDownRight, TbFileDescription } from 'react-icons/tb';
 import { useMemo } from 'react';
 
 import { parseMessageContent } from '../../utils/contentParser';
@@ -10,9 +10,51 @@ type Props = {
   role: 'user' | 'assistant';
   text: string;
   loading?: boolean;
+  attachment?: { name: string };
 };
 
-export default function MessageBubble({ role, text, loading }: Props) {
+const FileCard = ({ name }: { name: string }) => (
+  <Paper
+    withBorder
+    p="sm"
+    radius="md"
+    mb="sm"
+    style={{
+      backgroundColor: '#f8fafc',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      maxWidth: '300px',
+      cursor: 'default',
+      transition: 'transform 0.2s ease',
+    }}
+  >
+    <Box
+      style={{
+        width: '40px',
+        height: '40px',
+        borderRadius: '8px',
+        backgroundColor: '#ecfccb',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#65a30d',
+      }}
+    >
+      <TbFileDescription size={24} />
+    </Box>
+    <Box style={{ flex: 1, overflow: 'hidden' }}>
+      <Text size="sm" fw={600} truncate c="#1e293b">
+        {name}
+      </Text>
+      <Text size="xs" c="dimmed">
+        File Attachment
+      </Text>
+    </Box>
+  </Paper>
+);
+
+export default function MessageBubble({ role, text, loading, attachment }: Props) {
   const isUser = role === 'user';
 
   // Parse structured data if assistant
@@ -96,16 +138,50 @@ export default function MessageBubble({ role, text, loading }: Props) {
           </Alert>
         ) : (
           <Box>
-            <Text
-              size="lg"
-              style={{
-                whiteSpace: 'pre-wrap',
-                lineHeight: 1.6,
-                fontWeight: 500, // Slightly bolder for better visibility
-              }}
-            >
-              {content.text}
-            </Text>
+            {/* Display explicit attachment if present */}
+            {attachment && (
+              <FileCard name={attachment.name} />
+            )}
+
+            {/* Parse and display embedded attachments from text */}
+            {(() => {
+              const attachmentRegex = /\[(?:Extracted from|Uploaded File|Attached):?\s*(.*?)\]:?/g;
+              const match = attachmentRegex.exec(content.text);
+              if (match) {
+                const fileName = match[1];
+                const cleanText = content.text.replace(attachmentRegex, '').trim();
+                return (
+                  <>
+                    {!attachment && <FileCard name={fileName} />}
+                    {cleanText && (
+                      <Text
+                        size="lg"
+                        style={{
+                          whiteSpace: 'pre-wrap',
+                          lineHeight: 1.6,
+                          fontWeight: 500,
+                        }}
+                      >
+                        {cleanText}
+                      </Text>
+                    )}
+                  </>
+                );
+              }
+
+              return (
+                <Text
+                  size="lg"
+                  style={{
+                    whiteSpace: 'pre-wrap',
+                    lineHeight: 1.6,
+                    fontWeight: 500,
+                  }}
+                >
+                  {content.text}
+                </Text>
+              );
+            })()}
 
             {!isUser && (
               <Box mt="md">

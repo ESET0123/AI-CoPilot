@@ -127,7 +127,10 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
       }
 
       if (targetConvoId) {
-        dispatch(addUserMessage(messageContent || `Attached: ${selectedFile?.name}`));
+        dispatch(addUserMessage({
+          text: messageContent,
+          attachment: selectedFile ? { name: selectedFile.name } : undefined
+        }));
         dispatch(addAssistantLoading());
 
         const promise = dispatch(
