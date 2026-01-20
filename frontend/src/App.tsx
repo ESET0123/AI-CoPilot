@@ -6,12 +6,6 @@ import { useAppDispatch } from './app/hooks';
 import { checkAuthStatus } from './features/auth/authSlice';
 
 export default function App() {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(checkAuthStatus());
-  }, [dispatch]);
-
   return (
     <MantineProvider theme={theme} defaultColorScheme="light">
       <AppRoutes />

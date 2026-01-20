@@ -179,7 +179,7 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                             withLegend={false}
                             series={[{ name: 'count', label: 'Consumer Survey Count', color: 'url(#purple-gradient-intensity)' }]}
                             gridAxis="xy"
-                            gridProps={{ vertical: false, horizontal: true, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
+                            gridProps={{ vertical: false, horizontal: false, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
                             yAxisProps={{ domain: ['auto', 'auto'], tickLine: false, axisLine: false }}
                             xAxisProps={{ tickLine: false, axisLine: false }}
                             barProps={{ radius: [10, 10, 0, 0], label: { position: 'insideTop', fill: '#fff', fontSize: 10, offset: 10 } }}

@@ -1,6 +1,8 @@
 import { Navigate } from "react-router-dom";
-import { useAppSelector } from "../../app/hooks";
-import { Box, Title, Button, Stack } from "@mantine/core";
+import { useEffect } from "react";
+import { useAppSelector, useAppDispatch } from "../../app/hooks";
+import { checkAuthStatus } from "../../features/auth/authSlice";
+import { Box, Title, Button, Stack, LoadingOverlay } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 interface RoleProtectedRouteProps {
@@ -9,7 +11,22 @@ interface RoleProtectedRouteProps {
 }
 
 export default function RoleProtectedRoute({ roles, children }: RoleProtectedRouteProps) {
-    const { isAuthenticated, roles: userRoles } = useAppSelector((s) => s.auth);
+    const { isAuthenticated, roles: userRoles, isInitialized, isInitialLoading } = useAppSelector((s) => s.auth);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (!isInitialized && !isInitialLoading) {
+            dispatch(checkAuthStatus());
+        }
+    }, [isInitialized, isInitialLoading, dispatch]);
+
+    if (!isInitialized || (isInitialLoading && !isAuthenticated)) {
+        return (
+            <Box h="100vh" pos="relative">
+                <LoadingOverlay visible={true} />
+            </Box>
+        );
+    }
 
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />;
@@ -29,5 +46,5 @@ export default function RoleProtectedRoute({ roles, children }: RoleProtectedRou
         );
     }
 
-    return children;
+    return <>{children}</>;
 }

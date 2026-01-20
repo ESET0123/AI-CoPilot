@@ -67,7 +67,6 @@ axiosClient.interceptors.response.use(
         }
 
         store.dispatch(logout());
-        window.location.href = '/login';
         return Promise.reject(refreshError);
       } finally {
         // Always reset the refreshing flag

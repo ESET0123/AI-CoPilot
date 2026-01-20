@@ -11,6 +11,7 @@ export interface AuthState {
   isAuthenticated: boolean;
   error: string | null;
   isInitialLoading: boolean;
+  isInitialized: boolean;
 }
 
 export const loginWithCredentials = createAsyncThunk(
@@ -72,6 +73,7 @@ const authSlice = createSlice({
     isAuthenticated: false,
     error: null,
     isInitialLoading: false,
+    isInitialized: false,
   } as AuthState,
   reducers: {
     logout(state) {
@@ -119,11 +121,13 @@ const authSlice = createSlice({
       state.groups = action.payload.user.groups;
       state.isAuthenticated = true;
       state.isInitialLoading = false;
+      state.isInitialized = true;
     });
 
     builder.addCase(checkAuthStatus.rejected, (state) => {
       state.isAuthenticated = false;
       state.isInitialLoading = false;
+      state.isInitialized = true;
     });
   },
 });
