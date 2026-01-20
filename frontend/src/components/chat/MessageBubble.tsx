@@ -1,8 +1,9 @@
 import {
-  Paper, Text, Loader, Box, Alert, Group, ActionIcon, Stack, Title
+  Paper, Text, Loader, Box, Alert, Group, ActionIcon, Stack, Title, Tooltip
 } from '@mantine/core';
-import { TbAlertCircle, TbDownload, TbCopy, TbRefresh, TbCornerDownRight, TbFileDescription } from 'react-icons/tb';
+import { TbAlertCircle, TbDownload, TbCopy, TbRefresh, TbCornerDownRight, TbFileDescription, TbCheck } from 'react-icons/tb';
 import { useMemo } from 'react';
+import { useClipboard } from '@mantine/hooks';
 
 import { parseMessageContent } from '../../utils/contentParser';
 
@@ -61,6 +62,13 @@ export default function MessageBubble({ role, text, loading, attachment }: Props
   const content = useMemo(() => {
     return parseMessageContent(text, isUser);
   }, [text, isUser]);
+
+  const clipboard = useClipboard({ timeout: 2000 });
+
+  const getCopyableText = () => {
+    const attachmentRegex = /\[(?:Extracted from|Uploaded File|Attached):?\s*(.*?)\]:?/g;
+    return content.text.replace(attachmentRegex, '').trim();
+  };
 
   if (loading) {
     return (
@@ -190,9 +198,16 @@ export default function MessageBubble({ role, text, loading, attachment }: Props
                   <ActionIcon variant="subtle" color="gray" size="sm">
                     <TbDownload size={16} />
                   </ActionIcon>
-                  <ActionIcon variant="subtle" color="gray" size="sm">
-                    <TbCopy size={16} />
-                  </ActionIcon>
+                  <Tooltip label={clipboard.copied ? 'Copied!' : 'Copy to clipboard'}>
+                    <ActionIcon
+                      variant="subtle"
+                      color={clipboard.copied ? 'green' : 'gray'}
+                      size="sm"
+                      onClick={() => clipboard.copy(getCopyableText())}
+                    >
+                      {clipboard.copied ? <TbCheck size={16} /> : <TbCopy size={16} />}
+                    </ActionIcon>
+                  </Tooltip>
                   <ActionIcon variant="subtle" color="gray" size="sm">
                     <TbRefresh size={16} />
                   </ActionIcon>

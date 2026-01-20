@@ -72,6 +72,8 @@ export default function TheftDetectionPage() {
                                 <Title order={2} size="h2" fw={700}>Theft Detection- Real time analytics</Title>
                             </Group>
                             <Button
+                                component={Link}
+                                to="/dashboard"
                                 bg="#1e1e1e"
                                 leftSection={
                                     <Box

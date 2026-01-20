@@ -13,7 +13,7 @@ export default function QuickActionCard({ title, description, icon: Icon, onClic
     const ActualIcon = Icon || TbLayoutDashboard;
 
     return (
-        <UnstyledButton onClick={onClick} style={{ width: '100%' }}>
+        <UnstyledButton onClick={onClick} style={{ width: '100%', height:'100%' }}>
             <Paper
                 p="md"
                 radius="lg"

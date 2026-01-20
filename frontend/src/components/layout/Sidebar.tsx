@@ -106,7 +106,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
               }}
               styles={{
                 root: {
-                  height: 24,
+                  height: 44,
                   padding: '0 16px',
                   fontWeight: 700,
                   fontSize: '15px',
