@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosClient } from "../../services/axiosClient";
+import { AxiosError } from "axios";
 import type { User, LoginCredentials } from "../../types/types";
 
 export interface AuthState {
@@ -28,11 +29,16 @@ export const loginWithCredentials = createAsyncThunk(
       return {
         user: data.user,
       };
-    } catch (err: unknown) {
+    } catch (err) {
       console.error("Login error:", err);
-      const axiosError = err as any;
-      const msg = axiosError.response?.data?.error_description || axiosError.response?.data?.error || "Login failed";
-      return thunkAPI.rejectWithValue(msg);
+      if (err instanceof AxiosError) {
+        const msg = err.response?.data?.error_description
+          || err.response?.data?.error
+          || err.message
+          || "Login failed";
+        return thunkAPI.rejectWithValue(msg);
+      }
+      return thunkAPI.rejectWithValue("An unexpected error occurred");
     }
   }
 );

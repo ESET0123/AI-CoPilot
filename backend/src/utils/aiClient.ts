@@ -34,7 +34,22 @@ export async function callAIService(
 
   // Map the structured ChatResponse to the JSON format expected by the frontend
   // This format mimics what modules/compatibility_layer.py used to do
-  const responsePayload: any = {
+  interface ResponsePayload {
+    text: string;
+    type: string;
+    data: unknown[] | null;
+    extras: {
+      sql?: string;
+      insight?: unknown;
+      plot_json?: unknown;
+      chartType?: string;
+      xKey?: string;
+      yKey?: string;
+      yLabel?: string;
+    };
+  }
+
+  const responsePayload: ResponsePayload = {
     text: data.content,
     type: data.type === 'data' ? (data.sql ? 'sql' : (data.data?.rows?.length > 0 ? 'table' : 'text')) : data.type,
     data: data.data?.rows || null,
@@ -67,8 +82,8 @@ export async function transcribeAudio(audioData: Buffer | Blob): Promise<string>
   const formData = new FormData();
   if (Buffer.isBuffer(audioData)) {
     // In Node.js environment
-    const blob = new Blob([audioData as any], { type: 'audio/wav' });
-    formData.append('file', blob as any, 'voice.wav');
+    const blob = new Blob([audioData as unknown as BlobPart], { type: 'audio/wav' });
+    formData.append('file', blob, 'voice.wav');
   } else {
     // In browser environment (if ever used there)
     formData.append('file', audioData, 'voice.wav');

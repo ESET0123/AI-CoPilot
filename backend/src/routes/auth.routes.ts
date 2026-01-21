@@ -1,5 +1,5 @@
-import { Router, Response } from "express";
-import axios from "axios";
+import { Router, Response, Request } from "express";
+import axios, { AxiosError } from "axios";
 import jwt from "jsonwebtoken";
 import {
     keycloakEndpoints,
@@ -98,16 +98,21 @@ router.post("/login", async (req, res) => {
             user,
             expires_in: response.data.expires_in,
         });
-    } catch (error: any) {
-        const errorData = error.response?.data;
-        const status = error.response?.status || 500;
-        console.error(`[Backend Auth] Login failed (${status}):`, errorData || error.message);
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            const errorData = error.response?.data;
+            const status = error.response?.status || 500;
+            console.error(`[Backend Auth] Login failed (${status}):`, errorData || error.message);
 
-        if (typeof errorData === 'string' && errorData.includes('<!DOCTYPE HTML')) {
-            console.warn('[Backend Auth] Received HTML response instead of JSON. This often indicates a 404 Not Found from the server or proxy.');
+            if (typeof errorData === 'string' && errorData.includes('<!DOCTYPE HTML')) {
+                console.warn('[Backend Auth] Received HTML response instead of JSON. This often indicates a 404 Not Found from the server or proxy.');
+            }
+
+            res.status(status).json(errorData || { message: "Internal server error" });
+        } else {
+            console.error('[Backend Auth] Unexpected error during login:', error);
+            res.status(500).json({ message: "Internal server error" });
         }
-
-        res.status(status).json(errorData || { message: "Internal server error" });
     }
 });
 
@@ -139,11 +144,16 @@ router.post("/refresh", async (req, res) => {
             message: "Token refreshed",
             expires_in: response.data.expires_in,
         });
-    } catch (error: any) {
-        const errorData = error.response?.data;
-        const status = error.response?.status || 500;
-        console.error(`[Backend Auth] Refresh failed (${status}):`, errorData || error.message);
-        res.status(status).json(errorData || { message: "Internal server error" });
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            const errorData = error.response?.data;
+            const status = error.response?.status || 500;
+            console.error(`[Backend Auth] Refresh failed (${status}):`, errorData || error.message);
+            res.status(status).json(errorData || { message: "Internal server error" });
+        } else {
+            console.error('[Backend Auth] Unexpected error during refresh:', error);
+            res.status(500).json({ message: "Internal server error" });
+        }
     }
 });
 
@@ -163,8 +173,12 @@ router.post("/logout", async (req, res) => {
             await axios.post(keycloakEndpoints.logout, params, {
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
             });
-        } catch (error: any) {
-            console.error("[Backend Auth] Keycloak logout failed:", error.response?.data || error.message);
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                console.error("[Backend Auth] Keycloak logout failed:", error.response?.data || error.message);
+            } else {
+                console.error("[Backend Auth] Unexpected error during logout:", error);
+            }
             // We still proceed to clear cookies locally even if Keycloak logout fails
         }
     }
@@ -174,7 +188,7 @@ router.post("/logout", async (req, res) => {
     res.json({ message: "Logged out" });
 });
 
-router.get("/me", requireAuth, async (req: any, res) => {
+router.get("/me", requireAuth, async (req: Request, res) => {
     // requireAuth middleware populates req.userId, req.userEmail, req.userRoles
     // We can also fetch groups if we store them or refresh from Keycloak
     // For now, return what we have in req

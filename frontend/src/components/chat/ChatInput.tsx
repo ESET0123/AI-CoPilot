@@ -38,7 +38,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   const [ocrText, setOcrText] = useState<string>('');
   const [isProcessingOcr, setIsProcessingOcr] = useState(false);
 
-  const pendingThunkRef = useRef<any>(null);
+  const pendingThunkRef = useRef<{ abort: () => void } | null>(null);
 
   const { activeConversationId, draftMessageMode, sendingConversationIds } =
     useAppSelector((s) => s.chat);
@@ -160,7 +160,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
           sendMessage({
             conversationId: targetConvoId,
             message: finalMessage,
-            optimisticId, 
+            optimisticId,
           })
         );
 
@@ -169,9 +169,13 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
 
         await promise.unwrap();
       }
-    } catch (err: unknown) {
-      const error = err as any;
-      if (error?.name !== 'AbortError' && error?.message !== 'Aborted' && error?.message !== 'Request cancelled') {
+    } catch (err) {
+      if (err && typeof err === 'object' && 'name' in err) {
+        const error = err as { name: string; message?: string };
+        if (error.name !== 'AbortError' && error.message !== 'Aborted' && error.message !== 'Request cancelled') {
+          console.error('Failed to send message:', err);
+        }
+      } else {
         console.error('Failed to send message:', err);
       }
     } finally {
@@ -407,7 +411,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
               <Box
                 key={index}
                 onMouseDown={(e) => {
-                  e.preventDefault(); 
+                  e.preventDefault();
                   handleSuggestionClick(suggestion);
                 }}
                 style={{

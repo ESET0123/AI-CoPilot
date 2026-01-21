@@ -82,8 +82,9 @@ export function requireAuth(
           const newUser = await AuthService.upsertUserFromKeycloak(payload.sub, email);
           req.userId = newUser.id;
           req.userEmail = newUser.email;
-        } catch (jitError: any) {
-          console.error('[AUTH] JIT provisioning failed:', jitError.message);
+        } catch (jitError) {
+          const errorMessage = jitError instanceof Error ? jitError.message : 'Unknown error';
+          console.error('[AUTH] JIT provisioning failed:', errorMessage);
           return res.status(500).json({ message: 'User provisioning failed' });
         }
       } else {
@@ -92,11 +93,12 @@ export function requireAuth(
       }
 
       req.userRoles = payload.realm_access?.roles || [];
-      (req as any).userGroups = payload.groups || [];
+      req.userGroups = payload.groups || [];
 
       next();
-    } catch (dbErr: any) {
-      console.error('[AUTH] Database error during user resolution:', dbErr.message);
+    } catch (dbErr) {
+      const errorMessage = dbErr instanceof Error ? dbErr.message : 'Unknown error';
+      console.error('[AUTH] Database error during user resolution:', errorMessage);
       return res.status(500).json({ message: 'Authentication service error' });
     }
   });

@@ -9,5 +9,6 @@ router.use(requireAuth);
 router.get('/:conversationId', MessagesController.list);
 router.post('/', MessagesController.send);
 router.patch('/:messageId', MessagesController.edit);
+router.post('/stop', MessagesController.stop);
 
 export default router;

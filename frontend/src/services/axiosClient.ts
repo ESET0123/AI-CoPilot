@@ -11,10 +11,15 @@ axiosClient.interceptors.request.use((config) => {
   return config;
 });
 
-let isRefreshing = false;
-let failedQueue: any[] = [];
+interface QueuedRequest {
+  resolve: (value?: unknown) => void;
+  reject: (error: Error) => void;
+}
 
-const processQueue = (error: any) => {
+let isRefreshing = false;
+let failedQueue: QueuedRequest[] = [];
+
+const processQueue = (error: Error | null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -62,10 +67,11 @@ axiosClient.interceptors.response.use(
         }
 
         return axiosClient(originalRequest);
-      } catch (refreshError: any) {
+      } catch (refreshError) {
         // Process queued requests with error
+        const error = refreshError instanceof Error ? refreshError : new Error('Token refresh failed');
         try {
-          processQueue(refreshError);
+          processQueue(error);
         } catch (queueError) {
           console.error('[AxiosClient] Error processing failed queue:', queueError);
         }

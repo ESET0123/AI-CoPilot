@@ -5,8 +5,8 @@ export const theme: MantineThemeOverride = createTheme({
     primaryColor: 'brand',
     primaryShade: 5,
     colors: {
-        brand: designTokens.colors.brand as any,
-        dark: designTokens.colors.dark as any,
+        brand: designTokens.colors.brand as [string, string, string, string, string, string, string, string, string, string],
+        dark: designTokens.colors.dark as [string, string, string, string, string, string, string, string, string, string],
     },
     fontFamily: 'Inter, sans-serif',
     headings: {
@@ -19,7 +19,7 @@ export const theme: MantineThemeOverride = createTheme({
             defaultProps: {
                 radius: 'xl',
             },
-            styles: (theme: any) => ({
+            styles: () => ({
                 root: {
                     transition: `background-color ${designTokens.animations.medium}, transform ${designTokens.animations.fast}`,
                     '&:active': {

@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
@@ -30,8 +30,6 @@ app.get('/', (_req, res) => {
   res.send('SERVER OK');
 });
 
-import { MessagesController } from './controllers/messages.controller';
-
 app.use('/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/conversations', conversationsRoutes);
@@ -42,7 +40,19 @@ app.use('/api/theft', requireAuth, theftRoutes);
 app.use('/api/forecasting', requireAuth, forecastingRoutes);
 app.use('/api/defaulter', requireAuth, defaulterRoutes);
 
-app.post('/api/messages/stop', requireAuth, MessagesController.stop);
+// Global error handling middleware
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error('[Global Error Handler]:', err);
+
+  if (env.NODE_ENV === 'production') {
+    res.status(500).json({ message: 'Internal server error' });
+  } else {
+    res.status(500).json({
+      message: err.message || 'Internal server error',
+      stack: err.stack
+    });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);

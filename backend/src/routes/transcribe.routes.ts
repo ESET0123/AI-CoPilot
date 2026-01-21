@@ -5,7 +5,7 @@ import { transcribeAudio } from '../utils/aiClient';
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-router.post('/', upload.single('file'), async (req: Request, res: Response): Promise<any> => {
+router.post('/', upload.single('file'), async (req: Request, res: Response) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
@@ -19,11 +19,12 @@ router.post('/', upload.single('file'), async (req: Request, res: Response): Pro
         // Let's modify transcribeAudio in aiClient to handle Buffer/Readable stream if needed,
         // but for simplicity, let's see if we can just pass the buffer.
 
-        const text = await transcribeAudio(req.file.buffer as any);
+        const text = await transcribeAudio(req.file.buffer);
         res.json({ text });
-    } catch (error: any) {
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Transcription failed';
         console.error('Transcription route error:', error);
-        res.status(500).json({ error: error.message || 'Transcription failed' });
+        res.status(500).json({ error: errorMessage });
     }
 });
 
