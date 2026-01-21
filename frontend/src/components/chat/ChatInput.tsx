@@ -140,8 +140,13 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
 
     try {
       if (draftMessageMode) {
+        const derivedTitle = messageContent.trim()
+          || (selectedFile ? `File: ${selectedFile.name}` : '')
+          || (ocrText ? ocrText.slice(0, MAX_CONVERSATION_TITLE_LENGTH) : '')
+          || 'New Chat';
+
         const convo = await dispatch(
-          createConversation(messageContent.slice(0, MAX_CONVERSATION_TITLE_LENGTH) || 'New Chat')
+          createConversation(derivedTitle.slice(0, MAX_CONVERSATION_TITLE_LENGTH))
         ).unwrap();
         dispatch(setActiveConversation(convo.id));
         targetConvoId = convo.id;
