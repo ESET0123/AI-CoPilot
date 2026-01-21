@@ -2,7 +2,7 @@ import { SimpleGrid, Paper, Text, Group, ThemeIcon, Box } from '@mantine/core';
 import { TbFlag } from 'react-icons/tb';
 import { PiWarningDiamond } from "react-icons/pi";
 import { GoLightBulb } from "react-icons/go";
-import { DefaulterStats } from '../../services/defaulterService';
+import { DefaulterStats } from '../../../services/defaulterService';
 
 interface DefaulterStatsGridProps {
     stats: DefaulterStats;

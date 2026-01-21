@@ -1,6 +1,6 @@
 import { LineChart } from '@mantine/charts';
 import { Paper, Title, Group, Text, Badge } from '@mantine/core';
-import { DefaulterPredictionTrendData } from '../../services/defaulterService';
+import { DefaulterPredictionTrendData } from '../../../services/defaulterService';
 
 interface DefaulterPredictionChartProps {
     data: DefaulterPredictionTrendData;

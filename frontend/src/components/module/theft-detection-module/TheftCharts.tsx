@@ -1,6 +1,6 @@
 import { BarChart, DonutChart } from '@mantine/charts';
 import { Paper, Title as MantineTitle, Group, Text } from '@mantine/core';
-import { ChartData as ChartDataType } from '../../services/theftService';
+import { ChartData as ChartDataType } from '../../../services/theftService';
 
 const CHART_HEIGHT = 300;
 

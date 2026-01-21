@@ -407,7 +407,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
               <Box
                 key={index}
                 onMouseDown={(e) => {
-                  e.preventDefault(); // Prevent blurring the input before the click fires
+                  e.preventDefault(); 
                   handleSuggestionClick(suggestion);
                 }}
                 style={{

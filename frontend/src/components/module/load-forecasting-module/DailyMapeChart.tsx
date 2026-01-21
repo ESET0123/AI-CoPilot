@@ -13,10 +13,10 @@ export default function DailyMapeChart({ data }: DailyMapeChartProps) {
             <Group justify="space-between" align="start" mb="xs">
                 <Text fw={700} size="15px" c="#454b54">Daily Mape</Text>
                 <Group gap={4} align="center">
-                    <ActionIcon variant="subtle" color="gray" size="sm">
+                    <ActionIcon variant="subtle" color="black" size="sm">
                         <MdFilterList size={18} />
                     </ActionIcon>
-                    <ActionIcon variant="subtle" color="gray" size="sm">
+                    <ActionIcon variant="subtle" color="black" size="sm">
                         <TbDotsVertical size={16} />
                     </ActionIcon>
                 </Group>
@@ -42,7 +42,7 @@ export default function DailyMapeChart({ data }: DailyMapeChartProps) {
                     gridAxis="y"
                     gridProps={{ vertical: false, strokeDasharray: '0', stroke: '#f1f5f9' }}
                     yAxisProps={{
-                        domain: [0, 7],
+                        domain: [0, 8],
                         tickSize: 0,
                         tickMargin: 10,
                         tickCount: 8,
@@ -54,10 +54,7 @@ export default function DailyMapeChart({ data }: DailyMapeChartProps) {
                         tickMargin: 8,
                         style: { fontSize: '11px', fill: '#94a3b8' }
                     }}
-                    barProps={{
-                        radius: [8, 8, 8, 8],
-                        barSize: 28,
-                    }}
+                    barProps={{ radius: [7, 7, 0, 0], label: { position: 'insideTop', fill: '#fff', fontSize: 10, offset: 10 } }}
                     withBarValueLabel
                     valueLabelProps={{
                         position: 'top',

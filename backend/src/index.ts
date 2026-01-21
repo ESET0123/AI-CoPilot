@@ -9,9 +9,9 @@ import conversationsRoutes from './routes/conversations.routes';
 import messagesRoutes from './routes/messages.routes';
 import transcribeRoutes from './routes/transcribe.routes';
 import ocrRoutes from './routes/ocr.routes';
-import theftRoutes from './theft-detection-module/theft.routes';
-import forecastingRoutes from './load-forecasting-module/forecasting.routes';
-import defaulterRoutes from './defaulter-analysis-module/defaulter.routes';
+import theftRoutes from './module/theft-detection-module/theft.routes';
+import forecastingRoutes from './module/load-forecasting-module/forecasting.routes';
+import defaulterRoutes from './module/defaulter-analysis-module/defaulter.routes';
 import { requireAuth } from './middleware/auth';
 
 const app = express();

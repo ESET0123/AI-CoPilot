@@ -82,10 +82,80 @@ export default function UserMenu({ collapsed = false }: Props) {
       </Menu.Target>
 
       {/* ===== Dropdown ===== */}
-      <Menu.Dropdown>
+      {/* <Menu.Dropdown>
 
         <Menu.Item
           // color="red"
+          leftSection={<TbTrash size={16} />}
+          onClick={openDeleteModal}
+          closeMenuOnClick={false}
+        >
+          Delete all chats
+        </Menu.Item>
+
+        <Menu.Item
+          color="red"
+          leftSection={<TbLogout size={16} />}
+          onClick={() => {
+            dispatch(logout());
+          }}
+        >
+          Logout
+        </Menu.Item>
+      </Menu.Dropdown> */}
+      <Menu.Dropdown>
+        {/* ===== Settings Sections (Placeholders) ===== */}
+
+        <Menu.Item
+          leftSection={<TbSettings size={16} />}
+          onClick={() => {
+            console.log('User Preferences clicked');
+          }}
+        >
+          User Preferences
+        </Menu.Item>
+
+        <Menu.Item
+          leftSection={<TbSettings size={16} />}
+          onClick={() => {
+            console.log('Notifications clicked');
+          }}
+        >
+          Notifications
+        </Menu.Item>
+
+        <Menu.Item
+          leftSection={<TbSettings size={16} />}
+          onClick={() => {
+            console.log('Privacy & Data clicked');
+          }}
+        >
+          Privacy & Data
+        </Menu.Item>
+
+        <Menu.Item
+          leftSection={<TbSettings size={16} />}
+          onClick={() => {
+            console.log('Display & Accessibility clicked');
+          }}
+        >
+          Display & Accessibility
+        </Menu.Item>
+
+        <Menu.Item
+          leftSection={<TbSettings size={16} />}
+          onClick={() => {
+            console.log('Help & Support clicked');
+          }}
+        >
+          Help & Support
+        </Menu.Item>
+
+        <Menu.Divider />
+
+        {/* ===== Existing Actions ===== */}
+
+        <Menu.Item
           leftSection={<TbTrash size={16} />}
           onClick={openDeleteModal}
         >
@@ -102,6 +172,7 @@ export default function UserMenu({ collapsed = false }: Props) {
           Logout
         </Menu.Item>
       </Menu.Dropdown>
+
 
       <DeleteAllConversationsModal
         opened={deleteModalOpened}

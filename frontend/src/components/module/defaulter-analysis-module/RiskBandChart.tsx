@@ -1,6 +1,6 @@
 import { DonutChart } from '@mantine/charts';
 import { Paper, Title, Group, Text } from '@mantine/core';
-import { RiskBandDistributionData } from '../../services/defaulterService';
+import { RiskBandDistributionData } from '../../../services/defaulterService';
 
 interface RiskBandChartProps {
     data: RiskBandDistributionData;

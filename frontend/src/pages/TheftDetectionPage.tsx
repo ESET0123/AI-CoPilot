@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Container, Title, Button, Group, Box, LoadingOverlay, Text, ThemeIcon, Grid } from '@mantine/core';
-import { TbRobot, TbShieldCheck } from 'react-icons/tb';
+import { Container, Title, Button, Group, Box, LoadingOverlay, Text, ThemeIcon, Grid, Stack } from '@mantine/core';
 import { FaAngleLeft } from "react-icons/fa6";
 import { LuCloudAlert } from "react-icons/lu";
 import { Link } from 'react-router-dom';
-import TheftFilters from '../components/theft-detection-module/TheftFilters';
-import TheftStatsGrid from '../components/theft-detection-module/TheftStatsGrid';
-import { CaseCheckedChart, CasesByDivisionChart, TheftByCaseTypeChart } from '../components/theft-detection-module/TheftCharts';
-import TheftAdditionalCharts from '../components/theft-detection-module/TheftAdditionalCharts';
+import TheftFilters from '../components/module/theft-detection-module/TheftFilters';
+import TheftStatsGrid from '../components/module/theft-detection-module/TheftStatsGrid';
+import { CaseCheckedChart, CasesByDivisionChart, TheftByCaseTypeChart } from '../components/module/theft-detection-module/TheftCharts';
+import TheftAdditionalCharts from '../components/module/theft-detection-module/TheftAdditionalCharts';
 import { theftService, TheftDashboardData } from '../services/theftService';
 import AppShellLayout from '../components/layout/AppShellLayout';
 import HeaderBar from '../components/layout/HeaderBar';
@@ -51,43 +50,53 @@ export default function TheftDetectionPage() {
                     <LoadingOverlay visible={loading} />
 
                     {/* Header */}
-                    <Box mb="xl">
-                        <Button
-                            component={Link}
-                            to="/dashboard"
-                            variant="subtle"
-                            color="black"
-                            leftSection={<FaAngleLeft />}
-                            size="xs"
-                            mb="md"
-                            pl={0}
-                        >
-                            Back to Home
-                        </Button>
-
+                    <Box mb="xl" mt="xs">
                         <Group justify="space-between" align="center">
-                            <Group>
-                                <ThemeIcon size={32} radius="l" color="green">
-                                    <LuCloudAlert size={20} />
-                                </ThemeIcon>
-                                <Title order={2} size="h2" fw={700}>Theft Detection- Real time analytics</Title>
-                            </Group>
+                            {/* Left column */}
+                            <Stack>
+                                <Button
+                                    component={Link}
+                                    to="/dashboard"
+                                    variant="subtle"
+                                    color="black"
+                                    leftSection={<FaAngleLeft />}
+                                    size="s"
+                                    justify='left'
+                                    w="fit-content"
+                                    pl={0}
+                                >
+                                    Back to Home
+                                </Button>
+
+                                <Group align="center">
+                                    <ThemeIcon size={32} radius="md" color="green" variant="filled">
+                                        <LuCloudAlert size={20} />
+                                    </ThemeIcon>
+
+                                    <Title order={2} size="h4" fw={700}>
+                                        Theft Detection – Real time analytics
+                                    </Title>
+                                </Group>
+                            </Stack>
+
+                            {/* Right button */}
                             <Button
                                 component={Link}
                                 to="/dashboard"
                                 bg="#1e1e1e"
                                 leftSection={
                                     <Box
+                                        w={18}
+                                        h={18}
                                         style={{
-                                            width: 20,
-                                            height: 20,
                                             borderRadius: '50%',
-                                            flexShrink: 0,
-                                            background: 'linear-gradient(135deg, #4ade80 0%, #ece019 100%)'
+                                            background: 'linear-gradient(135deg, #4ade80 0%, #ece019 100%)',
                                         }}
                                     />
                                 }
                                 radius="xl"
+                                size="md"
+                                fw={600}
                             >
                                 Ask Ai
                             </Button>

@@ -1,4 +1,4 @@
-import { DUMMY_THEFT_DATA } from '../utils/dummy_theft_data';
+import { DUMMY_THEFT_DATA } from '../../utils/dummy_theft_data';
 
 export class TheftRepository {
     static async getStats() {

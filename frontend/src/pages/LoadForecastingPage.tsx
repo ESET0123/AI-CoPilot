@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Container, Title, Button, Group, Box, LoadingOverlay, Text, ThemeIcon, Grid } from '@mantine/core';
-import { TbRefresh } from 'react-icons/tb';
+import { Container, Title, Button, Group, Box, LoadingOverlay, Text, ThemeIcon, Grid, Stack } from '@mantine/core';
+import { TfiReload } from "react-icons/tfi";
 import { FaAngleLeft } from "react-icons/fa6";
 import { Link } from 'react-router-dom';
 import AppShellLayout from '../components/layout/AppShellLayout';
 import HeaderBar from '../components/layout/HeaderBar';
-import ForecastStatsCard from '../components/load-forecasting-module/ForecastStatsCard';
-import DailyMapeChart from '../components/load-forecasting-module/DailyMapeChart';
-import ModelComparisonChart from '../components/load-forecasting-module/ModelComparisonChart';
+import ForecastStatsCard from '../components/module/load-forecasting-module/ForecastStatsCard';
+import DailyMapeChart from '../components/module/load-forecasting-module/DailyMapeChart';
+import ModelComparisonChart from '../components/module/load-forecasting-module/ModelComparisonChart';
 import { forecastingService, ForecastDashboardData } from '../services/forecastingService';
 
 export default function LoadForecastingPage() {
@@ -52,48 +52,57 @@ export default function LoadForecastingPage() {
 
                     {/* Header Section */}
                     <Box mb="xl" mt="xs">
-                        <Button
-                            component={Link}
-                            to="/dashboard"
-                            variant="subtle"
-                            color="black"
-                            leftSection={<FaAngleLeft />}
-                            size="xs"
-                            mb="md"
-                            pl={0}
-                        >
-                            Back to Home
-                        </Button>
-
                         <Group justify="space-between" align="center">
-                            <Group>
+                            {/* Left column */}
+                            <Stack >
+                                <Button
+                                component={Link}
+                                to="/dashboard"
+                                variant="subtle"
+                                color="black"
+                                leftSection={<FaAngleLeft />}
+                                size="s"
+                                justify='left'
+                                w="fit-content"
+                                pl={0}
+                                >
+                                Back to Home
+                                </Button>
+
+                                <Group align="center">
                                 <ThemeIcon size={32} radius="md" color="green" variant="filled">
-                                    <TbRefresh size={20} />
+                                    <TfiReload size={20} />
                                 </ThemeIcon>
-                                <Title order={2} size="h4" fw={700}>Load Forecasting- Real time analytics</Title>
-                            </Group>
+
+                                <Title order={2} size="h4" fw={700}>
+                                    Load Forecasting – Real time analytics
+                                </Title>
+                                </Group>
+                            </Stack>
+
+                            {/* Right button */}
                             <Button
                                 component={Link}
                                 to="/dashboard"
                                 bg="#1e1e1e"
                                 leftSection={
-                                    <Box
-                                        style={{
-                                            width: 18,
-                                            height: 18,
-                                            borderRadius: '50%',
-                                            flexShrink: 0,
-                                            background: 'linear-gradient(135deg, #bef264 0%, #4ade80 100%)'
-                                        }}
-                                    />
+                                <Box
+                                    w={18}
+                                    h={18}
+                                    style={{
+                                    borderRadius: '50%',
+                                    background: 'linear-gradient(135deg, #4ade80 0%, #ece019 100%)',
+                                    }}
+                                />
                                 }
                                 radius="xl"
-                                size="sm"
+                                size="md"
                                 fw={600}
                             >
                                 Ask Ai
                             </Button>
-                        </Group>
+                            </Group>
+
                     </Box>
 
                     {data && (

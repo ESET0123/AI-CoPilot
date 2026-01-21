@@ -3,6 +3,7 @@ import { Paper, Text, Group, Box, ThemeIcon, ActionIcon } from '@mantine/core';
 import { TbDotsVertical } from 'react-icons/tb';
 import { LiaBroadcastTowerSolid } from "react-icons/lia";
 import { MdFilterList } from "react-icons/md";
+import { ComponentType } from 'react';
 
 interface ForecastStatsCardProps {
     title: string;
@@ -10,7 +11,7 @@ interface ForecastStatsCardProps {
     subtitle?: string;
     liveValue?: string | number;
     liveLabel?: string;
-    icon?: any;
+    icon?: ComponentType<{ size?: number }>;
 }
 
 export default function ForecastStatsCard({
@@ -26,10 +27,10 @@ export default function ForecastStatsCard({
             <Group justify="space-between" mb="xs">
                 <Text fw={600} size="14px" c="#5c6a7e">{title}</Text>
                 <Group gap={4}>
-                    <ActionIcon variant="subtle" color="gray" size="sm">
+                    <ActionIcon variant="subtle" color="black" size="sm">
                         <MdFilterList size={18} />
                     </ActionIcon>
-                    <ActionIcon variant="subtle" color="gray" size="sm">
+                    <ActionIcon variant="subtle" color="black" size="sm">
                         <TbDotsVertical size={16} />
                     </ActionIcon>
                 </Group>

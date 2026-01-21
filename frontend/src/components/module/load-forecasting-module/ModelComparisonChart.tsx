@@ -14,10 +14,10 @@ export default function ModelComparisonChart({ data }: ModelComparisonChartProps
                 <Text fw={700} size="15px" c="#454b54">Model Comparison Test</Text>
                 <Group gap="xl">
                     <Group gap={4}>
-                        <ActionIcon variant="subtle" color="gray" size="sm">
+                        <ActionIcon variant="subtle" color="black" size="sm">
                             <MdFilterList size={18} />
                         </ActionIcon>
-                        <ActionIcon variant="subtle" color="gray" size="sm">
+                        <ActionIcon variant="subtle" color="black" size="sm">
                             <TbDotsVertical size={16} />
                         </ActionIcon>
                     </Group>

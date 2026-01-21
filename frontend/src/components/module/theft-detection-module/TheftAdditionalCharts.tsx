@@ -1,6 +1,6 @@
 import { BarChart, DonutChart } from '@mantine/charts';
 import { Paper, Title as MantineTitle, Grid, Group, Text, Box } from '@mantine/core';
-import { ChartData as ChartDataType } from '../../services/theftService';
+import { ChartData as ChartDataType } from '../../../services/theftService';
 
 interface TheftAdditionalChartsProps {
     data: {

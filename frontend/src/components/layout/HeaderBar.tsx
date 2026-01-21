@@ -1,12 +1,27 @@
 import { Group, Title, Burger, Box, Image, Avatar, Menu, UnstyledButton, rem } from '@mantine/core';
 import { TbLogout } from 'react-icons/tb';
 import { useLayout } from './LayoutContext';
-import { useAppDispatch } from '../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout } from '../../features/auth/authSlice';
 
 export default function HeaderBar() {
   const { mobileOpened, toggleMobile, hasSidebar } = useLayout();
   const dispatch = useAppDispatch();
+
+  const user = useAppSelector((state) => state.auth.user);
+
+  const getInitials = (u: any) => {
+    if (u?.given_name && u?.family_name) {
+      return `${u.given_name[0]}${u.family_name[0]}`.toUpperCase();
+    }
+    if (u?.name) {
+      return u.name.substring(0, 2).toUpperCase();
+    }
+    if (u?.email) {
+      return u.email.substring(0, 2).toUpperCase();
+    }
+    return 'U';
+  };
 
   return (
     <Group h="100%" justify="space-between" align="center" style={{ width: '100%' }}>
@@ -36,7 +51,7 @@ export default function HeaderBar() {
               color="green"
               style={{ cursor: 'pointer' }}
             >
-              RS
+              {getInitials(user)}
             </Avatar>
           </UnstyledButton>
         </Menu.Target>

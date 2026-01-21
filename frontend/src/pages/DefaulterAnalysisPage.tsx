@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Container, Title, Button, Group, Box, LoadingOverlay, Text, ThemeIcon, Grid } from '@mantine/core';
-import { TbDotsVertical } from 'react-icons/tb';
+import { Container, Title, Button, Group, Box, LoadingOverlay, Text, ThemeIcon, Grid, Stack } from '@mantine/core';
 import { FaAngleLeft } from "react-icons/fa6";
 import { MdOutlineAccountBalanceWallet } from "react-icons/md";
 import { Link } from 'react-router-dom';
-import DefaulterStatsGrid from '../components/defaulter-analysis-module/DefaulterStatsGrid';
-import DefaulterPredictionChart from '../components/defaulter-analysis-module/DefaulterPredictionChart';
-import RiskBandChart from '../components/defaulter-analysis-module/RiskBandChart';
+import DefaulterStatsGrid from '../components/module/defaulter-analysis-module/DefaulterStatsGrid';
+import DefaulterPredictionChart from '../components/module/defaulter-analysis-module/DefaulterPredictionChart';
+import RiskBandChart from '../components/module/defaulter-analysis-module/RiskBandChart';
 import { defaulterService, DefaulterDashboardData } from '../services/defaulterService';
 import AppShellLayout from '../components/layout/AppShellLayout';
 import HeaderBar from '../components/layout/HeaderBar';
@@ -50,43 +49,53 @@ export default function DefaulterAnalysisPage() {
                     <LoadingOverlay visible={loading} />
 
                     {/* Header */}
-                    <Box mb="xs">
-                        <Button
-                            component={Link}
-                            to="/dashboard"
-                            variant="subtle"
-                            color="black"
-                            leftSection={<FaAngleLeft />}
-                            size="xs"
-                            mb="xs"
-                            pl={0}
-                        >
-                            Back to Home
-                        </Button>
-
+                    <Box mb="xl" mt="xs">
                         <Group justify="space-between" align="center">
-                            <Group>
-                                <ThemeIcon size={32} radius="l" color="green">
-                                    <MdOutlineAccountBalanceWallet size={20} />
-                                </ThemeIcon>
-                                <Title order={2} size="h4" fw={700}>Default Predictions and Key Metrics</Title>
-                            </Group>
+                            {/* Left column */}
+                            <Stack >
+                                <Button
+                                    component={Link}
+                                    to="/dashboard"
+                                    variant="subtle"
+                                    color="black"
+                                    leftSection={<FaAngleLeft />}
+                                    size="s"
+                                    justify='left'
+                                    w="fit-content"
+                                    pl={0}
+                                >
+                                    Back to Home
+                                </Button>
+
+                                <Group align="center">
+                                    <ThemeIcon size={32} radius="md" color="green" variant="filled">
+                                        <MdOutlineAccountBalanceWallet size={20} />
+                                    </ThemeIcon>
+
+                                    <Title order={2} size="h4" fw={700}>
+                                        Default Predictions and Key Metrics – Real time analytics
+                                    </Title>
+                                </Group>
+                            </Stack>
+
+                            {/* Right button */}
                             <Button
                                 component={Link}
                                 to="/dashboard"
                                 bg="#1e1e1e"
                                 leftSection={
                                     <Box
+                                        w={18}
+                                        h={18}
                                         style={{
-                                            width: 20,
-                                            height: 20,
                                             borderRadius: '50%',
-                                            flexShrink: 0,
-                                            background: 'linear-gradient(135deg, #4ade80 0%, #ece019 100%)'
+                                            background: 'linear-gradient(135deg, #4ade80 0%, #ece019 100%)',
                                         }}
                                     />
                                 }
                                 radius="xl"
+                                size="md"
+                                fw={600}
                             >
                                 Ask Ai
                             </Button>

@@ -1,7 +1,7 @@
 import { SimpleGrid, Paper, Text, Group, ThemeIcon, Stack, Grid, Box } from '@mantine/core';
 import { TbTarget, TbCircleCheck, TbAlertTriangle, TbActivity } from 'react-icons/tb';
 import { TfiTarget } from "react-icons/tfi";
-import { TheftStats } from '../../services/theftService';
+import { TheftStats } from '../../../services/theftService';
 import { Link } from 'react-router-dom';
 
 interface TheftStatsGridProps {
