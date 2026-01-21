@@ -2,18 +2,24 @@
 
 ## Quick Start
 
-1. **Start Keycloak**:
-   ```bash
-   cd keycloak-setup
-   docker-compose up -d
-   ```
+### 1. Start the Instances
+Navigate to this directory and run:
+```bash
+docker-compose up -d
+```
+> [!TIP]
+> Use `docker-compose ps` to verify that both `keycloak` and `keycloak-postgres` are "Up" and "Healthy".
 
-2. **Access Keycloak Admin Console**:
-   - URL: http://localhost:8080
-   - Username: `admin`
-   - Password: `admin`
+### 2. Access Admin Console
+- **URL**: [http://localhost:8080](http://localhost:8080)
+- **Username**: `admin`
+- **Password**: `admin`
 
-3. **Configure Realm and Client** (see below)
+### 3. Essential Docker Commands
+- **View Logs**: `docker-compose logs -f keycloak`
+- **Stop Containers**: `docker-compose stop`
+- **Start Again**: `docker-compose start`
+- **Remove Containers**: `docker-compose down` (Add `-v` to also delete database volumes)
 
 ---
 
@@ -107,6 +113,60 @@ VITE_KEYCLOAK_CLIENT_ID=test_client
 
 ---
 
+## Data Import & Export
+
+### Option 1: Importing a Realm JSON (Recommended)
+If you have a `realm-export.json` file, you can import it to quickly set up all roles, clients, and configurations.
+
+1.  **Via Admin Console**:
+    *   Log in to http://localhost:8080 (admin/admin).
+    *   Click on the **Master** realm dropdown → **Create Realm**.
+    *   Click **Browse** for the "Resource File" and select your `.json` export.
+    *   Click **Create**.
+
+2.  **Via Docker (Auto-Import on Start)**:
+    *   Place your JSON file in the `keycloak-setup` directory.
+    *   Update `docker-compose.yml` to mount the file:
+        ```yaml
+        volumes:
+          - ./realm-export.json:/opt/keycloak/data/import/realm.json
+        ```
+    *   Add the import command to the `keycloak` service:
+        ```yaml
+        command: start-dev --import-realm
+        ```
+
+### Option 2: Database Snapshot (PostgreSQL)
+Since Keycloak data is stored in the `postgres` container, you can import/export the entire DB state.
+
+1.  **Export Data**:
+    ```bash
+    docker exec keycloak-postgres pg_dump -U keycloak keycloak > backup.sql
+    ```
+
+2.  **Import SQL File (Manual)**:
+    *   **Step 1**: Copy the SQL file into the container:
+        ```bash
+        docker cp path/to/your/file.sql keycloak-postgres:/tmp/import.sql
+        ```
+    *   **Step 2**: Execute the import command:
+        ```bash
+        docker exec -it keycloak-postgres psql -U keycloak -d keycloak -f /tmp/import.sql
+        ```
+
+3.  **Import SQL File (Automated - First Run Only)**:
+    *   Create an `init-db` folder in this directory.
+    *   Place your SQL file inside `init-db/`.
+    *   Modify [docker-compose.yml](file:///c:/Users/RishavShah/Desktop/Projects/chatbot/keycloak-setup/docker-compose.yml) to include the volume:
+        ```yaml
+        volumes:
+          - ./init-db:/docker-entrypoint-initdb.d
+        ```
+    *   > [!IMPORTANT]
+        > This only works if the Postgres volume is empty (first initialization).
+
+---
+
 ## Troubleshooting
 
 ### Keycloak not starting
@@ -114,9 +174,13 @@ VITE_KEYCLOAK_CLIENT_ID=test_client
 - Ensure PostgreSQL is healthy: `docker-compose ps`
 
 ### Cannot access admin console
-- Wait 1-2 minutes for Keycloak to fully start
+- Wait 1-2 minutes for Keycloak to fully start. It often takes longer on the first run as it initializes the database schema.
 - Check health: `curl http://localhost:8080/health/ready`
 
 ### Port 8080 already in use
-- Change port in `docker-compose.yml`: `"8081:8080"`
-- Update all URLs accordingly
+- Change the host port mapping in `docker-compose.yml`:
+  ```yaml
+  ports:
+    - "8081:8080" # Change left side to any free port
+  ```
+- Update all `.env` URLs to use `8081`. 
