@@ -40,7 +40,7 @@ export default function RoleProtectedRoute({ roles, children }: RoleProtectedRou
                 <Stack align="center">
                     <Title order={2}>403 - Forbidden</Title>
                     <p>You do not have permission to access this page.</p>
-                    <Button component={Link} to="/dashboard">Back to Dashboard</Button>
+                    <Button component={Link} to="/copilot">Back to Dashboard</Button>
                 </Stack>
             </Box>
         );

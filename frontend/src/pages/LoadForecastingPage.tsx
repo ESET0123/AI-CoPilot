@@ -44,10 +44,10 @@ export default function LoadForecastingPage() {
     return (
         <AppShellLayout>
             <Box h="100%" display="flex" style={{ flexDirection: 'column' }}>
-                <Box h={60} px="md" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.05)', display: 'flex', alignItems: 'center' }}>
+                <Box h={60} px="md" style={{ borderBottom: '1px solid var(--app-border)', display: 'flex', alignItems: 'center' }}>
                     <HeaderBar />
                 </Box>
-                <Container fluid px="xl" bg="#f8fafc" py="xs" pos="relative" style={{ flex: 1, overflowY: 'auto', width: '100%' }}>
+                <Container fluid px="xl" py="xs" pos="relative" style={{ flex: 1, overflowY: 'auto', width: '100%', background: 'var(--app-background-module)' }}>
                     <LoadingOverlay visible={loading} />
 
                     {/* Header Section */}
@@ -56,44 +56,44 @@ export default function LoadForecastingPage() {
                             {/* Left column */}
                             <Stack >
                                 <Button
-                                component={Link}
-                                to="/dashboard"
-                                variant="subtle"
-                                color="black"
-                                leftSection={<FaAngleLeft />}
-                                size="s"
-                                justify='left'
-                                w="fit-content"
-                                pl={0}
+                                    component={Link}
+                                    to="/copilot"
+                                    variant="transparent"
+                                    leftSection={<FaAngleLeft />}
+                                    size="s"
+                                    justify='left'
+                                    w="fit-content"
+                                    pl={0}
+                                    c="var(--app-text-primary)"
                                 >
-                                Back to Home
+                                    Back to Home
                                 </Button>
 
                                 <Group align="center">
-                                <ThemeIcon size={32} radius="md" color="green" variant="filled">
-                                    <TfiReload size={20} />
-                                </ThemeIcon>
+                                    <ThemeIcon size={32} radius="md" color="green" variant="filled">
+                                        <TfiReload size={20} />
+                                    </ThemeIcon>
 
-                                <Title order={2} size="h4" fw={700}>
-                                    Load Forecasting – Real time analytics
-                                </Title>
+                                    <Title order={2} size="h4" fw={700}>
+                                        Load Forecasting – Real time analytics
+                                    </Title>
                                 </Group>
                             </Stack>
 
                             {/* Right button */}
                             <Button
                                 component={Link}
-                                to="/dashboard"
+                                to="/copilot"
                                 bg="#1e1e1e"
                                 leftSection={
-                                <Box
-                                    w={18}
-                                    h={18}
-                                    style={{
-                                    borderRadius: '50%',
-                                    background: 'linear-gradient(135deg, #4ade80 0%, #ece019 100%)',
-                                    }}
-                                />
+                                    <Box
+                                        w={18}
+                                        h={18}
+                                        style={{
+                                            borderRadius: '50%',
+                                            background: 'linear-gradient(135deg, #4ade80 0%, #ece019 100%)',
+                                        }}
+                                    />
                                 }
                                 radius="xl"
                                 size="md"
@@ -101,7 +101,7 @@ export default function LoadForecastingPage() {
                             >
                                 Ask Ai
                             </Button>
-                            </Group>
+                        </Group>
 
                     </Box>
 

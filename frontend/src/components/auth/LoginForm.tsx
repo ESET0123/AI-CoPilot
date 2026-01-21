@@ -37,7 +37,7 @@ export default function LoginForm({ setLoading }: { setLoading: (loading: boolea
         dispatch(loginWithCredentials({ username: values.email, password: values.password }))
             .unwrap()
             .then(() => {
-                navigate('/dashboard', { replace: true });
+                navigate('/copilot', { replace: true });
             })
             .catch((err) => {
                 console.error('[LoginPage] Login failed:', err);

@@ -10,6 +10,44 @@ body,
     height: 100%;
 }
 
+/* Light mode CSS variables */
+:root[data-mantine-color-scheme="light"] {
+    --app-background: #ffffff;
+    --app-background-secondary: radial-gradient(circle at 50% 0%, rgba(236, 252, 203, 0.8) 10%, #ffffff 70%);
+    --app-background-module: #f8fafc;
+    --app-surface: #ffffff;
+    --app-surface-hover: #f7fee7;
+    --app-border: rgba(0, 0, 0, 0.05);
+    --app-border-hover: #84cc16;
+    --app-text-primary: #1e293b;
+    --app-text-secondary: #64748b;
+    --app-text-tertiary: #94a3b8;
+    --app-accent-primary: #4caf50;
+    --app-accent-secondary: #84cc16;
+    --app-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --app-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --app-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode CSS variables */
+:root[data-mantine-color-scheme="dark"] {
+    --app-background: #1a1b1e;
+    --app-background-secondary: radial-gradient(circle at 50% 0%, rgba(76, 175, 80, 0.08) 10%, #1a1b1e 70%);
+    --app-background-module: #141517;
+    --app-surface: #25262b;
+    --app-surface-hover: #2c2e33;
+    --app-border: rgba(255, 255, 255, 0.1);
+    --app-border-hover: #66bb6a;
+    --app-text-primary: #e9ecef;
+    --app-text-secondary: #adb5bd;
+    --app-text-tertiary: #868e96;
+    --app-accent-primary: #66bb6a;
+    --app-accent-secondary: #a3e635;
+    --app-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --app-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --app-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+}
+
 
 @keyframes fadeIn {
     from {
@@ -72,10 +110,12 @@ body,
         box-shadow: 0 0 0 0 rgba(132, 204, 22, 0.7);
         transform: scale(0.95);
     }
+
     70% {
         box-shadow: 0 0 0 8px rgba(132, 204, 22, 0);
         transform: scale(1);
     }
+
     100% {
         box-shadow: 0 0 0 0 rgba(132, 204, 22, 0);
         transform: scale(0.95);
@@ -125,4 +165,9 @@ select,
     outline: 2px solid rgba(79, 172, 254, 0.5);
     outline-offset: 2px;
     border-radius: 4px;
+}
+
+/* Dark mode focus adjustment */
+:root[data-mantine-color-scheme="dark"] *:focus-visible {
+    outline-color: rgba(102, 187, 106, 0.6);
 }

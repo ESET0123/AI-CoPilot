@@ -12,7 +12,7 @@ import {
   fetchMessages,
 } from '../features/chat/chatSlice';
 
-export default function DashboardPage() {
+export default function CoPilotPage() {
   const dispatch = useAppDispatch();
   const user = useAppSelector((s) => s.auth.user);
   const chatState = useAppSelector((s) => s.chat);
@@ -43,7 +43,7 @@ export default function DashboardPage() {
         flexDirection: 'column',
         overflow: 'hidden',
         zoom: '0.9',
-        background: 'radial-gradient(circle at 50% 0%, rgba(236, 252, 203, 0.8) 10%, #ffffff 70%)'
+        background: 'var(--app-background-secondary)'
       }}>
 
         {/* HEADER SECTION */}
@@ -52,7 +52,7 @@ export default function DashboardPage() {
           px="md"
           style={{
             background: 'transparent',
-            borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+            borderBottom: '1px solid var(--app-border)',
             flexShrink: 0,
             display: 'flex',
             alignItems: 'center'

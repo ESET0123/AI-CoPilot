@@ -1,4 +1,4 @@
-import { Modal, Tabs, Box, Text, Group, Select, Switch, Stack, Divider, Button, ActionIcon } from '@mantine/core';
+import { Modal, Tabs, Box, Text, Group, Select, Switch, Stack, Divider, Button, ActionIcon, useMantineColorScheme } from '@mantine/core';
 import { TbUser, TbBell, TbLock, TbPalette, TbChevronRight, TbExternalLink } from 'react-icons/tb';
 
 interface SettingsModalProps {
@@ -7,6 +7,7 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
+    const { colorScheme, setColorScheme } = useMantineColorScheme();
     return (
         <Modal
             opened={opened}
@@ -26,8 +27,8 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                     padding: '10px 15px',
                     fontWeight: 500,
                     '&[data-active]': {
-                        backgroundColor: 'rgba(132, 204, 22, 0.1)',
-                        color: '#65a30d',
+                        backgroundColor: 'var(--mantine-color-brand-light)',
+                        color: 'var(--mantine-color-brand-text)',
                     }
                 },
                 panel: {
@@ -144,8 +145,13 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                             <Text fw={600} mb="xs">Theme</Text>
                             <Select
                                 placeholder="Choose theme"
-                                data={['System', 'Light', 'Dark']}
-                                defaultValue="Light"
+                                data={[
+                                    { value: 'auto', label: 'System' },
+                                    { value: 'light', label: 'Light' },
+                                    { value: 'dark', label: 'Dark' }
+                                ]}
+                                value={colorScheme}
+                                onChange={(value) => setColorScheme(value as 'auto' | 'light' | 'dark')}
                             />
                         </Box>
 
@@ -168,7 +174,7 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                 </Tabs.Panel>
             </Tabs>
 
-            <Box mt={40} pt="md" style={{ borderTop: '1px solid #eee' }}>
+            <Box mt={40} pt="md" style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}>
                 <Group justify="flex-end">
                     <Button variant="filled" color="lime" onClick={onClose} radius="md">Done</Button>
                 </Group>

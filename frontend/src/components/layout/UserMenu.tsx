@@ -82,15 +82,15 @@ export default function UserMenu({ collapsed = false }: Props) {
                 width: '100%',
                 transition: 'background-color 200ms ease',
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.04)'}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--mantine-color-default-hover)'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
               <ActionIcon variant="subtle" radius="xl" size={collapsed ? 'lg' : 'md'} color="gray">
-                <TbSettings size={collapsed ? 22 : 18} color="#475569" />
+                <TbSettings size={collapsed ? 22 : 18} />
               </ActionIcon>
 
               {!collapsed && (
-                <Text size="sm" fw={600} style={{ color: '#1e293b' }}>
+                <Text size="sm" fw={600} style={{ color: 'var(--mantine-color-text)' }}>
                   Settings & Help
                 </Text>
               )}

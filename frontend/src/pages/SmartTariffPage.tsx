@@ -6,7 +6,7 @@ export default function SmartTariffPage() {
     return (
         <AppShellLayout>
             <Box h="100%" display="flex" style={{ flexDirection: 'column' }}>
-                <Box h={60} px="md" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.05)', display: 'flex', alignItems: 'center' }}>
+                <Box h={60} px="md" style={{ borderBottom: '1px solid var(--app-border)', display: 'flex', alignItems: 'center' }}>
                     <HeaderBar />
                 </Box>
                 <Container size="xl" pt="xl">

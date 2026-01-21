@@ -23,14 +23,14 @@ export default function ForecastStatsCard({
     icon: Icon = LiaBroadcastTowerSolid
 }: ForecastStatsCardProps) {
     return (
-        <Paper p="md" radius="md" withBorder h="100%" pos="relative" style={{ backgroundColor: '#ffffff' }}>
+        <Paper p="md" radius="md" withBorder h="100%" pos="relative">
             <Group justify="space-between" mb="xs">
-                <Text fw={600} size="14px" c="#5c6a7e">{title}</Text>
+                <Text fw={600} size="14px" c="dimmed">{title}</Text>
                 <Group gap={4}>
-                    <ActionIcon variant="subtle" color="black" size="sm">
+                    <ActionIcon variant="subtle" size="sm">
                         <MdFilterList size={18} />
                     </ActionIcon>
-                    <ActionIcon variant="subtle" color="black" size="sm">
+                    <ActionIcon variant="subtle" size="sm">
                         <TbDotsVertical size={16} />
                     </ActionIcon>
                 </Group>

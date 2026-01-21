@@ -226,8 +226,8 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
         maxWidth: 900,
         margin: '0 auto',
         width: '100%',
-        backgroundColor: '#ffffff',
-        border: '1px solid rgba(0, 0, 0, 0.05)',
+        backgroundColor: 'var(--mantine-color-body)',
+        border: '1px solid var(--mantine-color-default-border)',
         position: 'relative',
         transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
         minHeight: 'auto',
@@ -255,14 +255,14 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            backgroundColor: 'rgba(132, 204, 22, 0.1)',
+            backgroundColor: 'var(--app-surface-hover)',
             borderRadius: '8px',
-            border: '1px solid rgba(132, 204, 22, 0.2)',
+            border: '1px solid var(--app-border)',
             width: 'fit-content'
           }}>
-            <TbPaperclip size={16} color="#65a30d" />
+            <TbPaperclip size={16} color="var(--mantine-color-brand-6)" />
             <Box style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Text size="sm" fw={600} style={{ color: '#1a1a1a' }}>{selectedFile.name}</Text>
+              <Text size="sm" fw={600} style={{ color: 'var(--mantine-color-text)' }}>{selectedFile.name}</Text>
               {isProcessingOcr && <Loader size="xs" color="lime" />}
               {!isProcessingOcr && ocrText && <TbCheck size={14} color="#65a30d" />}
             </Box>
@@ -295,11 +295,11 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 padding: '8px 4px',
                 fontSize: '16px',
                 lineHeight: 1,
-                color: '#000000',
+                color: 'var(--mantine-color-text)',
                 backgroundColor: 'transparent',
                 '&:disabled': {
                   backgroundColor: 'transparent',
-                  color: '#000000',
+                  color: 'var(--mantine-color-text)',
                   opacity: 1,
                   cursor: 'not-allowed',
                 },
@@ -328,7 +328,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 <Tooltip label="Attach file">
                   <ActionIcon
                     variant="subtle"
-                    style={{ color: '#000000' }}
+                    style={{ color: 'var(--mantine-color-text)' }}
                     radius="xl"
                     size="lg"
                     onClick={() => fileInputRef.current?.click()}
@@ -342,7 +342,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                   <ActionIcon
                     onClick={handleToggleRecording}
                     style={{
-                      color: isRecording ? 'red' : '#000000',
+                      color: isRecording ? 'red' : 'var(--mantine-color-text)',
                       transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',
                       transform: isRecording ? 'scale(1.1)' : 'scale(1)',
                     }}
@@ -366,8 +366,8 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 radius="md"
                 size="xl"
                 style={{
-                  backgroundColor: '#f1f3f5',
-                  color: '#000000'
+                  backgroundColor: 'var(--mantine-color-gray-2)',
+                  color: 'var(--mantine-color-text)'
                 }}
               >
                 <TbPlayerStopFilled stroke='1.5' size={20} />
@@ -377,7 +377,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             <Tooltip label={isCurrentSending ? 'Stop generating' : (isRecording ? 'Finish recording' : 'Send message')}>
               <ActionIcon
                 onClick={() => handleSend()}
-                color={isCurrentSending ? 'red' : (isRecording ? 'green' : '#000000')}
+                color={isCurrentSending ? 'red' : (isRecording ? 'green' : 'gray')}
                 variant="filled"
                 radius="md"
                 size="xl"
@@ -404,7 +404,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
         {showSuggestions && (
           <Box
             style={{
-              borderTop: '1px solid rgba(0, 0, 0, 0.05)',
+              borderTop: '1px solid var(--app-border)',
               paddingTop: '12px',
               marginTop: '8px',
               display: 'flex',
@@ -430,7 +430,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                   backgroundColor: 'transparent',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(132, 204, 22, 0.08)';
+                  e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'transparent';
@@ -438,7 +438,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
               >
                 <Group gap="sm">
                   <TbSearch />
-                  <Text size="sm" style={{ color: '#495057' }}>{suggestion}</Text>
+                  <Text size="sm" c="dimmed">{suggestion}</Text>
                 </Group>
                 <TbArrowUpRight />
               </Box>

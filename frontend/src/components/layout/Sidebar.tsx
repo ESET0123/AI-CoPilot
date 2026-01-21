@@ -47,7 +47,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
   const { toggleMobile } = useLayout();
 
   return (
-    <Stack h="100%" p="sm" gap="sm" style={{ backgroundColor: '#ffffff' }}>
+    <Stack h="100%" p="sm" gap="sm" bg="body">
       <Group justify={collapsed ? 'center' : 'space-between'} px="xs" >
         <ActionIcon
           variant="subtle"
@@ -62,7 +62,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
             }
           }}
         >
-          <TbMenu2 size={22} strokeWidth={1.5} color="#334155" />
+          <TbMenu2 size={22} strokeWidth={1.5} />
         </ActionIcon>
 
         {!collapsed && (
@@ -72,7 +72,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
             radius="md"
             size="lg"
           >
-            <TbSearch size={22} strokeWidth={1.5} color="#334155" />
+            <TbSearch size={22} strokeWidth={1.5} />
           </ActionIcon>
         )}
       </Group>
@@ -80,7 +80,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
       <Stack align={collapsed ? 'center' : 'stretch'} style={{ flex: 1, overflow: 'hidden' }}>
         {collapsed && (
           <ActionIcon
-            style={{ backgroundColor: '#ffffff', color: '#000000', justifyContent: 'center' }}
+            style={{ color: 'var(--mantine-color-text)', justifyContent: 'center' }}
             type="button"
             onClick={() => {
               dispatch(startNewChat());
@@ -110,7 +110,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                   padding: '0 16px',
                   fontWeight: 700,
                   fontSize: '15px',
-                  color: '#1e293b',
+                  color: 'var(--mantine-color-text)',
                   '&:hover': {
                     backgroundColor: 'rgba(132, 204, 22, 0.08)',
                   },
@@ -134,14 +134,14 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
               onClick={() => setOpen((o) => !o)}
               style={{ cursor: 'pointer' }}
             >
-              <Text size="xs" fw={700} style={{ letterSpacing: '0.05em', color: '#94a3b8' }}>
+              <Text size="xs" fw={700} style={{ letterSpacing: '0.05em' }} c="dimmed">
                 CHATS
               </Text>
 
               {open ? (
-                <TbChevronDown size={14} color="#000000" />
+                <TbChevronDown size={14} />
               ) : (
-                <TbChevronRight size={14} color="#000000" />
+                <TbChevronRight size={14} />
               )}
             </Group>
           </>
@@ -168,7 +168,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                         style={{
                           borderRadius: 22,
                           background: isActive
-                            ? '#ecfccb'
+                            ? 'var(--mantine-color-brand-light)'
                             : 'transparent',
                           border: 'none',
                           transition: 'background-color 150ms ease',
@@ -205,7 +205,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                             root: {
                               flexGrow: 1,
                               background: 'transparent',
-                              color: '#1e293b',
+                              color: 'var(--mantine-color-text)',
                               fontWeight: isActive ? 700 : 500,
                               fontSize: '14px',
                             },

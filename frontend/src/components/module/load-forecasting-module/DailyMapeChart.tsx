@@ -9,14 +9,14 @@ interface DailyMapeChartProps {
 
 export default function DailyMapeChart({ data }: DailyMapeChartProps) {
     return (
-        <Paper p="md" radius="md" withBorder h="100%" style={{ backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column' }}>
+        <Paper p="md" radius="md" withBorder h="100%" style={{ display: 'flex', flexDirection: 'column' }}>
             <Group justify="space-between" align="start" mb="xs">
-                <Text fw={700} size="15px" c="#454b54">Daily Mape</Text>
+                <Text fw={700} size="15px">Daily Mape</Text>
                 <Group gap={4} align="center">
-                    <ActionIcon variant="subtle" color="black" size="sm">
+                    <ActionIcon variant="subtle" size="sm">
                         <MdFilterList size={18} />
                     </ActionIcon>
-                    <ActionIcon variant="subtle" color="black" size="sm">
+                    <ActionIcon variant="subtle" size="sm">
                         <TbDotsVertical size={16} />
                     </ActionIcon>
                 </Group>
@@ -26,7 +26,7 @@ export default function DailyMapeChart({ data }: DailyMapeChartProps) {
             <Group justify="flex-end" px="xs" mb="xs">
                 <Group gap={6}>
                     <div style={{ width: 14, height: 14, borderRadius: 4, background: '#8b5cf6' }} />
-                    <Text size="13px" c="#5c6a7e" fw={500}>Mape</Text>
+                    <Text size="13px" c="dimmed" fw={500}>Mape</Text>
                 </Group>
             </Group>
 
@@ -40,7 +40,7 @@ export default function DailyMapeChart({ data }: DailyMapeChartProps) {
                         { name: 'value', label: 'Mape', color: 'url(#daily-mape-gradient)' },
                     ]}
                     gridAxis="y"
-                    gridProps={{ vertical: false, strokeDasharray: '0', stroke: '#f1f5f9' }}
+                    gridProps={{ vertical: false, strokeDasharray: '0', stroke: 'var(--mantine-color-gray-2)' }}
                     yAxisProps={{
                         domain: [0, 8],
                         tickSize: 0,

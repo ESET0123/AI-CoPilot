@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { LoadingOverlay, Box } from '@mantine/core';
 import LoginPage from '../pages/LoginPage';
-import DashboardPage from '../pages/DashboardPage';
+import CoPilotPage from '../pages/CoPilotPage';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import RoleProtectedRoute from '../components/auth/RoleProtectedRoute';
 import TheftDetectionPage from '../pages/TheftDetectionPage';
@@ -26,7 +26,7 @@ export default function AppRoutes() {
       {/* ROOT DECISION */}
       <Route
         path="/"
-        element={<Navigate to={user ? '/dashboard' : '/login'} replace />}
+        element={<Navigate to={user ? '/copilot' : '/login'} replace />}
       />
 
       {/* PUBLIC */}
@@ -34,10 +34,10 @@ export default function AppRoutes() {
 
       {/* PROTECTED */}
       <Route
-        path="/dashboard"
+        path="/copilot"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <CoPilotPage />
           </ProtectedRoute>
         }
       />
@@ -72,7 +72,7 @@ export default function AppRoutes() {
       <Route
         path="/defaulter-analysis"
         element={
-          <RoleProtectedRoute roles={[ 'ROLE_ADMINISTRATOR', 'ROLE_FIELD_OFFICER']}>
+          <RoleProtectedRoute roles={['ROLE_ADMINISTRATOR', 'ROLE_FIELD_OFFICER']}>
             <DefaulterAnalysisPage />
           </RoleProtectedRoute>
         }

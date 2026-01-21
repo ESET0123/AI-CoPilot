@@ -12,8 +12,11 @@ export default function App() {
     dispatch(checkAuthStatus());
   }, [dispatch]);
 
+  // Get initial color scheme from localStorage or default to 'light'
+  const defaultColorScheme = (localStorage.getItem('mantine-color-scheme') as 'light' | 'dark' | 'auto') || 'light';
+
   return (
-    <MantineProvider theme={theme} defaultColorScheme="light">
+    <MantineProvider theme={theme} defaultColorScheme={defaultColorScheme}>
       <AppRoutes />
     </MantineProvider>
   );

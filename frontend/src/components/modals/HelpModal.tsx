@@ -22,10 +22,10 @@ export default function HelpModal({ opened, onClose }: HelpModalProps) {
                     style={{
                         cursor: 'pointer',
                         borderRadius: 12,
-                        border: '1px solid #eee',
+                        border: '1px solid var(--mantine-color-default-border)',
                         transition: '200ms ease'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(132, 204, 22, 0.05)'}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--mantine-color-brand-light)'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     onClick={() => window.open('#', '_blank')}
                 >
@@ -39,7 +39,7 @@ export default function HelpModal({ opened, onClose }: HelpModalProps) {
                                 <Text size="xs" color="dimmed">Learn the basics and advanced features</Text>
                             </Box>
                         </Group>
-                        <TbExternalLink size={18} color="#94a3b8" />
+                        <TbExternalLink size={18} color="var(--mantine-color-dimmed)" />
                     </Group>
                 </Box>
 
@@ -48,10 +48,10 @@ export default function HelpModal({ opened, onClose }: HelpModalProps) {
                     style={{
                         cursor: 'pointer',
                         borderRadius: 12,
-                        border: '1px solid #eee',
+                        border: '1px solid var(--mantine-color-default-border)',
                         transition: '200ms ease'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(132, 204, 22, 0.05)'}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--mantine-color-brand-light)'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     onClick={() => window.open('#', '_blank')}
                 >
@@ -65,7 +65,7 @@ export default function HelpModal({ opened, onClose }: HelpModalProps) {
                                 <Text size="xs" color="dimmed">Detailed guides and real-world use cases</Text>
                             </Box>
                         </Group>
-                        <TbExternalLink size={18} color="#94a3b8" />
+                        <TbExternalLink size={18} color="var(--mantine-color-dimmed)" />
                     </Group>
                 </Box>
 
@@ -73,7 +73,7 @@ export default function HelpModal({ opened, onClose }: HelpModalProps) {
                     mt="md"
                     p="md"
                     style={{
-                        backgroundColor: '#f8f9fa',
+                        backgroundColor: 'var(--mantine-color-gray-0)',
                         borderRadius: 12,
                         textAlign: 'center'
                     }}

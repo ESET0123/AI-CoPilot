@@ -43,10 +43,10 @@ export default function TheftDetectionPage() {
     return (
         <AppShellLayout>
             <Box h="100%" display="flex" style={{ flexDirection: 'column' }}>
-                <Box h={60} px="md" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.05)', display: 'flex', alignItems: 'center' }}>
+                <Box h={60} px="md" style={{ borderBottom: '1px solid var(--app-border)', display: 'flex', alignItems: 'center' }}>
                     <HeaderBar />
                 </Box>
-                <Container fluid px="xl" bg="gray.0" py="xs" pos="relative" style={{ flex: 1, overflowY: 'auto' }}>
+                <Container fluid px="xl" py="xs" pos="relative" style={{ flex: 1, overflowY: 'auto', background: 'var(--app-background-module)' }}>
                     <LoadingOverlay visible={loading} />
 
                     {/* Header */}
@@ -56,14 +56,14 @@ export default function TheftDetectionPage() {
                             <Stack>
                                 <Button
                                     component={Link}
-                                    to="/dashboard"
-                                    variant="subtle"
-                                    color="black"
+                                    to="/copilot"
+                                    variant="transparent"
                                     leftSection={<FaAngleLeft />}
                                     size="s"
                                     justify='left'
                                     w="fit-content"
                                     pl={0}
+                                    c="var(--app-text-primary)"
                                 >
                                     Back to Home
                                 </Button>
@@ -82,7 +82,7 @@ export default function TheftDetectionPage() {
                             {/* Right button */}
                             <Button
                                 component={Link}
-                                to="/dashboard"
+                                to="/copilot"
                                 bg="#1e1e1e"
                                 leftSection={
                                     <Box
