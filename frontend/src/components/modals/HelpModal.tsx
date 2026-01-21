@@ -1,5 +1,5 @@
 import { Modal, Text, Stack, Box, Group, ActionIcon } from '@mantine/core';
-import { TbBook, TbPointer, TbExternalLink, TbArrowRight } from 'react-icons/tb';
+import { TbBook, TbPointer, TbExternalLink} from 'react-icons/tb';
 
 interface HelpModalProps {
     opened: boolean;

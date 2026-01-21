@@ -3,10 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.logging import logger
-from app.routers import auth, chat, audio, system
+from app.routers import classify
 
 def create_app() -> FastAPI:
-    logger.info("Initializing AI Service...")
+    logger.info("Initializing Intent Classifier Service...")
     
     app = FastAPI(title=settings.PROJECT_NAME)
 
@@ -29,10 +29,7 @@ def create_app() -> FastAPI:
         )
 
     # Routers
-    app.include_router(system.router)
-    app.include_router(auth.router)
-    app.include_router(audio.router)
-    app.include_router(chat.router)
+    app.include_router(classify.router)
 
     return app
 

@@ -8,7 +8,7 @@ def setup_logging():
         datefmt='%Y-%m-%d %H:%M:%S',
         stream=sys.stdout
     )
-    logger = logging.getLogger("AI_SERVICE")
+    logger = logging.getLogger("INTENT_SERVICE")
     return logger
 
 logger = setup_logging()
