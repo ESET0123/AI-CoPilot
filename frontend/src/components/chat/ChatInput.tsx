@@ -226,7 +226,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
         maxWidth: 900,
         margin: '0 auto',
         width: '100%',
-        backgroundColor: 'var(--mantine-color-body)',
+        backgroundColor: 'var(--app-surface-hover)',
         border: '1px solid var(--mantine-color-default-border)',
         position: 'relative',
         transition: '250ms cubic-bezier(0.4, 0, 0.2, 1)',

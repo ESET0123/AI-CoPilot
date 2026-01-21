@@ -68,7 +68,7 @@ export default function QuickAccessCategories() {
 
     return (
         <Box w="100%" maw={900} mb="xl">
-            <Text fw={600} size="lg" mb="md" c="#334155">Quick Access Categories</Text>
+            <Text fw={600} size="lg" mb="md" c="var(--app-text-primary)">Quick Access Categories</Text>
             <SimpleGrid cols={{ base: 1, xs: 2, sm: 2, md: 4 }} spacing="md">
                 {visibleActions.map((action) => (
                     <QuickActionCard

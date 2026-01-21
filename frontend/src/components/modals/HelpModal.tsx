@@ -36,7 +36,7 @@ export default function HelpModal({ opened, onClose }: HelpModalProps) {
                             </ActionIcon>
                             <Box>
                                 <Text fw={600}>Interactive Tutorial</Text>
-                                <Text size="xs" color="dimmed">Learn the basics and advanced features</Text>
+                                <Text size="xs" c="dimmed">Learn the basics and advanced features</Text>
                             </Box>
                         </Group>
                         <TbExternalLink size={18} color="var(--mantine-color-dimmed)" />
@@ -62,7 +62,7 @@ export default function HelpModal({ opened, onClose }: HelpModalProps) {
                             </ActionIcon>
                             <Box>
                                 <Text fw={600}>Feature Documentation</Text>
-                                <Text size="xs" color="dimmed">Detailed guides and real-world use cases</Text>
+                                <Text size="xs" c="dimmed">Detailed guides and real-world use cases</Text>
                             </Box>
                         </Group>
                         <TbExternalLink size={18} color="var(--mantine-color-dimmed)" />
@@ -73,7 +73,7 @@ export default function HelpModal({ opened, onClose }: HelpModalProps) {
                     mt="md"
                     p="md"
                     style={{
-                        backgroundColor: 'var(--mantine-color-gray-0)',
+                        backgroundColor: 'transparent',
                         borderRadius: 12,
                         textAlign: 'center'
                     }}

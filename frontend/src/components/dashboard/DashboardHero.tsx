@@ -28,10 +28,10 @@ export default function DashboardHero() {
                 </Box>
 
                 <Stack gap="xs" align="center" mb="3rem">
-                    <Title order={1} size={34} fw={700} c="#1e293b" ta="center">
+                    <Title order={1} size={34} fw={700} c="var(--app-text-primary)" ta="center">
                         {greeting}, {firstName}
                     </Title>
-                    <Title order={2} size={34} fw={700} c="#1e293b" ta="center">
+                    <Title order={2} size={34} fw={700} c="var(--app-text-primary)" ta="center">
                         What's on <Text span c="#65a30d" inherit>your mind?</Text>
                     </Title>
                     <Text c="dimmed" size="md" maw={500} ta="center" mt="sm">
