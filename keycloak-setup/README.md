@@ -147,7 +147,7 @@ Since Keycloak data is stored in the `postgres` container, you can import/export
 2.  **Import SQL File (Manual)**:
     *   **Step 1**: Copy the SQL file into the container:
         ```bash
-        docker cp path/to/your/file.sql keycloak-postgres:/tmp/import.sql
+        docker cp keycloak-setup\keycloak_backup.sql keycloak-postgres:/tmp/import.sql
         ```
     *   **Step 2**: Execute the import command:
         ```bash
