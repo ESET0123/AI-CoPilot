@@ -35,7 +35,7 @@ class IntentClassifier:
         try:
             log_with_prefix("Intent Classifier", f"Calling Ollama ({settings.OLLAMA_MODEL})...")
             
-            async with httpx.AsyncClient(timeout=15.0) as client:
+            async with httpx.AsyncClient(timeout=45.0) as client:
                 resp = await client.post(
                     settings.OLLAMA_API,
                     json={
