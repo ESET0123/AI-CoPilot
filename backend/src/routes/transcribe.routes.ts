@@ -8,22 +8,24 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.post('/', upload.single('file'), async (req: Request, res: Response) => {
     try {
         if (!req.file) {
+            console.log('[Transcribe Route] ❌ No file uploaded');
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
-        // Convert Buffer to Blob-like if needed or just use buffer
-        // Actually, transcribeAudio expects a Blob (which works in Browser)
-        // In Node, we can pass the buffer or create a Blob if needed.
-        // aiClient uses Axios which can take a buffer directly for multipart if handled correctly.
+        const method = req.body.method || 'google-webkit';
+        const language = req.body.language;
+        
+        console.log(`[Transcribe Route] 🎤 Received transcription request`);
+        console.log(`[Transcribe Route] Method: ${method}, Language: ${language}`);
+        console.log(`[Transcribe Route] File: ${req.file.originalname}, Size: ${req.file.size} bytes`);
 
-        // Let's modify transcribeAudio in aiClient to handle Buffer/Readable stream if needed,
-        // but for simplicity, let's see if we can just pass the buffer.
-
-        const text = await transcribeAudio(req.file.buffer);
+        const text = await transcribeAudio(req.file.buffer, method, language);
+        
+        console.log(`[Transcribe Route] ✅ Transcription completed: ${text.length} characters`);
         res.json({ text });
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Transcription failed';
-        console.error('Transcription route error:', error);
+        console.error('[Transcribe Route] ❌ Error:', errorMessage);
         res.status(500).json({ error: errorMessage });
     }
 });

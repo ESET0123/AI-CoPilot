@@ -7,9 +7,14 @@ import traceback
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 def transcribe(file_path, language=None):
+    print(f"[Whisper-Review] Starting transcription of {file_path}", file=sys.stderr)
+    print(f"[Whisper-Review] Language: {language}", file=sys.stderr)
+    
     try:
         from faster_whisper import WhisperModel
+        print("[Whisper-Review] faster_whisper imported successfully", file=sys.stderr)
     except ImportError:
+        print("[Whisper-Review] faster_whisper module not found", file=sys.stderr)
         return {"error": "faster_whisper module not found. Please install it with 'pip install faster-whisper'"}
 
     try:
@@ -29,9 +34,11 @@ def transcribe(file_path, language=None):
             potential_model_path = os.path.join(models_dir, f"whisper-{language}")
             if os.path.exists(potential_model_path):
                 model_name = potential_model_path
+                print(f"[Whisper-Review] Using custom model: {model_name}", file=sys.stderr)
         
-        # Load model
+        print(f"[Whisper-Review] Loading model: {model_name}", file=sys.stderr)
         model = WhisperModel(model_name, device="cpu", compute_type="int8")
+        print("[Whisper-Review] Model loaded successfully", file=sys.stderr)
 
         # Prepare transcription parameters
         # Strict enforcement for native script
@@ -62,9 +69,15 @@ def transcribe(file_path, language=None):
             if language in prompts:
                 transcribe_params["initial_prompt"] = prompts[language]
 
+        print(f"[Whisper-Review] Transcription parameters: {transcribe_params}", file=sys.stderr)
+        print("[Whisper-Review] Starting transcription...", file=sys.stderr)
+        
         segments, info = model.transcribe(file_path, **transcribe_params)
         
+        print(f"[Whisper-Review] Detected language: {info.language} (probability: {info.language_probability})", file=sys.stderr)
+        
         text = " ".join([segment.text for segment in segments]).strip()
+        print(f"[Whisper-Review] Transcription completed: {len(text)} characters", file=sys.stderr)
         
         return {
             "text": text,

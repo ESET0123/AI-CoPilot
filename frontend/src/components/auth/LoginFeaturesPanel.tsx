@@ -67,7 +67,7 @@ export default function LoginFeaturesPanel() {
                     <Box w={60} h={4} bg="brand.5" mt="xs" style={{ borderRadius: 2 }} />
                 </Box>
 
-                <Paper p="xl" style={{ backgroundColor: designTokens.colors.glass, backdropFilter: 'blur(10px)' }}>
+                <Paper p="xl" style={{ backgroundColor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
                     <SimpleGrid cols={2} spacing="xl" verticalSpacing="xl">
                         <FeatureItem icon={TbChartPie} label="AI-Powered Analytics & Insights" />
                         <FeatureItem icon={TbActivity} label="Real-time Load Forecasting" />

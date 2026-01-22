@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { transcribeApi } from '../services/api';
 
 // Define types for Web Speech API since they might not be in the default TS types
 interface SpeechRecognitionEvent extends Event {
@@ -36,8 +37,10 @@ declare global {
 
 export const useVoiceRecorder = (
   onTranscriptionComplete: (text: string) => void,
-  onInterimTranscription?: (text: string) => void
+  onInterimTranscription?: (text: string) => void,
+  method: string = 'google-webkit'
 ) => {
+  console.log(`[VoiceRecorder] 🎤 Initialized with method: ${method}`);
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -59,47 +62,56 @@ export const useVoiceRecorder = (
   }, []);
 
   const startRecording = useCallback(async () => {
+    console.log(`[VoiceRecorder] 🎙️ Starting recording with method: ${method}`);
+    
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
+      console.log(`[VoiceRecorder] ✅ Microphone access granted`);
 
-      // 1. Setup Web Speech API for real-time results
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
-        finalTranscriptRef.current = '';
+      if (method === 'google-webkit') {
+        console.log(`[VoiceRecorder] 🌐 Using Google Webkit (browser API)`);
+        // 1. Setup Web Speech API for real-time results
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+          const recognition = new SpeechRecognition();
+          recognition.continuous = true;
+          recognition.interimResults = true;
+          recognition.lang = 'en-US';
+          finalTranscriptRef.current = '';
 
-        recognition.onresult = (event: SpeechRecognitionEvent) => {
-          let interimTranscript = '';
-          for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-              finalTranscriptRef.current += event.results[i][0].transcript;
-            } else {
-              interimTranscript += event.results[i][0].transcript;
+          recognition.onresult = (event: SpeechRecognitionEvent) => {
+            let interimTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+              if (event.results[i].isFinal) {
+                finalTranscriptRef.current += event.results[i][0].transcript;
+              } else {
+                interimTranscript += event.results[i][0].transcript;
+              }
             }
-          }
 
-          if (onInterimTranscription) {
-            onInterimTranscription(finalTranscriptRef.current + interimTranscript);
-          }
-        };
+            if (onInterimTranscription) {
+              onInterimTranscription(finalTranscriptRef.current + interimTranscript);
+            }
+          };
 
-        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-          console.error('[VoiceRecorder] Speech recognition error:', event.error);
-        };
+          recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+            console.error('[VoiceRecorder] ❌ Speech recognition error:', event.error);
+          };
 
-        recognition.onend = () => {
-          // End of recognition
-        };
+          recognition.onend = () => {
+            console.log(`[VoiceRecorder] 🏁 Speech recognition ended`);
+          };
 
-        recognition.start();
-        recognitionRef.current = recognition;
+          recognition.start();
+          recognitionRef.current = recognition;
+          console.log(`[VoiceRecorder] 🎯 Speech recognition started`);
+        }
+      } else {
+        console.log(`[VoiceRecorder] 📡 Using backend method: ${method}`);
       }
 
-      // 2. Setup MediaRecorder for fallback/persistence
+      // 2. Setup MediaRecorder for all methods (fallback/persistence)
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
@@ -111,27 +123,31 @@ export const useVoiceRecorder = (
       };
 
       mediaRecorder.onstop = async () => {
+        console.log(`[VoiceRecorder] ⏹️ MediaRecorder stopped, processing audio...`);
         // cleanup stream
         if (streamRef.current) {
           streamRef.current.getTracks().forEach(track => track.stop());
           streamRef.current = null;
         }
 
-        if (recognitionRef.current && finalTranscriptRef.current.trim()) {
+        if (method === 'google-webkit' && recognitionRef.current && finalTranscriptRef.current.trim()) {
+          console.log(`[VoiceRecorder] 📝 Using browser transcription result`);
           onTranscriptionComplete(finalTranscriptRef.current);
         } else if (chunksRef.current.length > 0) {
+          console.log(`[VoiceRecorder] 📤 Sending audio to backend for processing`);
           const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' });
-          await handleTranscription(audioBlob);
+          await handleTranscription(audioBlob, method);
         }
       };
 
       mediaRecorder.start();
       setIsRecording(true);
+      console.log(`[VoiceRecorder] 🎬 Recording started`);
     } catch (err) {
-      console.error('[VoiceRecorder] Error accessing microphone:', err);
+      console.error('[VoiceRecorder] ❌ Error accessing microphone:', err);
       alert('Could not access microphone. Please ensure you have granted permission.');
     }
-  }, [onInterimTranscription, onTranscriptionComplete]);
+  }, [onInterimTranscription, onTranscriptionComplete, method]);
 
   const stopRecording = useCallback(() => {
     if (recognitionRef.current) {
@@ -145,30 +161,27 @@ export const useVoiceRecorder = (
     }
   }, [isRecording]);
 
-  const handleTranscription = async (blob: Blob) => {
+  const handleTranscription = async (blob: Blob, method: string) => {
+    console.log(`[VoiceRecorder] 🔄 Starting backend transcription with method: ${method}`);
+    console.log(`[VoiceRecorder] 📊 Audio blob size: ${blob.size} bytes`);
+    
     setIsLoading(true);
     try {
-      const formData = new FormData();
-      formData.append('file', blob, 'voice.wav');
+      console.log(`[VoiceRecorder] 📡 Sending to backend: ${import.meta.env.VITE_API_URL}/api/transcribe`);
+      
+      const response = await transcribeApi.transcribeAudio(blob, method);
+      
+      console.log(`[VoiceRecorder] ✅ Backend transcription completed`);
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/transcribe`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Transcription failed: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      if (data.text) {
-        onTranscriptionComplete(data.text);
+      if (response.data.text) {
+        console.log(`[VoiceRecorder] 📝 Transcription result: ${response.data.text.length} characters`);
+        onTranscriptionComplete(response.data.text);
       }
     } catch (err) {
-      console.error('[VoiceRecorder] Failed to transcribe audio:', err);
+      console.error('[VoiceRecorder] ❌ Failed to transcribe audio:', err);
     } finally {
       setIsLoading(false);
+      console.log(`[VoiceRecorder] 🏁 Transcription process finished`);
     }
   };
 

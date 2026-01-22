@@ -1,6 +1,6 @@
 import { Modal, Tabs, Box, Text, Group, Select, Switch, Stack, Divider, Button, useMantineColorScheme } from '@mantine/core';
-import { TbUser, TbBell, TbLock, TbPalette } from 'react-icons/tb';
-import { useState } from 'react';
+import { TbUser, TbBell, TbLock, TbPalette, TbMicrophone } from 'react-icons/tb';
+import { useState, useEffect } from 'react';
 import { useAppDispatch } from '../../app/hooks';
 import { deleteAllConversations } from '../../features/chat/chatSlice';
 import { useDisclosure } from '@mantine/hooks';
@@ -17,6 +17,24 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
 
     const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [speechRecognitionMethod, setSpeechRecognitionMethod] = useState('google-webkit');
+
+    // Load speech recognition method from localStorage
+    useEffect(() => {
+        const saved = localStorage.getItem('speechRecognitionMethod');
+        if (saved) {
+            setSpeechRecognitionMethod(saved);
+        }
+    }, []);
+
+    // Save speech recognition method to localStorage
+    const handleSpeechMethodChange = (value: string | null) => {
+        if (value) {
+            console.log(`[Settings] 🎤 Speech recognition method changed to: ${value}`);
+            setSpeechRecognitionMethod(value);
+            localStorage.setItem('speechRecognitionMethod', value);
+        }
+    };
 
     const handleDeleteAll = async () => {
         setIsDeleting(true);
@@ -75,6 +93,9 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                     </Tabs.Tab>
                     <Tabs.Tab value="display" leftSection={<TbPalette size={18} />}>
                         Display
+                    </Tabs.Tab>
+                    <Tabs.Tab value="speech" leftSection={<TbMicrophone size={18} />}>
+                        Speech Recognition
                     </Tabs.Tab>
                 </Tabs.List>
 
@@ -177,6 +198,34 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                             />
                         </Box>
 
+                    </Stack>
+                </Tabs.Panel>
+
+                {/* ===== Speech Recognition Panel ===== */}
+                <Tabs.Panel value="speech">
+                    <Stack gap="lg">
+                        <Box>
+                            <Text fw={600} mb="xs">Speech Recognition Method</Text>
+                            <Text size="xs" c="dimmed" mb="sm">Choose how voice input is processed</Text>
+                            <Select
+                                placeholder="Select method"
+                                data={[
+                                    { value: 'google-webkit', label: 'Google Webkit (Browser API)' },
+                                    { value: 'review', label: 'Review (Whisper + Translation)' },
+                                    { value: 'translate-direct', label: 'Translate Direct (Whisper Direct Translation)' }
+                                ]}
+                                value={speechRecognitionMethod}
+                                onChange={handleSpeechMethodChange}
+                            />
+                        </Box>
+
+                        <Box>
+                            <Text size="xs" c="dimmed">
+                                <strong>Google Webkit:</strong> Uses browser's built-in speech recognition for real-time transcription.<br/>
+                                <strong>Review:</strong> Uses Whisper model for accurate transcription, with optional translation.<br/>
+                                <strong>Translate Direct:</strong> Uses Whisper with direct translation to English.
+                            </Text>
+                        </Box>
                     </Stack>
                 </Tabs.Panel>
             </Tabs>

@@ -62,8 +62,12 @@ export async function stopAIService(conversationId: string) {
  * Transcription function - can be removed if not needed
  */
 export async function transcribeAudio(
-  audioData: Buffer | Blob
+  audioData: Buffer | Blob,
+  method: string = 'google-webkit',
+  language?: string
 ): Promise<string> {
+  console.log(`[AI Client] 🎤 Transcribing audio with method: ${method}`);
+  
   const formData = new FormData();
   
   if (Buffer.isBuffer(audioData)) {
@@ -75,6 +79,13 @@ export async function transcribeAudio(
     formData.append('file', audioData, 'voice.wav');
   }
 
+  formData.append('method', method);
+  if (language) {
+    formData.append('language', language);
+  }
+
+  console.log(`[AI Client] 📡 Sending to intent-classifier-service: ${env.AI_SERVICE_URL}/api/transcribe`);
+  
   const { data } = await aiClient.post('/api/transcribe', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -82,8 +93,10 @@ export async function transcribeAudio(
   });
 
   if (data.error) {
+    console.error(`[AI Client] ❌ Transcription error: ${data.error}`);
     throw new Error(data.error);
   }
 
+  console.log(`[AI Client] ✅ Transcription successful: ${data.text.length} characters`);
   return data.text;
 }

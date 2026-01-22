@@ -65,3 +65,19 @@ export const ocrApi = {
   },
 };
 
+export const transcribeApi = {
+  transcribeAudio(blob: Blob, method: string, language?: string) {
+    const formData = new FormData();
+    formData.append('file', blob, 'voice.wav');
+    formData.append('method', method);
+    if (language) {
+      formData.append('language', language);
+    }
+    return axiosClient.post('/api/transcribe', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+};
+

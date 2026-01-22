@@ -7,16 +7,23 @@ import traceback
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 def transcribe_direct(file_path, language=None):
+    print(f"[Whisper-Direct] Starting direct translation of {file_path}", file=sys.stderr)
+    print(f"[Whisper-Direct] Language: {language}", file=sys.stderr)
+    
     try:
         from faster_whisper import WhisperModel
+        print("[Whisper-Direct] faster_whisper imported successfully", file=sys.stderr)
     except ImportError:
+        print("[Whisper-Direct] faster_whisper module not found", file=sys.stderr)
         return {"error": "faster_whisper module not found. Please install it with 'pip install faster-whisper'"}
 
     try:
         model_name = "large-v3"
+        print(f"[Whisper-Direct] Loading model: {model_name}", file=sys.stderr)
         
         # Load model (CPU)
         model = WhisperModel(model_name, device="cpu", compute_type="int8")
+        print("[Whisper-Direct] Model loaded successfully", file=sys.stderr)
 
         # Prepare transcription parameters for direct translation
         transcribe_params = {
@@ -27,9 +34,15 @@ def transcribe_direct(file_path, language=None):
         if language and language != 'auto':
             transcribe_params["language"] = language
 
+        print(f"[Whisper-Direct] Translation parameters: {transcribe_params}", file=sys.stderr)
+        print("[Whisper-Direct] Starting direct translation...", file=sys.stderr)
+        
         segments, info = model.transcribe(file_path, **transcribe_params)
         
+        print(f"[Whisper-Direct] Detected language: {info.language} (probability: {info.language_probability})", file=sys.stderr)
+        
         text = " ".join([segment.text for segment in segments]).strip()
+        print(f"[Whisper-Direct] Direct translation completed: {len(text)} characters", file=sys.stderr)
         
         return {
             "text": text,

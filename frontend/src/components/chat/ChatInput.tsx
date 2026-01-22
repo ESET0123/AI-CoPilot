@@ -52,6 +52,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   const { isRecording, isLoading: isTranscribing, startRecording, stopRecording } =
     useVoiceRecorder(
       (text) => {
+        console.log(`[ChatInput] 🎤 Transcription completed: ${text.length} characters`);
         const newValue = baseValue ? `${baseValue.trim()} ${text}` : text;
         setValue(newValue);
         inputRef.current?.focus();
@@ -59,7 +60,8 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
       (interimText) => {
         const newValue = baseValue ? `${baseValue.trim()} ${interimText}` : interimText;
         setValue(newValue);
-      }
+      },
+      localStorage.getItem('speechRecognitionMethod') || 'google-webkit'
     );
 
   const DEFAULT_SUGGESTIONS = [

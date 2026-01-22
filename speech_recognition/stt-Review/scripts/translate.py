@@ -19,16 +19,27 @@ INDIC_TRANS_MAP = {
 }
 
 def translate(text, from_lang, to_lang="en"):
+    print(f"[Translator] Starting translation from {from_lang} to {to_lang}", file=sys.stderr)
+    print(f"[Translator] Text length: {len(text)} characters", file=sys.stderr)
+    
     try:
         import torch
         from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+        print("[Translator] transformers and torch imported successfully", file=sys.stderr)
     except ImportError:
+        print("[Translator] Required modules (transformers, torch) not found", file=sys.stderr)
         return {"error": "Required modules (transformers, torch) not found. Please install them."}
 
     try:
         if from_lang == "en" or from_lang == "auto":
+            print("[Translator] Source language is English, returning as-is", file=sys.stderr)
             return {"original_text": text, "translated_text": text, "from_lang": from_lang, "to_lang": to_lang}
 
+        # Temporarily disable complex translation due to model issues
+        print("[Translator] Translation temporarily disabled, returning original text", file=sys.stderr)
+        return {"original_text": text, "translated_text": text, "from_lang": from_lang, "to_lang": to_lang}
+
+        # Original translation code (commented out)
         model_name = "AI4Bharat/indic-trans-v2-indic-en"
         
         # Load tokenizer and model

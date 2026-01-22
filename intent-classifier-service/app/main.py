@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.routers import process
+from app.routers import process, transcribe
 from app.core.logger import log_with_prefix, setup_logger
 
 # Setup logging
@@ -24,6 +24,7 @@ def create_app() -> FastAPI:
 
     # Include routers
     app.include_router(process.router, prefix="/api", tags=["process"])
+    app.include_router(transcribe.router, prefix="/api", tags=["transcribe"])
     
     @app.on_event("startup")
     async def startup_event():
