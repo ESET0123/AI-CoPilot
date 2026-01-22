@@ -1,5 +1,5 @@
 import { Modal, Text, Stack, Box, Group, ActionIcon } from '@mantine/core';
-import { TbBook, TbPointer, TbExternalLink} from 'react-icons/tb';
+import { TbBook, TbPointer, TbExternalLink } from 'react-icons/tb';
 
 interface HelpModalProps {
     opened: boolean;
@@ -12,6 +12,7 @@ export default function HelpModal({ opened, onClose }: HelpModalProps) {
             opened={opened}
             onClose={onClose}
             title={<Text fw={700} size="lg">Help & Support</Text>}
+            centered
             size="md"
             radius="lg"
             padding="xl"

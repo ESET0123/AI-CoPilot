@@ -18,9 +18,7 @@ import {
 } from 'react-icons/tb';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout } from '../../features/auth/authSlice';
-import { deleteAllConversations } from '../../features/chat/chatSlice';
 import { useDisclosure } from '@mantine/hooks';
-import DeleteAllConversationsModal from '../modals/DeleteAllConversationsModal';
 import SettingsModal from '../modals/SettingsModal';
 import HelpModal from '../modals/HelpModal';
 
@@ -32,23 +30,8 @@ export default function UserMenu({ collapsed = false }: Props) {
   const dispatch = useAppDispatch();
   const user = useAppSelector((s) => s.auth.user);
 
-  const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
   const [settingsOpened, { open: openSettings, close: closeSettings }] = useDisclosure(false);
   const [helpOpened, { open: openHelp, close: closeHelp }] = useDisclosure(false);
-
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const handleDeleteAll = async () => {
-    setIsDeleting(true);
-    try {
-      await dispatch(deleteAllConversations()).unwrap();
-      closeDeleteModal();
-    } catch (err) {
-      console.error('Failed to delete all chats:', err);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   return (
     <>
@@ -118,14 +101,7 @@ export default function UserMenu({ collapsed = false }: Props) {
 
           <Menu.Divider />
 
-          <Menu.Label>Danger Zone</Menu.Label>
-          <Menu.Item
-            leftSection={<TbTrash size={16} />}
-            onClick={openDeleteModal}
-            color="red.6"
-          >
-            Delete all chats
-          </Menu.Item>
+
 
           <Menu.Item
             color="red.7"
@@ -141,13 +117,6 @@ export default function UserMenu({ collapsed = false }: Props) {
 
       <SettingsModal opened={settingsOpened} onClose={closeSettings} />
       <HelpModal opened={helpOpened} onClose={closeHelp} />
-
-      <DeleteAllConversationsModal
-        opened={deleteModalOpened}
-        onClose={closeDeleteModal}
-        onConfirm={handleDeleteAll}
-        loading={isDeleting}
-      />
     </>
   );
 }

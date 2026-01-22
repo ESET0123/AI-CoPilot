@@ -1,5 +1,10 @@
-import { Modal, Tabs, Box, Text, Group, Select, Switch, Stack, Divider, Button, ActionIcon, useMantineColorScheme } from '@mantine/core';
-import { TbUser, TbBell, TbLock, TbPalette, TbChevronRight, TbExternalLink } from 'react-icons/tb';
+import { Modal, Tabs, Box, Text, Group, Select, Switch, Stack, Divider, Button, useMantineColorScheme } from '@mantine/core';
+import { TbUser, TbBell, TbLock, TbPalette } from 'react-icons/tb';
+import { useState } from 'react';
+import { useAppDispatch } from '../../app/hooks';
+import { deleteAllConversations } from '../../features/chat/chatSlice';
+import { useDisclosure } from '@mantine/hooks';
+import DeleteAllConversationsModal from './DeleteAllConversationsModal';
 
 interface SettingsModalProps {
     opened: boolean;
@@ -8,17 +13,34 @@ interface SettingsModalProps {
 
 export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
     const { colorScheme, setColorScheme } = useMantineColorScheme();
+    const dispatch = useAppDispatch();
+
+    const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDeleteAll = async () => {
+        setIsDeleting(true);
+        try {
+            await dispatch(deleteAllConversations()).unwrap();
+            closeDeleteModal();
+        } catch (err) {
+            console.error('Failed to delete all chats:', err);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
     return (
         <Modal
             opened={opened}
             onClose={onClose}
             title={<Text fw={700} size="lg">Settings</Text>}
+            centered
             size="xl"
             radius="lg"
             padding="xl"
             styles={{
                 title: { fontSize: '1.2rem' },
-                content: { minHeight: 450 }
+                content: { minHeight: 180 }
             }}
         >
             <Tabs variant="pills" defaultValue="general" orientation="vertical" styles={{
@@ -31,8 +53,14 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                         color: 'var(--mantine-color-brand-text)',
                     }
                 },
+                tabLabel: {
+                    textAlign: 'left',
+                    width: '100%',
+                },
                 panel: {
-                    paddingLeft: 30
+                    paddingLeft: 30,
+                    maxHeight: 300,
+                    overflowY: 'auto'
                 }
             }}>
                 <Tabs.List w={200}>
@@ -57,17 +85,8 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                             <Text fw={600} mb="xs">Language</Text>
                             <Select
                                 placeholder="Select language"
-                                data={['English', 'Hindi', 'Spanish', 'French', 'German']}
+                                data={['English', 'Hindi']}
                                 defaultValue="English"
-                            />
-                        </Box>
-
-                        <Box>
-                            <Text fw={600} mb="xs">Units</Text>
-                            <Select
-                                placeholder="Select units"
-                                data={['Metric (Celsius, km)', 'Imperial (Fahrenheit, miles)']}
-                                defaultValue="Metric (Celsius, km)"
                             />
                         </Box>
 
@@ -88,7 +107,7 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                         <Group justify="space-between">
                             <Box>
                                 <Text fw={600}>System Alerts</Text>
-                                <Text size="xs" color="dimmed">Get notified about system updates and maintenance</Text>
+                                <Text size="xs" c="dimmed">Get notified about system updates and maintenance</Text>
                             </Box>
                             <Switch defaultChecked color="lime" />
                         </Group>
@@ -96,7 +115,7 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                         <Group justify="space-between">
                             <Box>
                                 <Text fw={600}>Outage Notifications</Text>
-                                <Text size="xs" color="dimmed">Alerts for scheduled or unexpected power outages</Text>
+                                <Text size="xs" c="dimmed">Alerts for scheduled or unexpected power outages</Text>
                             </Box>
                             <Switch defaultChecked color="lime" />
                         </Group>
@@ -104,7 +123,7 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                         <Group justify="space-between">
                             <Box>
                                 <Text fw={600}>Performance Reports</Text>
-                                <Text size="xs" color="dimmed">Weekly summary of energy usage and efficiency</Text>
+                                <Text size="xs" c="dimmed">Weekly summary of energy usage and efficiency</Text>
                             </Box>
                             <Switch color="lime" />
                         </Group>
@@ -117,7 +136,7 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                         <Group justify="space-between">
                             <Box>
                                 <Text fw={600}>Chat History & Training</Text>
-                                <Text size="xs" color="dimmed">Save new chats into your history</Text>
+                                <Text size="xs" c="dimmed">Save new chats into your history</Text>
                             </Box>
                             <Switch defaultChecked color="lime" />
                         </Group>
@@ -126,15 +145,18 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
 
                         <Box>
                             <Text fw={600} mb="sm">Data Export</Text>
-                            <Text size="xs" color="dimmed" mb="md">Export your conversation data and account details</Text>
+                            <Text size="xs" c="dimmed" mb="md">Export your conversation data and account details</Text>
                             <Button variant="light" color="gray" size="xs">Export Data</Button>
                         </Box>
 
+                        <Divider />
+
                         <Box>
-                            <Text fw={600} color="red" mb="sm">Delete Account</Text>
-                            <Text size="xs" color="dimmed" mb="md">Permanently delete your account and all associated data</Text>
-                            <Button variant="outline" color="red" size="xs">Delete Account</Button>
+                            <Text fw={600} mb="sm">Delete Chat History</Text>
+                            <Text size="xs" c="dimmed" mb="md">Permanently delete all your conversations. This cannot be undone.</Text>
+                            <Button variant="light" color="red" size="xs" onClick={openDeleteModal}>Delete all conversations</Button>
                         </Box>
+
                     </Stack>
                 </Tabs.Panel>
 
@@ -155,21 +177,6 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                             />
                         </Box>
 
-                        <Group justify="space-between">
-                            <Box>
-                                <Text fw={600}>High Contrast Mode</Text>
-                                <Text size="xs" color="dimmed">Increase visibility for text and elements</Text>
-                            </Box>
-                            <Switch color="lime" />
-                        </Group>
-
-                        <Group justify="space-between">
-                            <Box>
-                                <Text fw={600}>Screen Reader Optimized</Text>
-                                <Text size="xs" color="dimmed">Enable enhanced metadata for accessibility</Text>
-                            </Box>
-                            <Switch color="lime" />
-                        </Group>
                     </Stack>
                 </Tabs.Panel>
             </Tabs>
@@ -179,6 +186,12 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                     <Button variant="filled" color="lime" onClick={onClose} radius="md">Done</Button>
                 </Group>
             </Box>
+            <DeleteAllConversationsModal
+                opened={deleteModalOpened}
+                onClose={closeDeleteModal}
+                onConfirm={handleDeleteAll}
+                loading={isDeleting}
+            />
         </Modal>
     );
 }
