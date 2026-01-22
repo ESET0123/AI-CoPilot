@@ -63,9 +63,9 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
     );
 
   const DEFAULT_SUGGESTIONS = [
-    "What was my recent bill?",
-    "How do I pay my invoice?",
-    "Check my power usage trends",
+    "What will be the load tomorrow?",
+    "Any theft detected?",
+    "Hello", "How are you?",
   ];
 
   const [showSuggestions, setShowSuggestions] = useState(false);

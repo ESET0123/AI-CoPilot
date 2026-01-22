@@ -1,31 +1,41 @@
-from fastapi import APIRouter, HTTPException, Body
-from pydantic import BaseModel
-import logging
-from app.modules.intent_classifier import IntentClassifier
+# from fastapi import APIRouter
+# from pydantic import BaseModel
+# from app.services.intent_classifier import IntentClassifier
+# from app.services.dispatcher import Dispatcher
+# import logging
 
-router = APIRouter()
-logger = logging.getLogger("INTENT_SERVICE")
+# logger = logging.getLogger("INTENT_SERVICE")
 
-class ClassifyRequest(BaseModel):
-    query: str
+# router = APIRouter()
 
-class ClassifyResponse(BaseModel):
-    intent: str
-    confidence: float = 1.0 # Placeholder for now
+# class ClassifyRequest(BaseModel):
+#     query: str
 
-@router.post("/api/classify", response_model=ClassifyResponse)
-async def classify_intent(request: ClassifyRequest):
-    """
-    Classifies the user intent based on the input query.
-    """
-    logger.info(f"Classification Request: {request.query}")
+# @router.post("/api/classify")
+# async def classify_intent_only(payload: ClassifyRequest):
+#     logger.info(f"Received classify-only request for query: '{payload.query}'")
+#     intent = await IntentClassifier.classify(payload.query)
+#     logger.info(f"Result for classify-only: {intent}")
+#     return {"intent": intent}
+
+# @router.post("/api/process")
+# async def process_request(payload: ClassifyRequest):
+#     logger.info(f"START: Processing request for query: '{payload.query}'")
     
-    intent = IntentClassifier.classify_intent(request.query)
+#     # 1. Classify
+#     logger.debug("Step 1: Classifying intent...")
+#     intent = await IntentClassifier.classify(payload.query)
+#     logger.info(f"Step 1 COMPLETE: Classified as '{intent}'")
     
-    logger.info(f"Classified Intent: {intent}")
+#     # 2. Dispatch
+#     logger.debug(f"Step 2: Dispatching to handler for '{intent}'...")
+#     response = await Dispatcher.route(intent, payload.query)
+#     logger.info(f"Step 2 COMPLETE: Response received from downstream service.")
     
-    return ClassifyResponse(intent=intent)
-
-@router.get("/health")
-def health_check():
-    return {"status": "ok"}
+#     # 3. Return full context
+#     logger.info("END: Request processed successfully. Returning response.")
+#     return {
+#         "query": payload.query,
+#         "intent": intent,
+#         "fulfillment": response
+#     }

@@ -2,10 +2,19 @@ import axios from 'axios';
 import { env } from '../config/env';
 
 const aiClient = axios.create({
-  baseURL: env.AI_SERVICE_URL,
+  baseURL: env.AI_SERVICE_URL, // e.g. http://localhost:8002
   timeout: 120000,
 });
 
+/**
+ * Calls the Intent Classifier Service
+ * 
+ * Flow:
+ * 1. Send query to /api/process
+ * 2. Backend classifies intent using LLM
+ * 3. Backend routes to appropriate handler
+ * 4. Backend returns: query + intent + response from handler
+ */
 export async function callAIService(
   payload: {
     conversationId: string;
@@ -13,46 +22,56 @@ export async function callAIService(
   },
   signal?: AbortSignal
 ): Promise<string> {
-  console.log('[AI Client] Requesting /api/classify:', {
-    query: payload.message,
-  });
+  console.log('[AI Client] Sending request to /api/process');
+  console.log('[AI Client] Query:', payload.message);
 
   const { data } = await aiClient.post(
-    '/api/classify',
+    '/api/process',
     {
       query: payload.message,
     },
-    {
-      signal,
-    }
+    { signal }
   );
 
-  console.log('[AI Client] Response Received from /api/classify:', data);
+  console.log('[AI Client] Response received:');
+  console.log('  - Intent:', data.intent);
+  console.log('  - Response length:', data.response.length, 'chars');
 
+  // Build response for chat UI
   const responsePayload = {
-    text: `Intent: ${data.intent}`,
+    text: data.response,
     type: 'text',
-    data: null,
-    extras: {}
+    extras: {
+      query: data.query,
+      intent: data.intent,
+    },
   };
 
   return JSON.stringify(responsePayload);
 }
 
+/**
+ * Stop function - can be removed if not needed
+ */
 export async function stopAIService(conversationId: string) {
-  await aiClient.post('/stop', {
-    conversation_id: conversationId,
-  });
+  console.log('[AI Client] Stop requested for conversation:', conversationId);
+  // No-op for now since we don't have streaming
 }
 
-export async function transcribeAudio(audioData: Buffer | Blob): Promise<string> {
+/**
+ * Transcription function - can be removed if not needed
+ */
+export async function transcribeAudio(
+  audioData: Buffer | Blob
+): Promise<string> {
   const formData = new FormData();
+  
   if (Buffer.isBuffer(audioData)) {
-    // In Node.js environment
-    const blob = new Blob([audioData as unknown as BlobPart], { type: 'audio/wav' });
+    const blob = new Blob([audioData as unknown as BlobPart], {
+      type: 'audio/wav',
+    });
     formData.append('file', blob, 'voice.wav');
   } else {
-    // In browser environment (if ever used there)
     formData.append('file', audioData, 'voice.wav');
   }
 
