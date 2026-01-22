@@ -70,14 +70,15 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
 
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [suggestionsDismissed, setSuggestionsDismissed] = useState(false);
 
   useEffect(() => {
-    if (isFocused && value.trim().length >= 0 && !isCurrentSending && !isRecording) {
+    if (isFocused && value.trim().length >= 0 && !isCurrentSending && !isRecording && !suggestionsDismissed) {
       setShowSuggestions(true);
     } else {
       setShowSuggestions(false);
     }
-  }, [isFocused, value, isCurrentSending, isRecording]);
+  }, [isFocused, value, isCurrentSending, isRecording, suggestionsDismissed]);
 
   const handleSuggestionClick = (suggestion: string) => {
     setShowSuggestions(false);
@@ -135,6 +136,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
     setValue('');
     setOcrText('');
     setSelectedFile(null);
+    setSuggestionsDismissed(true);
 
     let targetConvoId = activeConversationId;
 
@@ -276,7 +278,10 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
           <Textarea
             ref={inputRef}
             value={value}
-            onChange={(e) => setValue(e.currentTarget.value)}
+            onChange={(e) => {
+              setValue(e.currentTarget.value);
+              if (suggestionsDismissed) setSuggestionsDismissed(false);
+            }}
             placeholder={
               isRecording
                 ? "LISTENING"
@@ -311,7 +316,10 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
                 handleSend();
               }
             }}
-            onFocus={() => setIsFocused(true)}
+            onFocus={() => {
+              setIsFocused(true);
+              setSuggestionsDismissed(false);
+            }}
             onBlur={() => {
               // Delay slightly to allow click event on suggestions to fire first
               setTimeout(() => setIsFocused(false), 200);
@@ -377,7 +385,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             <Tooltip label={isCurrentSending ? 'Stop generating' : (isRecording ? 'Finish recording' : 'Send message')}>
               <ActionIcon
                 onClick={() => handleSend()}
-                color={isCurrentSending ? 'red' : (isRecording ? 'green' : 'gray')}
+                color={isCurrentSending ? 'red' : (isRecording ? 'green' : 'black')}
                 variant="filled"
                 radius="md"
                 size="xl"
