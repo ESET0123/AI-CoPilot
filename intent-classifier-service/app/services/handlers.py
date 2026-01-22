@@ -51,7 +51,7 @@ class OtherHandler:
         log_with_prefix("Other Handler", f"Query did not match any domain. Detected: {intent.value}")
         
         response = (
-            f"OTHER ROUTE (Detected Intent: {intent.value})\n\n"
+            "OTHER ROUTE\n\n"
             "I can help you with:\n"
             "• Load Forecasting - Ask about power demand predictions\n"
             "• Theft Detection - Ask about suspicious activity or alerts\n\n"

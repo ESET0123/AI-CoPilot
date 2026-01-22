@@ -14,23 +14,23 @@ class IntentClassifier:
         
         prompt = f"""You are an intent classifier for an energy grid system.
 
-Allowed intents:
-- LOAD_FORECASTING: Questions about power demand, load predictions, consumption forecasts, energy usage
-- THEFT_DETECTION: Questions about theft, theft alerts, suspicious activity, anomaly detection, fraud detection
-- OTHER: Everything else
+            Allowed intents:
+            - LOAD_FORECASTING: Questions about load forecast,  power demand, load predictions, consumption forecasts, energy usage
+            - THEFT_DETECTION: Questions about theft, theft alerts, suspicious activity, anomaly detection, fraud detection
+            - OTHER: Everything else
 
-Examples:
-- "What is the load forecast for tomorrow?" -> LOAD_FORECASTING
-- "Show me power demand for next week" -> LOAD_FORECASTING
-- "Any theft detected?" -> THEFT_DETECTION
-- "Show me theft alerts" -> THEFT_DETECTION
-- "Hello how are you?" -> OTHER
+            Examples:
+            - "What is the load forecast for tomorrow?" -> LOAD_FORECASTING
+            - "Show me power demand for next week" -> LOAD_FORECASTING
+            - "Any theft detected?" -> THEFT_DETECTION
+            - "Show me theft alerts" -> THEFT_DETECTION
+            - "Hello how are you?" -> OTHER
 
-Respond ONLY in JSON format:
-{{"intent": "<INTENT>"}}
+            Respond ONLY in JSON format:
+            {{"intent": "<INTENT>"}}
 
-Query: {query}
-"""
+            Query: {query}
+            """
 
         try:
             log_with_prefix("Intent Classifier", f"Calling Ollama ({settings.OLLAMA_MODEL})...")
@@ -46,17 +46,6 @@ Query: {query}
                     }
                 )
             
-            # DIAGNOSTIC LOGGING
-            with open("llm_diag.log", "a", encoding="utf-8") as f:
-                f.write(f"\n--- QUERY: {query} ---\n")
-                f.write(f"PROMPT: {prompt[:100]}...\n")
-                f.write(f"STATUS: {resp.status_code}\n")
-                if resp.status_code == 200:
-                    f.write(f"RESPONSE: {resp.json().get('response', '')}\n")
-                else:
-                    f.write(f"ERROR: {resp.text}\n")
-                f.write("-" * 20 + "\n")
-
             raw_response = resp.json().get("response", "")
             log_with_prefix("Intent Classifier", f"RAW LLM OUTPUT: {raw_response}")
 
