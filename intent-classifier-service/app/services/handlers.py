@@ -11,9 +11,6 @@ class LoadForecastingHandler:
         
         response = (
             "LOAD FORECASTING ROUTE\n\n"
-            "Predicted load for tomorrow: 1,280 MW\n"
-            "Confidence: 91%\n"
-            "Peak hours: 6 PM - 9 PM\n\n"
             "[This is a mock response from the Load Forecasting service]"
         )
         
@@ -31,10 +28,6 @@ class TheftDetectionHandler:
         
         response = (
             "THEFT DETECTION ROUTE\n\n"
-            "Active Alerts: 3\n"
-            "Risk Level: HIGH\n"
-            "Affected Areas: Zone A, Zone C\n"
-            "Suspicious Meters: 12\n\n"
             "[This is a mock response from the Theft Detection service]"
         )
         
