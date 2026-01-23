@@ -30,14 +30,15 @@ class BotReq(BaseModel):
 def health():
     return {"status": "ok"}
 
-@app.post("/query")
+@app.post("/theftDetection/query")
 def query(req: QueryReq):
     raw_sql = None
     clean_sql = None
     
     try:
         # Generate SQL from natural language
-        raw_sql = nl_to_sql(req.model, req.prompt)
+        # Hardcoded model for theft detection
+        raw_sql = nl_to_sql("gpt-oss:120b-cloud", req.prompt)
         
         # ---- CLEAN MODEL OUTPUT ----
         clean_sql = raw_sql.strip()

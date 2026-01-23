@@ -16,7 +16,7 @@ class Dispatcher:
             return "Error: No handler configured for this intent"
 
         # Execute handler and get response
-        response = handler(intent, query)
+        response = await handler(intent, query)
         
         log_with_prefix("Dispatcher", f"Handler complete - {len(response)} chars")
         

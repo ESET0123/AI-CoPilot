@@ -100,8 +100,12 @@ class IndicTransEngine:
                     tgt_lang=tgt_lang
                 )
             else:
-                # Fallback: manual preprocessing (less reliable)
-                log_with_prefix("IndicTransEngine", "⚠️ Using fallback preprocessing (IndicProcessor not available)", level="warning")
+                # Fallback: Set attributes on the tokenizer directly
+                # Some versions of the IndicTransTokenizer require these attributes
+                # to be set manually if the processor is not used.
+                log_with_prefix("IndicTransEngine", f"⚠️ Using manual attribute fallback: {src_lang}->{tgt_lang}", level="warning")
+                tokenizer.src_lang = src_lang
+                tokenizer.tgt_lang = tgt_lang
                 batch = [text]
             
             # Tokenize the preprocessed batch
@@ -117,13 +121,24 @@ class IndicTransEngine:
             
             # Generate translations
             with torch.no_grad():
+                gen_kwargs = {
+                    "use_cache": True,
+                    "min_length": 0,
+                    "max_length": 256,
+                    "num_beams": 5,
+                    "num_return_sequences": 1
+                }
+                
+                # For IndicTrans2 fallback, we must specify the target language token
+                if not INDIC_PROCESSOR_AVAILABLE:
+                    tgt_lang_id = tokenizer.convert_tokens_to_ids(tgt_lang)
+                    if tgt_lang_id != tokenizer.unk_token_id:
+                        gen_kwargs["forced_bos_token_id"] = tgt_lang_id
+                        log_with_prefix("IndicTransEngine", f"🎯 Forced BOS token: {tgt_lang} (ID: {tgt_lang_id})")
+
                 generated_tokens = model.generate(
                     **inputs,
-                    use_cache=True,
-                    min_length=0,
-                    max_length=256,
-                    num_beams=5,
-                    num_return_sequences=1
+                    **gen_kwargs
                 )
             
             # Decode the generated tokens
@@ -138,7 +153,10 @@ class IndicTransEngine:
                 translations = processor.postprocess_batch(decoded_tokens, lang=tgt_lang)
                 translated_text = translations[0]
             else:
+                # Manual postprocessing: if model returned the tag at start, remove it
                 translated_text = decoded_tokens[0]
+                if translated_text.startswith(tgt_lang):
+                    translated_text = translated_text[len(tgt_lang):].strip()
             
             log_with_prefix("IndicTransEngine", f"✅ Translation complete: '{translated_text[:30]}...'")
             return translated_text

@@ -1,11 +1,13 @@
 from app.core.constants import Intent
 from app.core.logger import log_with_prefix
+import httpx
+from app.core.config import settings
 
 class LoadForecastingHandler:
     """Handles load forecasting requests"""
     
     @staticmethod
-    def handle(intent: Intent, query: str) -> str:
+    async def handle(intent: Intent, query: str) -> str:
         log_with_prefix("Load Forecasting Handler", "Executing handler")
         log_with_prefix("Load Forecasting Handler", "Generating mock forecast data...")
         
@@ -22,24 +24,51 @@ class TheftDetectionHandler:
     """Handles theft detection requests"""
     
     @staticmethod
-    def handle(intent: Intent, query: str) -> str:
+    async def handle(intent: Intent, query: str) -> str:
         log_with_prefix("Theft Detection Handler", "Executing handler")
-        log_with_prefix("Theft Detection Handler", "Analyzing theft patterns...")
+        log_with_prefix("Theft Detection Handler", f"Sending query to theft detection service: {query}")
         
-        response = (
-            "THEFT DETECTION ROUTE\n\n"
-            "[This is a mock response from the Theft Detection service]"
-        )
-        
-        log_with_prefix("Theft Detection Handler", "Response generated successfully")
-        return response
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.post(
+                    "http://localhost:8010/theftDetection/query",
+                    json={"prompt": query, "model": settings.OLLAMA_MODEL}
+                )
+                response.raise_for_status()
+                data = response.json()
+                
+                if data.get("success"):
+                    sql = data.get("sql", "N/A")
+                    result = data.get("result", [])
+                    log_with_prefix("Theft Detection Handler", f"Query successful, result length: {len(str(result))}")
+                    
+                    # Format the response
+                    response_text = "THEFT DETECTION ANALYSIS\n\n"
+                    response_text += f"Generated SQL: {sql}\n\n"
+                    if result:
+                        response_text += f"Results:\n{result}\n"
+                    else:
+                        response_text += "No results found.\n"
+                    
+                    return response_text
+                else:
+                    error = data.get("error", "Unknown error")
+                    log_with_prefix("Theft Detection Handler", f"Query failed: {error}")
+                    return f"Theft Detection Error: {error}"
+                    
+        except httpx.RequestError as e:
+            log_with_prefix("Theft Detection Handler", f"Request error: {str(e)}")
+            return f"Theft Detection Service unavailable: {str(e)}"
+        except Exception as e:
+            log_with_prefix("Theft Detection Handler", f"Unexpected error: {str(e)}")
+            return f"Unexpected error in theft detection: {str(e)}"
 
 
 class OtherHandler:
     """Handles unrecognized requests"""
     
     @staticmethod
-    def handle(intent: Intent, query: str) -> str:
+    async def handle(intent: Intent, query: str) -> str:
         log_with_prefix("Other Handler", "Executing fallback handler")
         log_with_prefix("Other Handler", f"Query did not match any domain. Detected: {intent.value}")
         

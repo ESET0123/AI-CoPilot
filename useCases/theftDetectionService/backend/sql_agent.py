@@ -81,6 +81,6 @@ REMEMBER:
 - Default to historical_cases unless user mentions "live" or "registered" cases
 """
 
-def nl_to_sql(model, user_prompt):
+def nl_to_sql(model="gpt-oss:120b-cloud", user_prompt=""):
     """Generate SQL from natural language using static schema"""
     return call_ollama(model, SYSTEM_PROMPT, user_prompt)
