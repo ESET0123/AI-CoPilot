@@ -91,7 +91,7 @@ export async function transcribeAudio(
     formData.append('language', language);
   }
 
-  console.log(`[AI Client] 📡 Sending to intent-classifier-service: ${env.AI_SERVICE_URL}/api/transcribe`);
+  console.log(`[AI Client] 📡 Sending to LLM-service: ${env.AI_SERVICE_URL}/api/transcribe`);
 
   const { data } = await aiClient.post('/api/transcribe', formData, {
     headers: {

@@ -4,7 +4,7 @@ import http from 'http';
 import https from 'https';
 
 /**
- * Centralized client for communicating with the AI Service (intent-classifier-service).
+ * Centralized client for communicating with the AI Service (LLM-service).
  * Provides consistent configuration, timeout handling, connection pooling, and error management.
  */
 class AIServiceClient {
