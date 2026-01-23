@@ -1,6 +1,6 @@
 import os
-from app.engines.tts.piper_engine import tts_engine
-from app.engines.tts.indic_parler_engine import indic_parler_engine
+from app.modules.speech.engines.tts.piper_engine import tts_engine
+from app.modules.speech.engines.tts.indic_parler_engine import indic_parler_engine
 from app.core.logger import log_with_prefix
 
 class TTSService:

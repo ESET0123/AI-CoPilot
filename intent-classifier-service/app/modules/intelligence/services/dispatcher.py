@@ -1,5 +1,5 @@
 from app.core.constants import Intent
-from app.services.handlers import HANDLERS
+from app.modules.intelligence.services.handlers import HANDLERS
 from app.core.logger import log_with_prefix
 
 class Dispatcher:

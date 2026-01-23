@@ -3,12 +3,13 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from app.core.logger import log_with_prefix
 import os
 
-# Placeholder for IndicTrans2 which might require custom tokenization
-# For simplicity in this implementation, we will use the HF implementation if available,
-# or fallback to a simpler NLLB model if IndicTrans2 is too complex to setup without cloning their repo.
-# However, user requested IndicTrans2.
-# ai4bharat/indictrans2-en-indic-1B
-# ai4bharat/indictrans2-indic-en-1B
+# IndicTrans2 requires IndicProcessor for proper preprocessing
+try:
+    from IndicTransToolkit.processor import IndicProcessor
+    INDIC_PROCESSOR_AVAILABLE = True
+except ImportError:
+    INDIC_PROCESSOR_AVAILABLE = False
+    log_with_prefix("IndicTransEngine", "⚠️ IndicTransToolkit not installed. Install with: pip install IndicTransToolkit", level="warning")
 
 class IndicTransEngine:
     _instance = None
@@ -23,6 +24,7 @@ class IndicTransEngine:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.models = {}
         self.tokenizers = {}
+        self.processors = {}
         log_with_prefix("IndicTransEngine", f"Initializing on {self.device}")
 
     def _load_model(self, direction: str):
@@ -53,6 +55,12 @@ class IndicTransEngine:
                 trust_remote_code=True, 
                 token=token
             ).to(self.device)
+            
+            # Initialize IndicProcessor if available
+            if INDIC_PROCESSOR_AVAILABLE:
+                self.processors[direction] = IndicProcessor(inference=True)
+                log_with_prefix("IndicTransEngine", "✅ IndicProcessor initialized")
+            
             log_with_prefix("IndicTransEngine", f"✅ Successfully loaded {model_name}")
         except Exception as e:
             msg = str(e)
@@ -75,6 +83,7 @@ class IndicTransEngine:
         
         tokenizer = self.tokenizers.get(direction)
         model = self.models.get(direction)
+        processor = self.processors.get(direction)
         
         if not model or not tokenizer:
             return text
@@ -82,24 +91,55 @@ class IndicTransEngine:
         try:
             log_with_prefix("IndicTransEngine", f"⚙️ Tokenizing for {src_lang} -> {tgt_lang}")
             
-            # Set tokenizer language explicitly
-            tokenizer.src_lang = src_lang
+            # Use IndicProcessor for proper preprocessing if available
+            if processor and INDIC_PROCESSOR_AVAILABLE:
+                # Preprocess using IndicProcessor (handles language tags and formatting)
+                batch = processor.preprocess_batch(
+                    [text],  # IndicProcessor expects a list
+                    src_lang=src_lang,
+                    tgt_lang=tgt_lang
+                )
+            else:
+                # Fallback: manual preprocessing (less reliable)
+                log_with_prefix("IndicTransEngine", "⚠️ Using fallback preprocessing (IndicProcessor not available)", level="warning")
+                batch = [text]
             
-            # Tokenize
-            batch = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=256).to(self.device)
+            # Tokenize the preprocessed batch
+            inputs = tokenizer(
+                batch,
+                truncation=True,
+                padding="longest",
+                return_tensors="pt",
+                return_attention_mask=True
+            ).to(self.device)
             
             log_with_prefix("IndicTransEngine", "🔄 Generating translation (this may take a moment)...")
             
-            # Determine target lang ID
-            forced_bos_token_id = tokenizer.convert_tokens_to_ids(tgt_lang)
+            # Generate translations
+            with torch.no_grad():
+                generated_tokens = model.generate(
+                    **inputs,
+                    use_cache=True,
+                    min_length=0,
+                    max_length=256,
+                    num_beams=5,
+                    num_return_sequences=1
+                )
             
-            generated_tokens = model.generate(
-                **batch, 
-                forced_bos_token_id=forced_bos_token_id,
-                max_length=256
+            # Decode the generated tokens
+            decoded_tokens = tokenizer.batch_decode(
+                generated_tokens,
+                skip_special_tokens=True,
+                clean_up_tokenization_spaces=True
             )
             
-            translated_text = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)[0]
+            # Postprocess using IndicProcessor if available
+            if processor and INDIC_PROCESSOR_AVAILABLE:
+                translations = processor.postprocess_batch(decoded_tokens, lang=tgt_lang)
+                translated_text = translations[0]
+            else:
+                translated_text = decoded_tokens[0]
+            
             log_with_prefix("IndicTransEngine", f"✅ Translation complete: '{translated_text[:30]}...'")
             return translated_text
             
@@ -113,5 +153,5 @@ FLORES_MAP = {
     "hi": "hin_Deva",
     "kn": "kan_Knda",
     "bn": "ben_Beng",
-    "ar": "arb_Arab" # Not used here but for reference
+    "ar": "arb_Arab"  # Not used here but for reference
 }

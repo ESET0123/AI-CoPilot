@@ -1,6 +1,6 @@
 import os
-from app.engines.whisper.whisper_engine import whisper_engine
-from app.engines.whisper.translation_engine import translation_engine
+from app.modules.speech.engines.whisper.whisper_engine import whisper_engine
+from app.modules.speech.engines.whisper.translation_engine import translation_engine
 from app.core.logger import log_with_prefix
 
 class STTService:

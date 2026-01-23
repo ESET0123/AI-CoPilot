@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, Form
 from app.core.logger import log_with_prefix
-from app.services.stt_service import STTService
+from app.modules.speech.services.stt_service import STTService
 import os
 import tempfile
 

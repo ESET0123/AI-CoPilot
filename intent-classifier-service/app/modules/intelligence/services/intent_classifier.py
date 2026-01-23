@@ -35,7 +35,7 @@ class IntentClassifier:
         try:
             log_with_prefix("Intent Classifier", f"Calling Ollama ({settings.OLLAMA_MODEL})...")
             
-            async with httpx.AsyncClient(timeout=45.0) as client:
+            async with httpx.AsyncClient(timeout=settings.OLLAMA_TIMEOUT) as client:
                 resp = await client.post(
                     settings.OLLAMA_API,
                     json={
@@ -46,6 +46,7 @@ class IntentClassifier:
                     }
                 )
             
+            resp.raise_for_status()  # Raises HTTPStatusError for 4xx/5xx responses
             raw_response = resp.json().get("response", "")
             log_with_prefix("Intent Classifier", f"RAW LLM OUTPUT: {raw_response}")
 

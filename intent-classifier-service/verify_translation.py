@@ -1,6 +1,6 @@
 import os
 import asyncio
-from app.engines.translation.indic_trans_engine import IndicTransEngine
+from app.modules.speech.engines.translation.indic_trans_engine import IndicTransEngine
 
 # Mock logger to avoid import issues or complex setup
 import app.core.logger

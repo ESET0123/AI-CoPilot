@@ -9,4 +9,5 @@ torch
 transformers
 git+https://github.com/huggingface/parler-tts.git
 scipy
+IndicTransToolkit
 # piper-tts  # Uncomment if using Piper locally

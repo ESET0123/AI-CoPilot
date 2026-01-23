@@ -1,7 +1,7 @@
 from app.models.schemas import ProcessRequest, ProcessResponse
-from app.services.intent_classifier import IntentClassifier
-from app.services.dispatcher import Dispatcher
-from app.engines.whisper.translation_engine import translation_engine
+from app.modules.intelligence.services.intent_classifier import IntentClassifier
+from app.modules.intelligence.services.dispatcher import Dispatcher
+from app.modules.speech.engines.whisper.translation_engine import translation_engine
 from app.core.logger import log_with_prefix
 
 class PipelineService:

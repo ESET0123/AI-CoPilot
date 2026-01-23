@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.models.schemas import ProcessRequest, ProcessResponse
-from app.services.pipeline_service import PipelineService
+from app.pipeline_service import PipelineService
 from app.core.logger import log_with_prefix
 
 router = APIRouter()

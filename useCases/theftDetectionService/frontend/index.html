@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Utility AI Console</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div class="app">
+        <div id="chatWindow" class="chatWindow"></div>
+
+        <div class="inputBar">
+            <select id="model">
+                <option value="qwen2.5-coder:latest">qwen2.5-coder (Local)</option>
+                <option value="gpt-oss:120b-cloud">dgpt-oss:120b-cloud</option>
+            </select>
+
+            <button class="iconBtn" onclick="openBot()" title="Register Case">
+                <svg viewBox="0 0 24 24" class="iconSvg">
+                    <path d="M12 5v14M5 12h14" />
+                </svg>
+            </button>
+            <textarea id="prompt" placeholder="Ask about thefts, billing, zones, trends..."></textarea>
+            <button id="sendBtn" class="iconBtn send" onclick="sendQuery()" title="Send">
+                <svg viewBox="0 0 24 24" class="iconSvg">
+                    <path d="M3 12l18-9-5 9 5 9-18-9z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="botModal" class="modal">
+        <div class="chatbox" id="chatbox">
+            <div class="modalHeader">
+                <span>Case Registration</span>
+                <button onclick="closeBot()">✖</button>
+            </div>
+
+            <div id="chat" class="chatArea"></div>
+            <div id="options" class="options"></div>
+
+            <div class="inputBar modalInput">
+                <input id="input" placeholder="Type here..." />
+                <button onclick="send()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
