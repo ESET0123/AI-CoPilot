@@ -18,12 +18,18 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
     const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [speechRecognitionMethod, setSpeechRecognitionMethod] = useState('google-webkit');
+    const [primaryLanguage, setPrimaryLanguage] = useState('en');
 
-    // Load speech recognition method from localStorage
+    // Load settings from localStorage
     useEffect(() => {
-        const saved = localStorage.getItem('speechRecognitionMethod');
-        if (saved) {
-            setSpeechRecognitionMethod(saved);
+        const savedMethod = localStorage.getItem('speechRecognitionMethod');
+        if (savedMethod) {
+            setSpeechRecognitionMethod(savedMethod);
+        }
+
+        const savedLang = localStorage.getItem('primaryLanguage');
+        if (savedLang) {
+            setPrimaryLanguage(savedLang);
         }
     }, []);
 
@@ -33,6 +39,17 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
             console.log(`[Settings] 🎤 Speech recognition method changed to: ${value}`);
             setSpeechRecognitionMethod(value);
             localStorage.setItem('speechRecognitionMethod', value);
+        }
+    };
+
+    // Save primary language to localStorage
+    const handleLanguageChange = (value: string | null) => {
+        if (value) {
+            console.log(`[Settings] 🌐 Primary language changed to: ${value}`);
+            setPrimaryLanguage(value);
+            localStorage.setItem('primaryLanguage', value);
+            // Optional: trigger a page refresh or event if needed, 
+            // but for now we'll just read from storage in other components
         }
     };
 
@@ -104,10 +121,17 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                     <Stack gap="xl">
                         <Box>
                             <Text fw={600} mb="xs">Language</Text>
+                            <Text size="xs" c="dimmed" mb="sm">Forces STT, TTS and Responses to this language</Text>
                             <Select
                                 placeholder="Select language"
-                                data={['English', 'Hindi']}
-                                defaultValue="English"
+                                data={[
+                                    { value: 'en', label: 'English' },
+                                    { value: 'hi', label: 'Hindi (हिन्दी)' },
+                                    { value: 'kn', label: 'Kannada (ಕನ್ನಡ)' },
+                                    { value: 'bn', label: 'Bengali (বাংলা)' }
+                                ]}
+                                value={primaryLanguage}
+                                onChange={handleLanguageChange}
                             />
                         </Box>
 
@@ -221,8 +245,8 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
 
                         <Box>
                             <Text size="xs" c="dimmed">
-                                <strong>Google Webkit:</strong> Uses browser's built-in speech recognition for real-time transcription.<br/>
-                                <strong>Review:</strong> Uses Whisper model for accurate transcription, with optional translation.<br/>
+                                <strong>Google Webkit:</strong> Uses browser's built-in speech recognition for real-time transcription.<br />
+                                <strong>Review:</strong> Uses Whisper model for accurate transcription, with optional translation.<br />
                                 <strong>Translate Direct:</strong> Uses Whisper with direct translation to English.
                             </Text>
                         </Box>

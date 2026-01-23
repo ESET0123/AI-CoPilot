@@ -40,10 +40,11 @@ export const chatApi = {
     return axiosClient.delete('/api/conversations');
   },
 
-  sendMessage(conversationId: string, message: string, signal?: AbortSignal) {
+  sendMessage(conversationId: string, message: string, language?: string, signal?: AbortSignal) {
     return axiosClient.post('/api/messages', {
       conversationId,
       message,
+      language,
     }, { signal });
   },
 
@@ -79,5 +80,13 @@ export const transcribeApi = {
       },
     });
   },
+};
+
+export const ttsApi = {
+  synthesizeText(text: string, language: string = 'en') {
+    return axiosClient.post('/api/tts', { text, language }, {
+      responseType: 'blob'
+    });
+  }
 };
 

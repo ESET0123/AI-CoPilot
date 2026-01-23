@@ -90,6 +90,15 @@ class IntentClassifier:
             log_with_prefix("Intent Classifier", f"Result: {intent.value}")
             return intent
 
+        except httpx.ConnectError:
+            log_with_prefix("Intent Classifier", "❌ Could not connect to Ollama. Is it running?", level="error")
+            log_with_prefix("Intent Classifier", "👉 Run 'ollama serve' in your terminal.", level="error")
+            return Intent.OTHER
         except Exception as e:
-            log_with_prefix("Intent Classifier", f"ERROR: {str(e)}")
+            log_with_prefix("Intent Classifier", f"❌ Classification error: {e}", level="error")
+            # Fallback to keyword matching if LLM completely fails
+            if "theft" in query.lower():
+                return Intent.THEFT_DETECTION
+            if "load" in query.lower() or "forecast" in query.lower():
+                return Intent.LOAD_FORECASTING
             return Intent.OTHER

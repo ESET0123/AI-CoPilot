@@ -17,12 +17,12 @@ export class MessagesController {
 
     static async send(req: Request, res: Response) {
         try {
-            const { conversationId, message } = req.body;
+            const { conversationId, message, language } = req.body;
             if (!conversationId || !message?.trim()) {
                 return res.status(400).json({ message: 'Conversation and message required' });
             }
 
-            const result = await MessagesService.sendMessage(conversationId, req.userId!, message);
+            const result = await MessagesService.sendMessage(conversationId, req.userId!, message, language);
             res.json(result);
         } catch (err: unknown) {
             const error = err as Error;

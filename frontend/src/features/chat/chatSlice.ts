@@ -125,7 +125,7 @@ export const sendMessage = createAsyncThunk<
     assistant: BackendMessage;
     optimisticId: string;
   },
-  { conversationId: string; message: string; optimisticId: string },
+  { conversationId: string; message: string; optimisticId: string; language?: string },
   { state: RootState }
 >('chat/sendMessage', async (payload, { getState, rejectWithValue, signal }) => {
   if (!getState().auth.isAuthenticated) {
@@ -136,6 +136,7 @@ export const sendMessage = createAsyncThunk<
     const { data } = await chatApi.sendMessage(
       payload.conversationId,
       payload.message,
+      payload.language,
       signal
     );
 

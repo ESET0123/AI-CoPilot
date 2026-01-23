@@ -36,11 +36,12 @@ declare global {
 }
 
 export const useVoiceRecorder = (
-  onTranscriptionComplete: (text: string) => void,
+  onTranscriptionComplete: (result: { text: string; language?: string }) => void,
   onInterimTranscription?: (text: string) => void,
-  method: string = 'google-webkit'
+  method: string = 'google-webkit',
+  language: string = 'en'
 ) => {
-  console.log(`[VoiceRecorder] 🎤 Initialized with method: ${method}`);
+  console.log(`[VoiceRecorder] 🎤 Initialized with method: ${method} (Lang: ${language})`);
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -63,7 +64,7 @@ export const useVoiceRecorder = (
 
   const startRecording = useCallback(async () => {
     console.log(`[VoiceRecorder] 🎙️ Starting recording with method: ${method}`);
-    
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
@@ -77,7 +78,16 @@ export const useVoiceRecorder = (
           const recognition = new SpeechRecognition();
           recognition.continuous = true;
           recognition.interimResults = true;
-          recognition.lang = 'en-US';
+
+          // Map short codes to BCP 47 codes for browser
+          const langMap: Record<string, string> = {
+            'en': 'en-US',
+            'hi': 'hi-IN',
+            'kn': 'kn-IN',
+            'bn': 'bn-IN'
+          };
+          recognition.lang = langMap[language] || 'en-US';
+
           finalTranscriptRef.current = '';
 
           recognition.onresult = (event: SpeechRecognitionEvent) => {
@@ -132,11 +142,11 @@ export const useVoiceRecorder = (
 
         if (method === 'google-webkit' && recognitionRef.current && finalTranscriptRef.current.trim()) {
           console.log(`[VoiceRecorder] 📝 Using browser transcription result`);
-          onTranscriptionComplete(finalTranscriptRef.current);
+          onTranscriptionComplete({ text: finalTranscriptRef.current, language: 'en' });
         } else if (chunksRef.current.length > 0) {
           console.log(`[VoiceRecorder] 📤 Sending audio to backend for processing`);
           const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' });
-          await handleTranscription(audioBlob, method);
+          await handleTranscription(audioBlob, method, language);
         }
       };
 
@@ -147,7 +157,7 @@ export const useVoiceRecorder = (
       console.error('[VoiceRecorder] ❌ Error accessing microphone:', err);
       alert('Could not access microphone. Please ensure you have granted permission.');
     }
-  }, [onInterimTranscription, onTranscriptionComplete, method]);
+  }, [onInterimTranscription, onTranscriptionComplete, method, language]);
 
   const stopRecording = useCallback(() => {
     if (recognitionRef.current) {
@@ -161,21 +171,24 @@ export const useVoiceRecorder = (
     }
   }, [isRecording]);
 
-  const handleTranscription = async (blob: Blob, method: string) => {
-    console.log(`[VoiceRecorder] 🔄 Starting backend transcription with method: ${method}`);
+  const handleTranscription = async (blob: Blob, method: string, language?: string) => {
+    console.log(`[VoiceRecorder] 🔄 Starting backend transcription with method: ${method} (Lang: ${language})`);
     console.log(`[VoiceRecorder] 📊 Audio blob size: ${blob.size} bytes`);
-    
+
     setIsLoading(true);
     try {
       console.log(`[VoiceRecorder] 📡 Sending to backend: ${import.meta.env.VITE_API_URL}/api/transcribe`);
-      
-      const response = await transcribeApi.transcribeAudio(blob, method);
-      
+
+      const response = await transcribeApi.transcribeAudio(blob, method, language);
+
       console.log(`[VoiceRecorder] ✅ Backend transcription completed`);
 
       if (response.data.text) {
         console.log(`[VoiceRecorder] 📝 Transcription result: ${response.data.text.length} characters`);
-        onTranscriptionComplete(response.data.text);
+        onTranscriptionComplete({
+          text: response.data.originalText || response.data.text,
+          language: response.data.language
+        });
       }
     } catch (err) {
       console.error('[VoiceRecorder] ❌ Failed to transcribe audio:', err);

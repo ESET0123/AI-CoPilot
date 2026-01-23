@@ -1,9 +1,10 @@
 import {
   Paper, Text, Loader, Box, Alert, Group, ActionIcon, Stack, Title, Tooltip
 } from '@mantine/core';
-import { TbAlertCircle, TbDownload, TbCopy, TbRefresh, TbCornerDownRight, TbFileDescription, TbCheck } from 'react-icons/tb';
-import { useMemo } from 'react';
+import { TbAlertCircle, TbDownload, TbCopy, TbRefresh, TbCornerDownRight, TbFileDescription, TbCheck, TbVolume, TbVolume2 } from 'react-icons/tb';
+import { useMemo, useState } from 'react';
 import { useClipboard } from '@mantine/hooks';
+import { ttsApi } from '../../services/api';
 
 import { parseMessageContent } from '../../utils/contentParser';
 
@@ -68,6 +69,32 @@ export default function MessageBubble({ role, text, loading, attachment }: Props
   const getCopyableText = () => {
     const attachmentRegex = /\[(?:Extracted from|Uploaded File|Attached):?\s*(.*?)\]:?/g;
     return content.text.replace(attachmentRegex, '').trim();
+  };
+
+  const [playing, setPlaying] = useState(false);
+
+  const handleSpeak = async () => {
+    if (playing) return;
+
+    try {
+      setPlaying(true);
+      const language = content.extras?.language || 'en';
+      const response = await ttsApi.synthesizeText(content.text, language);
+
+      const audioBlob = response.data;
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+
+      audio.onended = () => {
+        setPlaying(false);
+        URL.revokeObjectURL(audioUrl);
+      };
+
+      await audio.play();
+    } catch (error) {
+      console.error('Playback failed:', error);
+      setPlaying(false);
+    }
   };
 
   if (loading) {
@@ -211,6 +238,17 @@ export default function MessageBubble({ role, text, loading, attachment }: Props
                   <ActionIcon variant="subtle" color="gray" size="sm">
                     <TbRefresh size={16} />
                   </ActionIcon>
+                  <Tooltip label={playing ? 'Reading aloud...' : 'Read message'}>
+                    <ActionIcon
+                      variant="subtle"
+                      color={playing ? 'green' : 'gray'}
+                      size="sm"
+                      onClick={handleSpeak}
+                      loading={playing}
+                    >
+                      {playing ? <TbVolume2 size={16} /> : <TbVolume size={16} />}
+                    </ActionIcon>
+                  </Tooltip>
                 </Group>
 
                 {/* Related Section */}

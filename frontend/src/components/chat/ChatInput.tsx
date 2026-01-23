@@ -48,11 +48,28 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
     : false;
 
   const [baseValue, setBaseValue] = useState('');
+  const [primaryLanguage, setPrimaryLanguage] = useState(localStorage.getItem('primaryLanguage') || 'en');
+
+  // Sync with localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setPrimaryLanguage(localStorage.getItem('primaryLanguage') || 'en');
+    };
+    window.addEventListener('storage', handleStorageChange);
+    // Also check on focuses
+    const handleFocus = () => handleStorageChange();
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
 
   const { isRecording, isLoading: isTranscribing, startRecording, stopRecording } =
     useVoiceRecorder(
-      (text) => {
-        console.log(`[ChatInput] 🎤 Transcription completed: ${text.length} characters`);
+      ({ text, language }) => {
+        console.log(`[ChatInput] 🎤 Transcription completed: ${text.length} characters (Lang: ${language || primaryLanguage})`);
         const newValue = baseValue ? `${baseValue.trim()} ${text}` : text;
         setValue(newValue);
         inputRef.current?.focus();
@@ -61,7 +78,8 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
         const newValue = baseValue ? `${baseValue.trim()} ${interimText}` : interimText;
         setValue(newValue);
       },
-      localStorage.getItem('speechRecognitionMethod') || 'google-webkit'
+      localStorage.getItem('speechRecognitionMethod') || 'google-webkit',
+      primaryLanguage
     );
 
   const DEFAULT_SUGGESTIONS = [
@@ -170,9 +188,11 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             conversationId: targetConvoId,
             message: finalMessage,
             optimisticId,
+            language: primaryLanguage
           })
         );
 
+        // No need to reset global language
         pendingThunkRef.current = promise;
         activeRequests.set(targetConvoId, promise);
 
@@ -281,7 +301,11 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
             ref={inputRef}
             value={value}
             onChange={(e) => {
-              setValue(e.currentTarget.value);
+              const newVal = e.currentTarget.value;
+              setValue(newVal);
+              if (newVal === '') {
+                // No need to reset global language
+              }
               if (suggestionsDismissed) setSuggestionsDismissed(false);
             }}
             placeholder={

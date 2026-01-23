@@ -12,6 +12,7 @@ import ocrRoutes from './routes/ocr.routes';
 import theftRoutes from './module/theft-detection-module/theft.routes';
 import forecastingRoutes from './module/load-forecasting-module/forecasting.routes';
 import defaulterRoutes from './module/defaulter-analysis-module/defaulter.routes';
+import ttsRoutes from './routes/tts.routes';
 import { requireAuth } from './middleware/auth';
 
 const app = express();
@@ -39,6 +40,7 @@ app.use('/api/ocr', requireAuth, ocrRoutes);
 app.use('/api/theft', requireAuth, theftRoutes);
 app.use('/api/forecasting', requireAuth, forecastingRoutes);
 app.use('/api/defaulter', requireAuth, defaulterRoutes);
+app.use('/api/tts', requireAuth, ttsRoutes);
 
 // Global error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

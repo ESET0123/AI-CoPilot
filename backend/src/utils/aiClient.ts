@@ -19,31 +19,38 @@ export async function callAIService(
   payload: {
     conversationId: string;
     message: string;
+    language?: string;
   },
   signal?: AbortSignal
 ): Promise<string> {
   console.log('[AI Client] Sending request to /api/process');
-  console.log('[AI Client] Query:', payload.message);
+  console.log('[AI Client] Query:', payload.message, '(Lang:', payload.language || 'en', ')');
 
   const { data } = await aiClient.post(
     '/api/process',
     {
       query: payload.message,
+      language: payload.language || 'en'
     },
     { signal }
   );
 
   console.log('[AI Client] Response received:');
   console.log('  - Intent:', data.intent);
-  console.log('  - Response length:', data.response.length, 'chars');
+  console.log('  - Language:', data.language);
+
+  // If there is a translated response (e.g. Hindi), use it as the primary text for chat
+  const finalResponseText = data.translated_response || data.response;
 
   // Build response for chat UI
   const responsePayload = {
-    text: data.response,
+    text: finalResponseText,
     type: 'text',
     extras: {
       query: data.query,
       intent: data.intent,
+      language: data.language,
+      englishResponse: data.response // Keep English for reference or debugging
     },
   };
 
@@ -67,9 +74,9 @@ export async function transcribeAudio(
   language?: string
 ): Promise<string> {
   console.log(`[AI Client] 🎤 Transcribing audio with method: ${method}`);
-  
+
   const formData = new FormData();
-  
+
   if (Buffer.isBuffer(audioData)) {
     const blob = new Blob([audioData as unknown as BlobPart], {
       type: 'audio/wav',
@@ -85,7 +92,7 @@ export async function transcribeAudio(
   }
 
   console.log(`[AI Client] 📡 Sending to intent-classifier-service: ${env.AI_SERVICE_URL}/api/transcribe`);
-  
+
   const { data } = await aiClient.post('/api/transcribe', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',

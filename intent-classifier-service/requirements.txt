@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+httpx
+python-multipart
+faster-whisper
+pydantic
+python-dotenv
+torch
+transformers
+git+https://github.com/huggingface/parler-tts.git
+scipy
+# piper-tts  # Uncomment if using Piper locally
