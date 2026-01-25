@@ -102,3 +102,28 @@ test/
 # Docker
 # ======================
 docker-compose.override.yml
+
+# ======================
+# AI Models & Binaries
+# ======================
+*.onnx
+*.ort
+*.traineddata
+*.bin
+*.pt
+*.pth
+*.pkl
+
+# ======================
+# Executables & Libraries
+# ======================
+*.exe
+*.dll
+*.so
+*.dylib
+*.lib
+
+# ======================
+# Tools & External Dependencies
+# ======================
+piper/

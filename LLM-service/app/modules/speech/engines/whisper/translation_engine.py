@@ -1,5 +1,5 @@
 from app.core.logger import log_with_prefix
-from app.modules.speech.engines.translation.indic_trans_engine import IndicTransEngine, FLORES_MAP
+from app.modules.speech.engines.translation.nllb_engine import nllb_engine
 from app.modules.speech.engines.translation.helsinki_engine import HelsinkiEngine
 
 class TranslationEngine:
@@ -12,14 +12,14 @@ class TranslationEngine:
         return cls._instance
 
     def _initialize(self):
-        self.indic_engine = IndicTransEngine()
-        # Helsinki engine instances are created on demand
+        # NLLB engine is initialized globally in its module
+        pass
         
     async def translate(self, text: str, from_lang: str, to_lang: str = "en") -> str:
         """
         Routes translation requests to the appropriate engine.
-        Indic Languages -> IndicTrans2
-        International -> Helsinki-NLP
+        Indic Languages -> NLLB-200
+        International -> Helsinki-NLP or NLLB-200
         """
         if not text or from_lang == to_lang:
             return text
@@ -30,18 +30,13 @@ class TranslationEngine:
 
         log_with_prefix("Translator", f"🌐 Routing: {from_lang} -> {to_lang}")
 
-        # 1. Indic Translation (Hindi/Kannada <-> English)
-        if (from_lang in ["hi", "kn", "bn"] and to_lang == "en") or \
-           (from_lang == "en" and to_lang in ["hi", "kn", "bn"]):
-            
-            src_code = FLORES_MAP.get(from_lang)
-            tgt_code = FLORES_MAP.get(to_lang)
-            
-            if src_code and tgt_code:
-                log_with_prefix("Translator", "🚀 Using IndicTrans2")
-                return self.indic_engine.translate(text, src_code, tgt_code)
+        # 1. Indic & Global Translation (Hindi/Kannada/Bengali <-> English)
+        # Using NLLB for these as it's more robust on-prem
+        if from_lang in ["hi", "kn", "bn", "en"] and to_lang in ["hi", "kn", "bn", "en"]:
+            log_with_prefix("Translator", "🚀 Using NLLB-200")
+            return nllb_engine.translate(text, from_lang, to_lang)
 
-        # 2. Helsinki Translation (Arabic <-> English)
+        # 2. Helsinki Translation (Arabic <-> English) - Keeping as alternative
         if (from_lang == "ar" and to_lang == "en") or \
            (from_lang == "en" and to_lang == "ar"):
             
@@ -52,7 +47,9 @@ class TranslationEngine:
                 return engine.translate(text)
             except Exception as e:
                 log_with_prefix("Translator", f"❌ Helsinki failed: {e}", level="error")
-                return text
+                # Fallback to NLLB as it also supports Arabic
+                log_with_prefix("Translator", "🔄 Falling back to NLLB-200 for Arabic")
+                return nllb_engine.translate(text, from_lang, to_lang)
 
         log_with_prefix("Translator", f"⚠️ No specialized engine for {from_lang}->{to_lang}. Returning original.")
         return text
