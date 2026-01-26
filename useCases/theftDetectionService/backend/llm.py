@@ -1,10 +1,8 @@
-import os
+from config import settings
 import requests
 
-OLLAMA_BASE = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-
 def call_ollama(model, system, user):
-    url = f"{OLLAMA_BASE}/api/generate"
+    url = f"{settings.OLLAMA_BASE_URL}/api/generate"
 
     payload = {
         "model": model,
@@ -12,9 +10,10 @@ def call_ollama(model, system, user):
         "stream": False
     }
 
-    r = requests.post(url, json=payload, timeout=300)
-
-    if r.status_code != 200:
-        raise Exception(f"Ollama error {r.status_code}: {r.text}")
-
-    return r.json()["response"].strip()
+    try:
+        r = requests.post(url, json=payload, timeout=300)
+        if r.status_code != 200:
+            raise Exception(f"Ollama error {r.status_code}: {r.text}")
+        return r.json()["response"].strip()
+    except Exception as e:
+        raise Exception(f"LLM Call Failed: {e}")

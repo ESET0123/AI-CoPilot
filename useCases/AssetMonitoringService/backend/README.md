@@ -1,6 +1,6 @@
-# Theft Detection Service
+# Asset Monitoring Service
 
-This service detects power theft and manages theft-related cases using an LLM-powered SQL agent and a conversational bot.
+This service analyzes Distribution Transformer (DT) data to identify overloaded and underloaded transformers using an LLM-powered SQL agent.
 
 ## Setup
 
@@ -12,7 +12,7 @@ This service detects power theft and manages theft-related cases using an LLM-po
 2.  **Environment Variables**:
     Create a `.env` file in the `backend` directory with the following variables:
     ```env
-    PORT=8010
+    PORT=8001
     HOST=0.0.0.0
     OLLAMA_BASE_URL=http://localhost:11434
     OLLAMA_MODEL=gemma3:12b
@@ -27,7 +27,5 @@ This service detects power theft and manages theft-related cases using an LLM-po
 ## API Endpoints
 
 -   **Health Check**: `GET /health`
--   **Query**: `POST /api/v1/theft-detection/query`
+-   **Query**: `POST /api/v1/asset-monitoring/query`
     - Payload: `{"prompt": "your query", "model": "optional-model"}`
--   **Chat**: `POST /api/v1/theft-detection/chat`
-    - Payload: `{"state": {}, "answer": "optional answer"}`

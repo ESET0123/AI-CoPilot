@@ -17,6 +17,7 @@ class IntentClassifier:
             Allowed intents:
             - LOAD_FORECASTING: Questions about load forecast,  power demand, load predictions, consumption forecasts, energy usage
             - THEFT_DETECTION: Questions about theft, theft alerts, suspicious activity, anomaly detection, fraud detection
+            - ASSET_MONITORING: Questions about asset health, transformer status, meter data, transformer life, asset maintenance
             - OTHER: Everything else
 
             Examples:
@@ -24,6 +25,8 @@ class IntentClassifier:
             - "Show me power demand for next week" -> LOAD_FORECASTING
             - "Any theft detected?" -> THEFT_DETECTION
             - "Show me theft alerts" -> THEFT_DETECTION
+            - "Show me transformer health" -> ASSET_MONITORING
+            - "What is the status of the meters?" -> ASSET_MONITORING
             - "Hello how are you?" -> OTHER
 
             Respond ONLY in JSON format:
@@ -84,6 +87,8 @@ class IntentClassifier:
                     intent = Intent.THEFT_DETECTION
                 elif "LOAD" in normalized or "FORECAST" in normalized:
                     intent = Intent.LOAD_FORECASTING
+                elif "ASSET" in normalized or "MONITOR" in normalized:
+                    intent = Intent.ASSET_MONITORING
                 else:
                     log_with_prefix("Intent Classifier", f"Could not map '{normalized}' to Intent Enum. Using OTHER.")
                     intent = Intent.OTHER
@@ -102,4 +107,6 @@ class IntentClassifier:
                 return Intent.THEFT_DETECTION
             if "load" in query.lower() or "forecast" in query.lower():
                 return Intent.LOAD_FORECASTING
+            if any(word in query.lower() for word in ["asset", "monitor", "transformer", "meter"]):
+                return Intent.ASSET_MONITORING
             return Intent.OTHER

@@ -32,7 +32,8 @@ export default function ChatWindow({ scrollContainerRef }: ChatWindowProps) {
   return (
     <Stack style={{
       maxWidth: 900,
-      margin: '0 auto'
+      margin: '0 auto',
+      padding: '2rem 0',
     }}>
       {convo.messages.map((msg) => (
         <MessageBubble key={msg.id} {...msg} />
