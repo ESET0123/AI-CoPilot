@@ -34,7 +34,7 @@ export default function ActiveConversationView() {
                         background: 'transparent'
                     }}
                 >
-                    <Box maw={900} w="100%" mb="md" >
+                    <Box maw={900} w="100%">
                         <ChatInput />
                     </Box>
                 </Box>
