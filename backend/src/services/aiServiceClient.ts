@@ -31,7 +31,7 @@ class AIServiceClient {
 
         this.client = axios.create({
             baseURL: env.AI_SERVICE_URL,
-            timeout: 120000, // 2 minutes for heavy operations
+            timeout: 240000, // 4 minutes for heavy operations
             headers: {
                 'Content-Type': 'application/json',
             },

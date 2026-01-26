@@ -38,21 +38,12 @@ class TheftDetectionHandler:
                 data = response.json()
                 
                 if data.get("success"):
-                    sql = data.get("sql", "N/A")
-                    result = data.get("result", [])
-                    log_with_prefix("Theft Detection Handler", f"Query successful, result length: {len(str(result))}")
+                    human_answer = data.get("human_answer", "No response received.")
+                    log_with_prefix("Theft Detection Handler", f"Query successful, answer length: {len(human_answer)}")
                     
-                    # Format the response
-                    response_text = "THEFT DETECTION ANALYSIS\n\n"
-                    response_text += f"Generated SQL: {sql}\n\n"
-                    if result:
-                        response_text += f"Results:\n{result}\n"
-                    else:
-                        response_text += "No results found.\n"
-                    
-                    return response_text
+                    return f"THEFT DETECTION ANALYSIS\n\n{human_answer}"
                 else:
-                    error = data.get("error", "Unknown error")
+                    error = data.get("human_answer", data.get("error", "Unknown error"))
                     log_with_prefix("Theft Detection Handler", f"Query failed: {error}")
                     return f"Theft Detection Error: {error}"
                     

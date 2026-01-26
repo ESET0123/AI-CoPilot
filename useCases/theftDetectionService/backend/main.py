@@ -8,10 +8,11 @@ import uvicorn
 import os
 import logging
 
-from sql_agent import nl_to_sql
-from db import run_sql
-from case_flow import bot_step
 from config import settings
+from sql_agent import nl_to_sql
+from database import run_sql
+from humanizer import humanize_response
+from case_flow import bot_step
 
 # ---- LOGGING SETUP ----
 logging.basicConfig(
@@ -48,13 +49,13 @@ def health():
 
 @router.post("/query")
 def query_endpoint(req: QueryReq):
-    raw_sql = None
-    clean_sql = None
     logger.info(f"Received query request: {req.prompt[:50]}...")
     
+    clean_sql = None
     try:
         model = settings.OLLAMA_MODEL
-        logger.info(f"Generating SQL with model {model}")
+        
+        # 1. Generate SQL
         raw_sql = nl_to_sql(model, req.prompt)
         
         # ---- CLEAN MODEL OUTPUT ----
@@ -66,6 +67,7 @@ def query_endpoint(req: QueryReq):
         clean_sql = clean_sql.encode("utf-8", "ignore").decode("utf-8").strip()
         
         logger.info(f"Cleaned SQL: {clean_sql}")
+        print(f"\n[SQL QUERY EXECUTED]: {clean_sql}\n")
         
         # ---- SAFETY CHECKS ----
         banned = ["delete", "drop", "update", "insert", "alter", "pragma"]
@@ -74,7 +76,7 @@ def query_endpoint(req: QueryReq):
             logger.warning(f"Unsafe SQL blocked: {clean_sql}")
             return {
                 "success": False,
-                "error": "Unsafe SQL blocked (read-only enforced)",
+                "human_answer": "I cannot execute that query due to safety restrictions.",
                 "sql": clean_sql
             }
         
@@ -82,17 +84,20 @@ def query_endpoint(req: QueryReq):
             logger.warning(f"Complex SQL blocked: {clean_sql}")
             return {
                 "success": False,
-                "error": "Multiple SQL statements detected. Only one SELECT is allowed.",
+                "human_answer": "The query was too complex.",
                 "sql": clean_sql
             }
         
-        # Execute the query
+        # 2. Execute the query
         data = run_sql(clean_sql)
-        logger.info(f"SQL execution successful, returned {len(data)} rows")
         
+        # 3. Humanize response
+        human_answer = humanize_response(model, req.prompt, clean_sql, data)
+
         return {
             "success": True,
             "sql": clean_sql,
+            "human_answer": human_answer,
             "result": data,
             "error": None
         }
@@ -100,14 +105,9 @@ def query_endpoint(req: QueryReq):
     except Exception as e:
         logger.exception("Error processing query request")
         error_msg = str(e)
-        if "no such column" in error_msg.lower():
-            error_msg += "\n\nTip: The column doesn't exist. Try asking 'show columns' to see available fields."
-        elif "no such table" in error_msg.lower():
-            error_msg += "\n\nAvailable tables: historical_cases, utility_cases"
-        
         return {
             "success": False,
-            "error": error_msg,
+            "human_answer": f"I encountered an error: {error_msg}",
             "sql": clean_sql
         }
 

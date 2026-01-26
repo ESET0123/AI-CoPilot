@@ -1,4 +1,7 @@
-from llm import call_ollama
+import logging
+from llm_client import call_ollama
+
+logger = logging.getLogger("TheftDetectionService.SQLAgent")
 
 SYSTEM_PROMPT = """
 You are a SQLite SQL generator for a utility inspection database.
@@ -81,6 +84,7 @@ REMEMBER:
 - Default to historical_cases unless user mentions "live" or "registered" cases
 """
 
-def nl_to_sql(model, user_prompt=""):
+def nl_to_sql(model: str, user_prompt: str):
     """Generate SQL from natural language using static schema"""
+    logger.info(f"Generating SQL for prompt: {user_prompt[:50]}...")
     return call_ollama(model, SYSTEM_PROMPT, user_prompt)
