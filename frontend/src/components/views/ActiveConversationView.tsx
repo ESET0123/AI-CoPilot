@@ -10,7 +10,7 @@ export default function ActiveConversationView() {
     return (
         <Box display="flex" style={{ flexDirection: 'column' }}>
             {/* Primary View: Chat Window + Input (90% height) */}
-            <Box display="flex" style={{ flexDirection: 'column', height: '90vh', overflow: 'hidden' }}>
+            <Box display="flex" style={{ flexDirection: 'column', height: '70vh', overflow: 'hidden' }}>
                 {/* Chat Content expands to fill available space */}
                 <Box
                     ref={scrollContainerRef}
@@ -21,9 +21,11 @@ export default function ActiveConversationView() {
                     <ChatWindow scrollContainerRef={scrollContainerRef} />
                 </Box>
 
-                {/* Input Area */}
+                
+            </Box>
+            {/* Input Area */}
                 <Box
-                    p="md"
+                    // p="md"
                     w="100%"
                     display="flex"
                     style={{
@@ -36,8 +38,6 @@ export default function ActiveConversationView() {
                         <ChatInput />
                     </Box>
                 </Box>
-            </Box>
-
             {/* Below the Fold: Action Categories (Scrollable and Hidden by default) */}
             <Box py="xl" display="flex" style={{ justifyContent: 'center' }}>
                 <QuickAccessCategories />
