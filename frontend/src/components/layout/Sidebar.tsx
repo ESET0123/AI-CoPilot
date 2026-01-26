@@ -51,7 +51,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
       <Group justify={collapsed ? 'center' : 'space-between'} px="xs" >
         <ActionIcon
           variant="subtle"
-          color="gray"
+          color="var(--mantine-color-text)"
           radius="md"
           size="lg"
           onClick={() => {
@@ -68,7 +68,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
         {!collapsed && (
           <ActionIcon
             variant="subtle"
-            color="gray"
+            color="var(--mantine-color-text)"
             radius="md"
             size="lg"
           >
@@ -80,7 +80,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
       <Stack align={collapsed ? 'center' : 'stretch'} style={{ flex: 1, overflow: 'hidden' }}>
         {collapsed && (
           <ActionIcon
-            style={{ color: 'var(--mantine-color-text)', justifyContent: 'center' }}
+            style={{ color: 'var(--mantine-color-text)', justifyContent: 'center', backgroundColor: 'transparent' }}
             type="button"
             onClick={() => {
               dispatch(startNewChat());
@@ -218,7 +218,7 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                           className="delete-chat-btn"
                           type="button"
                           variant="subtle"
-                          color="gray"
+                          color="var(--mantine-color-text)"
                           radius="xl"
                           size="sm"
                           style={{

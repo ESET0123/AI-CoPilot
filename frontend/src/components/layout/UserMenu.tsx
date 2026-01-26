@@ -1,4 +1,4 @@
-import { useState } from 'react';
+// import { useState } from 'react';
 import {
   Group,
   Text,
@@ -9,12 +9,7 @@ import {
 import {
   TbLogout,
   TbSettings,
-  TbTrash,
   TbQuestionMark,
-  TbUser,
-  TbBell,
-  TbLock,
-  TbPalette,
 } from 'react-icons/tb';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout } from '../../features/auth/authSlice';
@@ -68,7 +63,7 @@ export default function UserMenu({ collapsed = false }: Props) {
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--mantine-color-default-hover)'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
-              <ActionIcon variant="subtle" radius="xl" size={collapsed ? 'lg' : 'md'} color="gray">
+              <ActionIcon variant="subtle" radius="xl" size={collapsed ? 'lg' : 'md'} color="var(--mantine-color-text)">
                 <TbSettings size={collapsed ? 22 : 18} />
               </ActionIcon>
 
