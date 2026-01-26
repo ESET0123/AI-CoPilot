@@ -1,10 +1,12 @@
 import { Modal, Tabs, Box, Text, Group, Select, Switch, Stack, Divider, Button, useMantineColorScheme } from '@mantine/core';
 import { TbUser, TbBell, TbLock, TbPalette, TbMicrophone } from 'react-icons/tb';
 import { useState, useEffect } from 'react';
-import { useAppDispatch } from '../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { deleteAllConversations } from '../../features/chat/chatSlice';
 import { useDisclosure } from '@mantine/hooks';
 import DeleteAllConversationsModal from './DeleteAllConversationsModal';
+
+import { setPrimaryLanguage, setSpeechRecognitionMethod } from '../../features/settings/settingsSlice';
 
 interface SettingsModalProps {
     opened: boolean;
@@ -14,42 +16,24 @@ interface SettingsModalProps {
 export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
     const { colorScheme, setColorScheme } = useMantineColorScheme();
     const dispatch = useAppDispatch();
+    const { primaryLanguage, speechRecognitionMethod } = useAppSelector(s => s.settings);
 
     const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
     const [isDeleting, setIsDeleting] = useState(false);
-    const [speechRecognitionMethod, setSpeechRecognitionMethod] = useState('google-webkit');
-    const [primaryLanguage, setPrimaryLanguage] = useState('en');
 
-    // Load settings from localStorage
-    useEffect(() => {
-        const savedMethod = localStorage.getItem('speechRecognitionMethod');
-        if (savedMethod) {
-            setSpeechRecognitionMethod(savedMethod);
-        }
-
-        const savedLang = localStorage.getItem('primaryLanguage');
-        if (savedLang) {
-            setPrimaryLanguage(savedLang);
-        }
-    }, []);
-
-    // Save speech recognition method to localStorage
+    // Save speech recognition method to Redux
     const handleSpeechMethodChange = (value: string | null) => {
         if (value) {
             console.log(`[Settings] 🎤 Speech recognition method changed to: ${value}`);
-            setSpeechRecognitionMethod(value);
-            localStorage.setItem('speechRecognitionMethod', value);
+            dispatch(setSpeechRecognitionMethod(value));
         }
     };
 
-    // Save primary language to localStorage
+    // Save primary language to Redux
     const handleLanguageChange = (value: string | null) => {
         if (value) {
             console.log(`[Settings] 🌐 Primary language changed to: ${value}`);
-            setPrimaryLanguage(value);
-            localStorage.setItem('primaryLanguage', value);
-            // Optional: trigger a page refresh or event if needed, 
-            // but for now we'll just read from storage in other components
+            dispatch(setPrimaryLanguage(value));
         }
     };
 

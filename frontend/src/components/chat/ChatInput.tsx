@@ -48,23 +48,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
     : false;
 
   const [baseValue, setBaseValue] = useState('');
-  const [primaryLanguage, setPrimaryLanguage] = useState(localStorage.getItem('primaryLanguage') || 'en');
-
-  // Sync with localStorage
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setPrimaryLanguage(localStorage.getItem('primaryLanguage') || 'en');
-    };
-    window.addEventListener('storage', handleStorageChange);
-    // Also check on focuses
-    const handleFocus = () => handleStorageChange();
-    window.addEventListener('focus', handleFocus);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, []);
+  const { primaryLanguage, speechRecognitionMethod } = useAppSelector((s) => s.settings);
 
   const { isRecording, isLoading: isTranscribing, startRecording, stopRecording } =
     useVoiceRecorder(
@@ -78,14 +62,14 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
         const newValue = baseValue ? `${baseValue.trim()} ${interimText}` : interimText;
         setValue(newValue);
       },
-      localStorage.getItem('speechRecognitionMethod') || 'google-webkit',
+      speechRecognitionMethod,
       primaryLanguage
     );
 
   const DEFAULT_SUGGESTIONS = [
     "What will be the load tomorrow?",
     "Any theft detected?",
-    "Hello", "How are you?",
+    "Hello, How are you?",
   ];
 
   const [showSuggestions, setShowSuggestions] = useState(false);
