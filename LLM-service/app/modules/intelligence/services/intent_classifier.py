@@ -51,6 +51,7 @@ class IntentClassifier:
             
             resp.raise_for_status()  # Raises HTTPStatusError for 4xx/5xx responses
             raw_response = resp.json().get("response", "")
+            print(f"DEBUG: RAW LLM OUTPUT: {raw_response}")
             log_with_prefix("Intent Classifier", f"RAW LLM OUTPUT: {raw_response}")
 
             # Clean and normalize the response

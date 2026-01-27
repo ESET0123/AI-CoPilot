@@ -39,10 +39,13 @@ class PipelineService:
         
         # Step 3: Response Translation (Convert back to user's native language)
         translated_response = None
+        final_response_text = response_text
+        
         if payload.language and payload.language != "en":
             log_with_prefix("Pipeline", f"Step 3: Translating response back to {payload.language}...")
             try:
                 translated_response = await translation_engine.translate(response_text, "en", payload.language)
+                final_response_text = translated_response # SWAP: Main response becomes the translated one
                 log_with_prefix("Pipeline", "Translation complete")
             except Exception as e:
                 log_with_prefix("Pipeline", f"⚠️ Response translation failed: {str(e)}. Client will receive English.", level="warning")
@@ -51,7 +54,8 @@ class PipelineService:
         return ProcessResponse(
             query=payload.query,
             intent=intent.value,
-            response=response_text,
+            response=final_response_text, # This is now in target language (if success)
             language=payload.language,
-            translated_response=translated_response
+            translated_response=translated_response,
+            english_response=response_text # Always keep original English here
         )

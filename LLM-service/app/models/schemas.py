@@ -3,11 +3,12 @@ from typing import Optional
 
 class ProcessRequest(BaseModel):
     query: str
-    language: Optional[str] = "en"
+    language: str = "en"  # Default to English
 
 class ProcessResponse(BaseModel):
     query: str
     intent: str
     response: str
-    language: Optional[str] = "en"
+    language: str
     translated_response: Optional[str] = None
+    english_response: Optional[str] = None

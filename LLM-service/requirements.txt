@@ -8,6 +8,9 @@ python-dotenv
 torch
 transformers
 git+https://github.com/huggingface/parler-tts.git
+indic-nlp-library
+sacremoses
+sentencepiece
 
 
 # piper-tts  # Uncomment if using Piper locally

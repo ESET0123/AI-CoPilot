@@ -17,7 +17,7 @@ import {
   TbEdit,
   TbChevronDown,
 } from 'react-icons/tb';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 import UserMenu from './UserMenu';
 import { useLayout } from './LayoutContext';
@@ -29,6 +29,7 @@ import {
   startNewChat,
 } from '../../features/chat/chatSlice';
 import type { Conversation } from '../../features/chat/chatSlice';
+import { ChatSearch } from './ChatSearch';
 
 type Props = {
   collapsed: boolean;
@@ -42,13 +43,23 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
   );
 
   const [open, setOpen] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const isMobile = useMediaQuery('(max-width: 768px)');
   const { toggleMobile } = useLayout();
 
+  const filteredConversations = useMemo(() => {
+    return conversations
+      .filter((c: Conversation) => c.title && c.title.trim().length > 0)
+      .filter((c: Conversation) =>
+        c.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+  }, [conversations, searchQuery]);
+
   return (
-    <Stack h="100%" p="sm" gap="sm" bg="body">
-      <Group justify={collapsed ? 'center' : 'space-between'} px="xs" >
+    <Stack h="100%" p="sm" gap="xs" bg="body">
+      <Group justify={collapsed ? 'center' : 'space-between'} px="xs" h={40}>
         <ActionIcon
           variant="subtle"
           color="var(--mantine-color-text)"
@@ -68,16 +79,29 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
         {!collapsed && (
           <ActionIcon
             variant="subtle"
-            color="var(--mantine-color-text)"
+            color={isSearching ? 'var(--mantine-color-brand-filled)' : 'var(--mantine-color-text)'}
             radius="md"
             size="lg"
+            onClick={() => setIsSearching(!isSearching)}
           >
             <TbSearch size={22} strokeWidth={1.5} />
           </ActionIcon>
         )}
       </Group>
 
-      <Stack align={collapsed ? 'center' : 'stretch'} style={{ flex: 1, overflow: 'hidden' }}>
+      {isSearching && !collapsed && (
+        <ChatSearch
+          query={searchQuery}
+          onQueryChange={setSearchQuery}
+          onClear={() => {
+            setIsSearching(false);
+            setSearchQuery('');
+          }}
+        />
+      )}
+
+      <Stack align={collapsed ? 'center' : 'stretch'} style={{ flex: 1, overflow: 'hidden' }} gap="sm">
+        {/* ... (rest of the component remains the same, but using filteredConversations) */}
         {collapsed && (
           <ActionIcon
             style={{ color: 'var(--mantine-color-text)', justifyContent: 'center', backgroundColor: 'transparent' }}
@@ -151,11 +175,8 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
           <ScrollArea style={{ flex: 1 }} scrollbarSize={0}>
             <Collapse in={open}>
               <Stack gap={4}>
-                {conversations
-                  .filter(
-                    (c: Conversation) => c.title && c.title.trim().length > 0
-                  )
-                  .map((c: Conversation) => {
+                {filteredConversations.length > 0 ? (
+                  filteredConversations.map((c: Conversation) => {
                     const isActive = c.id === activeConversationId;
 
                     return (
@@ -234,7 +255,14 @@ export default function Sidebar({ collapsed, onToggle }: Props) {
                         </ActionIcon>
                       </Group>
                     );
-                  })}
+                  })
+                ) : (
+                  searchQuery && (
+                    <Text size="xs" c="dimmed" ta="center" py="md">
+                      No chats found for "{searchQuery}"
+                    </Text>
+                  )
+                )}
               </Stack>
             </Collapse>
           </ScrollArea>
