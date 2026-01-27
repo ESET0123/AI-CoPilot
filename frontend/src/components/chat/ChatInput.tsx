@@ -21,6 +21,7 @@ import {
   stopMessage,
 } from '../../features/chat/chatSlice';
 import { ocrApi } from '../../services/api';
+import { audioManager } from '../../utils/audioManager';
 
 interface ChatInputProps {
   isHeroMode?: boolean;
@@ -101,6 +102,9 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
 
   const handleStop = () => {
     if (!isCurrentSending) return;
+
+    // Stop any playing TTS audio
+    audioManager.stopAudio();
 
     if (activeConversationId) {
       const globalPromise = activeRequests.get(activeConversationId);

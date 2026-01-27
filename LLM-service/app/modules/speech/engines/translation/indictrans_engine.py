@@ -9,16 +9,16 @@ import re
 # ISO codes to IndicTrans2 language codes and scripts
 INDIC_LANG_MAP = {
     "hi": "hin_Deva",
-    "kn": "kan_Knda",
-    "bn": "ben_Beng",
-    "en": "eng_Latn",
-    "mr": "mar_Deva",
-    "ta": "tam_Taml",
-    "te": "tel_Telu",
-    "gu": "guj_Gujr",
-    "pa": "pan_Guru",
-    "ml": "mal_Mlym",
-    "or": "ori_Orya"
+    # "kn": "kan_Knda",
+    # "bn": "ben_Beng",
+    # "en": "eng_Latn",
+    # "mr": "mar_Deva",
+    # "ta": "tam_Taml",
+    # "te": "tel_Telu",
+    # "gu": "guj_Gujr",
+    # "pa": "pan_Guru",
+    # "ml": "mal_Mlym",
+    # "or": "ori_Orya"
 }
 
 class SimpleIndicProcessor:

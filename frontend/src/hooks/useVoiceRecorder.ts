@@ -83,8 +83,8 @@ export const useVoiceRecorder = (
           const langMap: Record<string, string> = {
             'en': 'en-US',
             'hi': 'hi-IN',
-            'kn': 'kn-IN',
-            'bn': 'bn-IN'
+            // 'kn': 'kn-IN',
+            // 'bn': 'bn-IN'
           };
           recognition.lang = langMap[language] || 'en-US';
 

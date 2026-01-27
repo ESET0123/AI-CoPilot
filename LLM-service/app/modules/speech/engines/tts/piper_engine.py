@@ -30,8 +30,8 @@ class PiperEngine:
         voice_map = {
             "en": "en_US-lessac-medium.onnx",
             "hi": "hi_IN-pratham-medium.onnx",
-            "kn": "kn_IN-shreyas-medium.onnx",
-            "ar": "ar_JO-kareem-medium.onnx"
+            # "kn": "kn_IN-shreyas-medium.onnx",
+            # "ar": "ar_JO-kareem-medium.onnx"
         }
         
         voice = voice_map.get(language, voice_map["en"])

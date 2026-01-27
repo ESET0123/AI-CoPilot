@@ -1,10 +1,11 @@
 import {
   Paper, Text, Loader, Box, Alert, Group, ActionIcon, Stack, Title, Tooltip
 } from '@mantine/core';
-import { TbAlertCircle, TbCopy, TbRefresh, TbCornerDownRight, TbFileDescription, TbCheck, TbVolume, TbVolume2 } from 'react-icons/tb';
+import { TbAlertCircle, TbCopy, TbRefresh, TbCornerDownRight, TbFileDescription, TbCheck, TbVolume, TbVolume2, TbPlayerStopFilled } from 'react-icons/tb';
 import { useMemo, useState } from 'react';
 import { useClipboard } from '@mantine/hooks';
 import { ttsApi } from '../../services/api';
+import { audioManager } from '../../utils/audioManager';
 
 import { parseMessageContent } from '../../utils/contentParser';
 
@@ -13,6 +14,7 @@ type Props = {
   text: string;
   loading?: boolean;
   attachment?: { name: string };
+  onRefresh?: () => void;
 };
 
 const FileCard = ({ name }: { name: string }) => (
@@ -56,7 +58,7 @@ const FileCard = ({ name }: { name: string }) => (
   </Paper>
 );
 
-export default function MessageBubble({ role, text, loading, attachment }: Props) {
+export default function MessageBubble({ role, text, loading, attachment, onRefresh }: Props) {
   const isUser = role === 'user';
 
   // Parse structured data if assistant
@@ -74,7 +76,12 @@ export default function MessageBubble({ role, text, loading, attachment }: Props
   const [playing, setPlaying] = useState(false);
 
   const handleSpeak = async () => {
-    if (playing) return;
+    if (playing) {
+      // Stop currently playing audio
+      audioManager.stopAudio();
+      setPlaying(false);
+      return;
+    }
 
     try {
       setPlaying(true);
@@ -85,15 +92,24 @@ export default function MessageBubble({ role, text, loading, attachment }: Props
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
 
+      // Register with global audio manager
+      audioManager.setAudio(audio, audioUrl);
+
       audio.onended = () => {
         setPlaying(false);
-        URL.revokeObjectURL(audioUrl);
+        audioManager.clearAudio();
+      };
+
+      audio.onerror = () => {
+        setPlaying(false);
+        audioManager.clearAudio();
       };
 
       await audio.play();
     } catch (error) {
       console.error('Playback failed:', error);
       setPlaying(false);
+      audioManager.clearAudio();
     }
   };
 
@@ -235,18 +251,25 @@ export default function MessageBubble({ role, text, loading, attachment }: Props
                       {clipboard.copied ? <TbCheck size={16} /> : <TbCopy size={16} />}
                     </ActionIcon>
                   </Tooltip>
-                  <ActionIcon variant="subtle" color="gray" size="sm">
-                    <TbRefresh size={16} />
-                  </ActionIcon>
-                  <Tooltip label={playing ? 'Reading aloud...' : 'Read message'}>
+                  <Tooltip label="Regenerate response">
                     <ActionIcon
                       variant="subtle"
-                      color={playing ? 'green' : 'gray'}
+                      color="gray"
+                      size="sm"
+                      onClick={onRefresh}
+                      disabled={!onRefresh}
+                    >
+                      <TbRefresh size={16} />
+                    </ActionIcon>
+                  </Tooltip>
+                  <Tooltip label={playing ? 'Stop reading' : 'Read message'}>
+                    <ActionIcon
+                      variant="subtle"
+                      color={playing ? 'red' : 'gray'}
                       size="sm"
                       onClick={handleSpeak}
-                      loading={playing}
                     >
-                      {playing ? <TbVolume2 size={16} /> : <TbVolume size={16} />}
+                      {playing ? <TbPlayerStopFilled size={16} /> : <TbVolume size={16} />}
                     </ActionIcon>
                   </Tooltip>
                 </Group>

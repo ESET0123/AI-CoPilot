@@ -111,9 +111,6 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                                 data={[
                                     { value: 'en', label: 'English' },
                                     { value: 'hi', label: 'Hindi (हिन्दी)' },
-                                    { value: 'kn', label: 'Kannada (ಕನ್ನಡ)' },
-                                    { value: 'bn', label: 'Bengali (বাংলা)' },
-                                    { value: 'ar', label: 'Arabic (العربية)' }
                                 ]}
                                 value={primaryLanguage}
                                 onChange={handleLanguageChange}
