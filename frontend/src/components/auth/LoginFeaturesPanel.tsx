@@ -57,7 +57,7 @@ export default function LoginFeaturesPanel() {
             </Box>
 
             <Stack gap="xl">
-                <Box>
+                <Box p="xl">
                     <Title order={1} size={36} fw={700} c="dark.7" style={{ lineHeight: 1.2, marginBottom: 8 }}>
                         See the Network Thinking
                     </Title>
@@ -83,11 +83,11 @@ export default function LoginFeaturesPanel() {
 
 function FeatureItem({ icon: Icon, label }: { icon: React.ElementType, label: string }) {
     return (
-        <Group gap="sm" align="flex-start" wrap="nowrap">
-            <ThemeIcon color="green" variant="light" size="lg" radius="md">
+        <Group gap="sm" align="center" wrap="nowrap">
+            <ThemeIcon color="green" variant="dark" size="lg" radius="md">
                 <Icon size={20} />
             </ThemeIcon>
-            <Text size="sm" c="dark.7" fw={600} style={{ lineHeight: 1.3 }}>
+            <Text size="sm" c="dark." fw={600} style={{ lineHeight: 1.3 }}>
                 {label}
             </Text>
         </Group>
