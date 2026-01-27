@@ -5,19 +5,38 @@ from app.core.config import settings
 
 class LoadForecastingHandler:
     """Handles load forecasting requests"""
-    
+
     @staticmethod
     async def handle(intent: Intent, query: str) -> str:
         log_with_prefix("Load Forecasting Handler", "Executing handler")
-        log_with_prefix("Load Forecasting Handler", "Generating mock forecast data...")
+        log_with_prefix("Load Forecasting Handler", f"Sending query to load forecasting service: {query}")
         
-        response = (
-            "Intent: Load Forecasting\n\n"
-            "[This is a mock response from the Load Forecasting service]"
-        )
-        
-        log_with_prefix("Load Forecasting Handler", "Response generated successfully")
-        return response
+        try:
+            async with httpx.AsyncClient(timeout=300.0) as client:
+                response = await client.post(
+                    "http://127.0.0.1:8013/api/v1/forecast/query",
+                    json={"prompt": query}
+                )
+                response.raise_for_status()
+                data = response.json()
+                
+                if data.get("success"):
+                    answer = data.get("answer", "No response received.")
+                    log_with_prefix("Load Forecasting Handler", f"Query successful, answer length: {len(answer)}")
+                    
+                    return f"Intent: Load Forecasting\n\n{answer}"
+                else:
+                    error = data.get("answer", data.get("error", "Unknown error"))
+                    log_with_prefix("Load Forecasting Handler", f"Query failed: {error}")
+                    return f"Load Forecasting Error: {error}"
+                    
+        except httpx.RequestError as e:
+            log_with_prefix("Load Forecasting Handler", f"Request error: {str(e)}")
+            return f"Load Forecasting Service unavailable: {str(e)}"
+        except Exception as e:
+            log_with_prefix("Load Forecasting Handler", f"Unexpected error: {str(e)}")
+            return f"Unexpected error in load forecasting: {str(e)}"
+
 
 
 class TheftDetectionHandler:

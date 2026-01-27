@@ -15,7 +15,7 @@ class IntentClassifier:
         prompt = f"""You are an intent classifier for an energy grid system.
 
             Allowed intents:
-            - LOAD_FORECASTING: Questions about load forecast,  power demand, load predictions, consumption forecasts, energy usage
+            - LOAD_FORECASTING: Questions about load forecast,  power demand, load predictions, consumption forecasts, energy usage, holidays
             - THEFT_DETECTION: Questions about theft, theft alerts, suspicious activity, anomaly detection, fraud detection
             - ASSET_MONITORING: Questions about asset health, transformer status, meter data, transformer life, asset maintenance
             - OTHER: Everything else

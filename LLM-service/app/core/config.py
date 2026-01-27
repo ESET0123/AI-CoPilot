@@ -17,5 +17,11 @@ class Settings:
     OLLAMA_API: str = os.getenv("OLLAMA_API", "http://localhost:11434/api/generate")
     OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "gemma3:12b")
     OLLAMA_TIMEOUT: float = float(os.getenv("OLLAMA_TIMEOUT", "1000"))
+    
+    # Domain Service URLs
+    LOAD_FORECASTING_API: str = os.getenv(
+        "LOAD_FORECASTING_API", 
+        "http://127.0.0.1:8013/api/v1/forecast/query"
+    )
 
 settings = Settings()
