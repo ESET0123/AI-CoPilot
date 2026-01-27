@@ -1,7 +1,7 @@
 import {
   Paper, Text, Loader, Box, Alert, Group, ActionIcon, Stack, Title, Tooltip
 } from '@mantine/core';
-import { TbAlertCircle, TbDownload, TbCopy, TbRefresh, TbCornerDownRight, TbFileDescription, TbCheck, TbVolume, TbVolume2 } from 'react-icons/tb';
+import { TbAlertCircle, TbCopy, TbRefresh, TbCornerDownRight, TbFileDescription, TbCheck, TbVolume, TbVolume2 } from 'react-icons/tb';
 import { useMemo, useState } from 'react';
 import { useClipboard } from '@mantine/hooks';
 import { ttsApi } from '../../services/api';
@@ -222,9 +222,9 @@ export default function MessageBubble({ role, text, loading, attachment }: Props
               <Box mt="md">
                 {/* Action Icons: Download, Copy, Refresh */}
                 <Group gap="sm" mb="md">
-                  <ActionIcon variant="subtle" color="gray" size="sm">
+                  {/* <ActionIcon variant="subtle" color="gray" size="sm">
                     <TbDownload size={16} />
-                  </ActionIcon>
+                  </ActionIcon> */}
                   <Tooltip label={clipboard.copied ? 'Copied!' : 'Copy to clipboard'}>
                     <ActionIcon
                       variant="subtle"

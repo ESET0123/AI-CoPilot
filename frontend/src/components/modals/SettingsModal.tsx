@@ -1,6 +1,6 @@
-import { Modal, Tabs, Box, Text, Group, Select, Switch, Stack, Divider, Button, useMantineColorScheme } from '@mantine/core';
+import { Modal, Tabs, Box, Text, Group, Select, Switch, Stack, Divider, Button, useMantineColorScheme, } from '@mantine/core';
 import { TbUser, TbBell, TbLock, TbPalette, TbMicrophone } from 'react-icons/tb';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { deleteAllConversations } from '../../features/chat/chatSlice';
 import { useDisclosure } from '@mantine/hooks';
@@ -62,7 +62,7 @@ export default function SettingsModal({ opened, onClose }: SettingsModalProps) {
                 content: { minHeight: 180 }
             }}
         >
-            <Tabs variant="pills" defaultValue="general" orientation="vertical" styles={{
+            <Tabs variant="pills" color="lime" defaultValue="general" orientation="vertical" styles={{
                 tab: {
                     justifyContent: 'flex-start',
                     padding: '10px 15px',
