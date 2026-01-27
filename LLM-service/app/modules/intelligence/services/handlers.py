@@ -12,7 +12,7 @@ class LoadForecastingHandler:
         log_with_prefix("Load Forecasting Handler", "Generating mock forecast data...")
         
         response = (
-            "LOAD FORECASTING ROUTE\n\n"
+            "Intent: Load Forecasting\n\n"
             "[This is a mock response from the Load Forecasting service]"
         )
         
@@ -41,7 +41,7 @@ class TheftDetectionHandler:
                     human_answer = data.get("human_answer", "No response received.")
                     log_with_prefix("Theft Detection Handler", f"Query successful, answer length: {len(human_answer)}")
                     
-                    return f"THEFT DETECTION ANALYSIS\n\n{human_answer}"
+                    return f"Intent: Theft Detection\n\n{human_answer}"
                 else:
                     error = data.get("human_answer", data.get("error", "Unknown error"))
                     log_with_prefix("Theft Detection Handler", f"Query failed: {error}")
@@ -75,7 +75,7 @@ class AssetMonitoringHandler:
                     human_answer = data.get("human_answer", "No response received.")
                     log_with_prefix("Asset Monitoring Handler", f"Query successful, answer length: {len(human_answer)}")
                     
-                    return f"ASSET MONITORING ANALYSIS\n\n{human_answer}"
+                    return f"Intent: Asset Monitoring\n\n{human_answer}"
                 else:
                     error = data.get("human_answer", data.get("error", "Unknown error"))
                     log_with_prefix("Asset Monitoring Handler", f"Query failed: {error}")
@@ -98,7 +98,7 @@ class OtherHandler:
         log_with_prefix("Other Handler", f"Query did not match any domain. Detected: {intent.value}")
         
         response = (
-            "OTHER ROUTE\n\n"
+            "Intent: Others\n\n"
             "I can help you with:\n"
             "• Load Forecasting - Ask about power demand predictions\n"
             "• Theft Detection - Ask about suspicious activity or alerts\n\n"

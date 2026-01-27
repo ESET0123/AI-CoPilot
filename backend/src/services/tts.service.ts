@@ -9,18 +9,13 @@ export class TTSService {
     async synthesize(text: string, language: string = 'en'): Promise<Buffer> {
         console.log(`[TTS Service] 📢 Requesting synthesis for text (Lang: ${language})`);
 
-        try {
-            const data = await aiServiceClient.getClient().post('/api/tts', {
-                text,
-                language
-            }, {
-                responseType: 'arraybuffer'
-            });
+        const data = await aiServiceClient.getClient().post('/api/tts', {
+            text,
+            language
+        }, {
+            responseType: 'arraybuffer'
+        });
 
-            return Buffer.from(data.data);
-        } catch (error) {
-            console.error('[TTS Service] ❌ AI Service Error:', error);
-            throw error;
-        }
+        return Buffer.from(data.data);
     }
 }

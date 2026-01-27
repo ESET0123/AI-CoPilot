@@ -71,7 +71,7 @@ class AIServiceClient {
      * Make a POST request to the AI service
      */
     public async post<T = any>(url: string, data?: any, config?: any): Promise<T> {
-        const response = await this.client.post(url, data, config);
+        const response = await this.client.post<T>(url, data, config);
         return response.data;
     }
 
@@ -79,7 +79,7 @@ class AIServiceClient {
      * Make a GET request to the AI service
      */
     public async get<T = any>(url: string, config?: any): Promise<T> {
-        const response = await this.client.get(url, config);
+        const response = await this.client.get<T>(url, config);
         return response.data;
     }
 }

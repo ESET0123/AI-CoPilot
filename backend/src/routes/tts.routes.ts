@@ -6,6 +6,6 @@ import { ttsSchema } from '../utils/validation';
 const router = Router();
 const ttsController = new TTSController();
 
-router.post('/', validateBody(ttsSchema), (req, res) => ttsController.handleSynthesis(req, res));
+router.post('/', validateBody(ttsSchema), ttsController.handleSynthesis);
 
 export default router;

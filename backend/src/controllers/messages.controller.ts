@@ -1,78 +1,78 @@
 import { Request, Response } from 'express';
 import { MessagesService } from '../services/messages.service';
+import { asyncHandler } from '../utils/asyncHandler';
+import { AppError } from '../utils/AppError';
 
 export class MessagesController {
-    static async list(req: Request, res: Response) {
+    static list = asyncHandler(async (req: Request, res: Response) => {
         try {
             const messages = await MessagesService.getMessages(req.params.conversationId, req.userId!);
             res.json(messages);
-        } catch (err: unknown) {
-            const error = err as Error;
-            if (error.message === 'ACCESS_DENIED') {
-                return res.status(403).json({ message: 'Access denied' });
+        } catch (err: any) {
+            if (err.message === 'ACCESS_DENIED') {
+                throw new AppError('Access denied', 403);
             }
-            res.status(500).json({ message: 'Internal Server Error' });
+            throw err;
         }
-    }
+    });
 
-    static async send(req: Request, res: Response) {
+    static send = asyncHandler(async (req: Request, res: Response) => {
         try {
             const { conversationId, message, language } = req.body;
             if (!conversationId || !message?.trim()) {
-                return res.status(400).json({ message: 'Conversation and message required' });
+                throw new AppError('Conversation and message required', 400);
             }
 
             const result = await MessagesService.sendMessage(conversationId, req.userId!, message, language);
             res.json(result);
-        } catch (err: unknown) {
-            const error = err as Error;
-            if (error.message === 'ABORTED') {
-                return res.status(204).end();
+        } catch (err: any) {
+            if (err.message === 'ABORTED') {
+                res.status(204).end();
+                return;
             }
-            if (error.message === 'ACCESS_DENIED') {
-                return res.status(403).json({ message: 'Access denied' });
+            if (err.message === 'ACCESS_DENIED') {
+                throw new AppError('Access denied', 403);
             }
-            console.error('SEND MESSAGE ERROR:', error);
-            res.status(500).json({ message: 'Failed to send message' });
+            console.error('SEND MESSAGE ERROR:', err);
+            throw new AppError('Failed to send message', 500);
         }
-    }
+    });
 
-    static async edit(req: Request, res: Response) {
+    static edit = asyncHandler(async (req: Request, res: Response) => {
         try {
             const { content } = req.body;
             if (!content?.trim()) {
-                return res.status(400).json({ message: 'Content required' });
+                throw new AppError('Content required', 400);
             }
 
             const updated = await MessagesService.editMessage(req.params.messageId, req.userId!, content);
             res.json(updated);
-        } catch (err: unknown) {
-            const error = err as Error;
-            switch (error.message) {
+        } catch (err: any) {
+            switch (err.message) {
                 case 'NOT_FOUND':
-                    return res.status(404).json({ message: 'Message not found' });
+                    throw new AppError('Message not found', 404);
                 case 'ACCESS_DENIED':
-                    return res.status(403).json({ message: 'Access denied' });
+                    throw new AppError('Access denied', 403);
                 case 'FORBIDDEN':
-                    return res.status(403).json({ message: 'Only user messages can be edited' });
+                    throw new AppError('Only user messages can be edited', 403);
                 case 'NOT_LAST':
-                    return res.status(403).json({ message: 'Only the latest message can be edited' });
+                    throw new AppError('Only the latest message can be edited', 403);
                 default:
-                    console.error('EDIT MESSAGE ERROR:', error);
-                    return res.status(500).json({ message: 'Failed to edit message' });
+                    console.error('EDIT MESSAGE ERROR:', err);
+                    throw new AppError('Failed to edit message', 500);
             }
         }
-    }
+    });
 
-    static async stop(req: Request, res: Response) {
+    static stop = asyncHandler(async (req: Request, res: Response) => {
+        const { conversation_id } = req.body;
+        if (!conversation_id) throw new AppError('conversation_id required', 400);
+
         try {
-            const { conversation_id } = req.body;
-            if (!conversation_id) return res.status(400).json({ message: 'conversation_id required' });
-
             await MessagesService.stopGeneration(conversation_id);
             res.json({ message: 'Stop signal sent' });
         } catch (err) {
-            res.status(500).json({ message: 'Failed to signal stop' });
+            throw new AppError('Failed to signal stop', 500);
         }
-    }
+    });
 }

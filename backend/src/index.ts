@@ -43,15 +43,19 @@ app.use('/api/defaulter', requireAuth, defaulterRoutes);
 app.use('/api/tts', requireAuth, ttsRoutes);
 
 // Global error handling middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+// Global error handling middleware
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error('[Global Error Handler]:', err);
 
-  if (env.NODE_ENV === 'production') {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Internal server error';
+
+  if (env.NODE_ENV === 'production' && statusCode === 500) {
     res.status(500).json({ message: 'Internal server error' });
   } else {
-    res.status(500).json({
-      message: err.message || 'Internal server error',
-      stack: err.stack
+    res.status(statusCode).json({
+      message,
+      stack: env.NODE_ENV === 'production' ? undefined : err.stack
     });
   }
 });

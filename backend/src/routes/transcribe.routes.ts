@@ -18,7 +18,7 @@ router.post(
         maxSize: 10 * 1024 * 1024, // 10MB
         allowedMimeTypes: ['audio/wav', 'audio/mpeg', 'audio/mp3', 'audio/webm', 'audio/ogg']
     }),
-    (req, res) => transcribeController.handleTranscription(req, res)
+    transcribeController.handleTranscription
 );
 
 export default router;

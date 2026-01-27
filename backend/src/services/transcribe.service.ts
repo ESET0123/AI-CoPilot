@@ -26,25 +26,20 @@ export class TranscribeService {
             formData.append('language', language);
         }
 
-        try {
-            const data = await aiServiceClient.post('/api/transcribe', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+        const data = await aiServiceClient.post('/api/transcribe', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
 
-            if (data.error) {
-                throw new Error(data.error);
-            }
-
-            return {
-                text: data.text,
-                originalText: data.original_text || data.text,
-                language: data.language || 'en'
-            };
-        } catch (error) {
-            console.error('[Transcribe Service] ❌ API Error:', error);
-            throw error;
+        if (data.error) {
+            throw new Error(data.error);
         }
+
+        return {
+            text: data.text,
+            originalText: data.original_text || data.text,
+            language: data.language || 'en'
+        };
     }
 }

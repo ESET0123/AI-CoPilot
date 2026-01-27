@@ -1,46 +1,26 @@
 import { Request, Response } from 'express';
 import { ConversationsService } from '../services/conversations.service';
+import { asyncHandler } from '../utils/asyncHandler';
 
 export class ConversationsController {
-    static async list(req: Request, res: Response) {
-        try {
-            const conversations = await ConversationsService.listConversations(req.userId!);
-            res.json(conversations);
-        } catch (err) {
-            res.status(500).json({ message: 'Internal Server Error' });
-        }
-    }
+    static list = asyncHandler(async (req: Request, res: Response) => {
+        const conversations = await ConversationsService.listConversations(req.userId!);
+        res.json(conversations);
+    });
 
-    static async create(req: Request, res: Response) {
-        try {
-            const { title } = req.body;
-            const conversation = await ConversationsService.createConversation(req.userId!, title);
-            res.status(201).json(conversation);
-        } catch (err: any) {
-            console.error('[ConversationsController] Create error details:', err.message, err.stack);
-            const message = process.env.NODE_ENV === 'production'
-                ? 'Internal Server Error'
-                : err.message;
-            res.status(500).json({ message });
-        }
-    }
+    static create = asyncHandler(async (req: Request, res: Response) => {
+        const { title } = req.body;
+        const conversation = await ConversationsService.createConversation(req.userId!, title);
+        res.status(201).json(conversation);
+    });
 
+    static delete = asyncHandler(async (req: Request, res: Response) => {
+        await ConversationsService.deleteConversation(req.params.id, req.userId!);
+        res.sendStatus(204);
+    });
 
-    static async delete(req: Request, res: Response) {
-        try {
-            await ConversationsService.deleteConversation(req.params.id, req.userId!);
-            res.sendStatus(204);
-        } catch (err) {
-            res.status(500).json({ message: 'Internal Server Error' });
-        }
-    }
-
-    static async deleteAll(req: Request, res: Response) {
-        try {
-            await ConversationsService.deleteAllConversations(req.userId!);
-            res.sendStatus(204);
-        } catch (err) {
-            res.status(500).json({ message: 'Internal Server Error' });
-        }
-    }
+    static deleteAll = asyncHandler(async (req: Request, res: Response) => {
+        await ConversationsService.deleteAllConversations(req.userId!);
+        res.sendStatus(204);
+    });
 }

@@ -1,10 +1,8 @@
-import axios from 'axios';
+import { aiServiceClient } from '../services/aiServiceClient';
 import { env } from '../config/env';
 
-const aiClient = axios.create({
-  baseURL: env.AI_SERVICE_URL,
-  timeout: 240000,
-});
+// Removed direct axios.create. Using aiServiceClient singleton.
+
 
 /**
  * Calls the Intent Classifier Service
@@ -26,7 +24,7 @@ export async function callAIService(
   console.log('[AI Client] Sending request to /api/process');
   console.log('[AI Client] Query:', payload.message, '(Lang:', payload.language || 'en', ')');
 
-  const { data } = await aiClient.post(
+  const data = await aiServiceClient.post<any>(
     '/api/process',
     {
       query: payload.message,
@@ -93,7 +91,7 @@ export async function transcribeAudio(
 
   console.log(`[AI Client] 📡 Sending to LLM-service: ${env.AI_SERVICE_URL}/api/transcribe`);
 
-  const { data } = await aiClient.post('/api/transcribe', formData, {
+  const data = await aiServiceClient.post<any>('/api/transcribe', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
