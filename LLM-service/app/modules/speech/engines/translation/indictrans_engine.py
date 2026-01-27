@@ -46,8 +46,11 @@ class SimpleIndicProcessor:
             except Exception as e:
                 log_with_prefix("IndicProcessor", f"Normalization skipped for {src_lang}: {e}", level="warning")
         
-        # 2. Collapse whitespace
-        text = re.sub(r"\s+", " ", text).strip()
+        # 2. Normalize excessive spaces WITHIN lines only (preserve newlines and single spaces)
+        # Replace multiple consecutive spaces with a single space, but keep newlines
+        lines = text.split('\n')
+        normalized_lines = [re.sub(r' {2,}', ' ', line) for line in lines]
+        text = '\n'.join(normalized_lines)
         
         # 3. Add tags for IndicTrans2
         # Format: "<src_lang> <tgt_lang> <text>"
@@ -73,6 +76,16 @@ class IndicTrans2Engine:
         self.loaded_models = {}
         self.loaded_tokenizers = {}
         log_with_prefix("IndicTrans2Engine", f"Initializing on {self.device}")
+    
+    def _postprocess_formatting(self, text: str) -> str:
+        """Clean up spacing around punctuation while preserving structure"""
+        # Fix spacing around common punctuation
+        text = re.sub(r'\s+([.,!?;:])', r'\1', text)  # Remove space before punctuation
+        text = re.sub(r'([.,!?;:])([^\s])', r'\1 \2', text)  # Add space after punctuation if missing
+        # Fix spacing around quotes
+        text = re.sub(r'\s+(["\'])', r'\1', text)
+        text = re.sub(r'(["\'])\s+', r'\1 ', text)
+        return text
 
     def _get_model_key(self, src_lang: str, tgt_lang: str) -> str:
         if src_lang == "en":
@@ -155,8 +168,8 @@ class IndicTrans2Engine:
                 except Exception as translit_err:
                     log_with_prefix("IndicTrans2Engine", f"Transliteration failed: {translit_err}", level="warning")
             
-            # Postprocess: IndicTrans2 might have the tag in the output if not Careful
-            # but skip_special_tokens=True should handle it.
+            # Postprocess: Clean up formatting (spacing around punctuation)
+            translated_text = self._postprocess_formatting(translated_text)
             
             log_with_prefix("IndicTrans2Engine", f"Translation complete: '{translated_text[:30]}...'")
             return translated_text

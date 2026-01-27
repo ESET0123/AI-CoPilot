@@ -2,6 +2,7 @@ import torch
 from transformers import MarianMTModel, MarianTokenizer
 from app.core.logger import log_with_prefix
 import os
+import re
 
 class HelsinkiEngine:
     _instances = {}
@@ -30,6 +31,16 @@ class HelsinkiEngine:
         except Exception as e:
             log_with_prefix("HelsinkiEngine", f"❌ Failed to load {model_name}: {e}", level="error")
             raise e
+    
+    def _postprocess_formatting(self, text: str) -> str:
+        """Clean up spacing around punctuation while preserving structure"""
+        # Fix spacing around common punctuation
+        text = re.sub(r'\s+([.,!?;:])', r'\1', text)  # Remove space before punctuation
+        text = re.sub(r'([.,!?;:])([^\s])', r'\1 \2', text)  # Add space after punctuation if missing
+        # Fix spacing around quotes
+        text = re.sub(r'\s+(["\'"])', r'\1', text)
+        text = re.sub(r'(["\'"])\s+', r'\1 ', text)
+        return text
 
     def translate(self, text: str) -> str:
         if not text:
@@ -46,9 +57,15 @@ class HelsinkiEngine:
             
             # Decode
             translated = self.tokenizer.batch_decode(gen, skip_special_tokens=True)
-            log_with_prefix("HelsinkiEngine", f"✅ Translation complete: '{translated[0][:30]}...'")
-            return translated[0]
+            translated_text = translated[0]
+            
+            # Postprocess: Clean up formatting
+            translated_text = self._postprocess_formatting(translated_text)
+            
+            log_with_prefix("HelsinkiEngine", f"✅ Translation complete: '{translated_text[:30]}...'")
+            return translated_text
             
         except Exception as e:
             log_with_prefix("HelsinkiEngine", f"❌ Translation failed: {e}", level="error")
             return text
+
