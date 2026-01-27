@@ -27,14 +27,17 @@ export const ChatSearch = ({ query, onQueryChange, onClear }: ChatSearchProps) =
                 </ActionIcon>
             }
             styles={{
-                root: { padding: '0 8px' },
-                input: {
-                    borderRadius: '8px',
-                    backgroundColor: 'rgba(0,0,0,0.05)',
-                    '&:focus': {
-                        borderColor: 'var(--mantine-color-brand-filled)',
-                    },
+            root: { padding: '0 8px' },
+            input: {
+                border: 'none',
+                borderBottom: '1px solid var(--mantine-color-gray-4)',
+                borderRadius: 0,
+                backgroundColor: 'transparent',
+
+                '&:focus': {
+                borderBottom: '2px solid var(--mantine-color-brand-filled)',
                 },
+            },
             }}
         />
     );
