@@ -6,7 +6,6 @@ import {
   ThemeIcon,
   Group,
   UnstyledButton,
-  useMantineColorScheme,
   useComputedColorScheme,
 } from '@mantine/core';
 import { TbArrowUpRight, TbLayoutDashboard } from 'react-icons/tb';
