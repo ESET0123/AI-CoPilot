@@ -62,12 +62,9 @@ export default function QuickActionCard({
             style={{
               width: 36,
               height: 36,
-              backgroundColor: 'var(--app-surface)',
-              borderRadius: 8,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: 'var(--app-shadow-sm)',
             }}
           >
             <ActualIcon size={20} style={{ color: 'var(--app-text-primary)' }} />

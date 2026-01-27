@@ -81,7 +81,7 @@ export default function LoginFeaturesPanel() {
     );
 }
 
-function FeatureItem({ icon: Icon, label }: { icon: any, label: string }) {
+function FeatureItem({ icon: Icon, label }: { icon: React.ElementType, label: string }) {
     return (
         <Group gap="sm" align="flex-start" wrap="nowrap">
             <ThemeIcon color="green" variant="light" size="lg" radius="md">
