@@ -1,7 +1,7 @@
 import {
   Paper, Text, Loader, Box, Alert, Group, ActionIcon, Stack, Title, Tooltip
 } from '@mantine/core';
-import { TbAlertCircle, TbCopy, TbRefresh, TbCornerDownRight, TbFileDescription, TbCheck, TbVolume, TbVolume2, TbPlayerStopFilled } from 'react-icons/tb';
+import { TbAlertCircle, TbCopy, TbRefresh, TbCornerDownRight, TbFileDescription, TbCheck, TbVolume, TbPlayerStopFilled } from 'react-icons/tb';
 import { useMemo, useState } from 'react';
 import { useClipboard } from '@mantine/hooks';
 import { ttsApi } from '../../services/api';
