@@ -14,7 +14,7 @@ class LoadForecastingHandler:
         try:
             async with httpx.AsyncClient(timeout=300.0) as client:
                 response = await client.post(
-                    "http://127.0.0.1:8013/api/v1/forecast/query",
+                    "http://127.0.0.1:8012/api/v1/forecast/query",
                     json={"prompt": query}
                 )
                 response.raise_for_status()
@@ -50,7 +50,7 @@ class TheftDetectionHandler:
         try:
             async with httpx.AsyncClient(timeout=300.0) as client:
                 response = await client.post(
-                    "http://127.0.0.1:8010/api/v1/theft-detection/query",
+                    "http://127.0.0.1:8013/api/v1/theft-detection/query",
                     json={"prompt": query}
                 )
                 response.raise_for_status()

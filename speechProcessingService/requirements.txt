@@ -12,4 +12,3 @@ indic-nlp-library
 sacremoses
 sentencepiece
 TTS
-edge-tts

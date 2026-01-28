@@ -1,5 +1,4 @@
 import os
-from app.modules.engines.tts.edge_tts_engine import tts_engine as edge_engine
 from app.modules.engines.tts.xtts_engine import xtts_engine
 from app.modules.engines.tts.indic_parler_engine import indic_parler_engine
 from app.core.logger import log_with_prefix
@@ -9,7 +8,7 @@ class TTSService:
     async def generate_speech(text: str, language: str = "en", engine: str = "auto") -> str:
         """
         Orchestrates speech generation with tiered engine support and fallback.
-        Priority: 1. Parler (Indic) 2. XTTS v2 (Local) 3. EdgeTTS (Cloud/Robust Fallback)
+        Priority: 1. Parler (Indic) 2. XTTS v2 (Local)
         """
         log_with_prefix("TTSService", f"📢 Request received: '{text[:30]}...' (Lang: {language}, Engine: {engine})")
         file_path = None
@@ -36,20 +35,8 @@ class TTSService:
                     engine_used = "Coqui XTTS v2"
                     log_with_prefix("TTSService", f"✅ {engine_used} synthesis successful")
             except Exception as e:
-                log_with_prefix("TTSService", f"❌ XTTS v2 engine failed: {str(e)}. Falling back to EdgeTTS.", level="warning")
+                log_with_prefix("TTSService", f"❌ XTTS v2 engine failed: {str(e)}.", level="error")
                 file_path = None
-
-        # 3. Tier 3: EdgeTTS (Robust fallback)
-        if not file_path:
-            try:
-                log_with_prefix("TTSService", "➡️ Step 3: Synthesizing with EdgeTTS...")
-                file_path = await edge_engine.synthesize(text, language)
-                if file_path:
-                    engine_used = "EdgeTTS"
-                    log_with_prefix("TTSService", f"✅ {engine_used} synthesis successful")
-            except Exception as e:
-                log_with_prefix("TTSService", f"❌ EdgeTTS engine failed: {str(e)}", level="error")
-                return None
         
         if file_path and os.path.exists(file_path):
             log_with_prefix("TTSService", f"🎯 SUCCESS: Speech generated using [{engine_used}] engine.")

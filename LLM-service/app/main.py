@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
     log_with_prefix("Server", f"Ollama Model: {settings.OLLAMA_MODEL}")
     
     # Speech processing is now decoupled: models are loaded in speechProcessingService
-    log_with_prefix("Server", "System ready: Intent Classifier active (Speech services decoupled to port 8003)")        
+    log_with_prefix("Server", "System ready: Intent Classifier active ")        
     log_with_prefix("Server", f"API endpoint: /api/process")
     
     yield

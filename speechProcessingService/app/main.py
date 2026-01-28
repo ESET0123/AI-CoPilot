@@ -29,7 +29,7 @@ async def lifespan(app: FastAPI):
         if xtts_engine.initialize():
             log_with_prefix("Server", "✅ XTTS v2 Engine pre-loaded")
         else:
-            log_with_prefix("Server", "⚠️ XTTS v2 pre-loading failed (Fallback to EdgeTTS active)")
+            log_with_prefix("Server", "⚠️ XTTS v2 pre-loading failed")
     except Exception as e:
         log_with_prefix("Server", f"⚠️ XTTS v2 pre-loading unexpected error: {e}")
         
