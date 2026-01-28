@@ -12,8 +12,8 @@ indic-nlp-library
 sacremoses
 sentencepiece
 
-
-# piper-tts  # Uncomment if using Piper locally
+# TTS Engine
+edge-tts  # Pure Python-native TTS solution (no C++ build tools required)
 
 langchain
 langchain-huggingface

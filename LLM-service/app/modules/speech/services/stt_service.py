@@ -15,7 +15,6 @@ class STTService:
         
         if method == "review":
             # 1. Transcribe (Native Language)
-            # 1. Transcribe (Native Language)
             log_with_prefix("STTService", "➡️ Step 1: Transcribing with Whisper...")
             result = whisper_engine.transcribe(file_path, language=language, task="transcribe")
             native_text = result["text"]
@@ -24,20 +23,12 @@ class STTService:
             log_with_prefix("STTService", f"✅ Transcription complete. Detected: {detected_lang}")
             log_with_prefix("STTService", f"📝 Native Text: '{native_text}'")
             
-            # 2. Translate to English for processing
-            if detected_lang and detected_lang != "en":
-                log_with_prefix("STTService", f"Detected {detected_lang}, translating for system")
-                english_text = await translation_engine.translate(native_text, detected_lang, "en")
-                return {
-                    "text": english_text, 
-                    "original_text": native_text, 
-                    "language": detected_lang
-                }
-            
+            # Return native text without translation
+            # The translation to English will be handled by the PipelineService when sent.
             return {
                 "text": native_text, 
                 "original_text": native_text, 
-                "language": "en"
+                "language": detected_lang or language or "en"
             }
 
         elif method == "translate-direct":

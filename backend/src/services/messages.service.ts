@@ -71,4 +71,24 @@ export class MessagesService {
 
         return updated;
     }
+
+    static async deleteMessagesAfter(conversationId: string, userId: string, messageId: string): Promise<number> {
+        // 1. Assert Ownership
+        await ConversationsService.assertOwnership(conversationId, userId);
+
+        // 2. Find the target message
+        const targetMessage = await MessagesRepository.findById(messageId);
+        if (!targetMessage) throw new Error('NOT_FOUND');
+
+        // 3. Verify the message belongs to this conversation
+        if (targetMessage.conversation_id !== conversationId) throw new Error('INVALID_MESSAGE');
+
+        // 4. Delete all messages from this timestamp onwards
+        const deletedCount = await MessagesRepository.deleteMessagesFromTimestamp(
+            conversationId,
+            targetMessage.created_at
+        );
+
+        return deletedCount;
+    }
 }

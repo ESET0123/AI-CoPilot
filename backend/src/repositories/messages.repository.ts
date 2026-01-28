@@ -98,4 +98,22 @@ export class MessagesRepository {
             throw new Error('Failed to update message in database');
         }
     }
+
+    static async deleteMessagesFromTimestamp(conversationId: string, timestamp: Date): Promise<number> {
+        try {
+            const result = await pool.query(
+                `
+                DELETE FROM messages
+                WHERE conversation_id = $1
+                AND created_at >= $2
+                RETURNING id
+                `,
+                [conversationId, timestamp]
+            );
+            return result.rowCount || 0;
+        } catch (error) {
+            console.error('[MessagesRepository] Failed to delete messages from timestamp:', error);
+            throw new Error('Failed to delete messages from database');
+        }
+    }
 }

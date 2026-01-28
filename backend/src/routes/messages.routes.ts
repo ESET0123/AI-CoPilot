@@ -10,5 +10,6 @@ router.get('/:conversationId', MessagesController.list);
 router.post('/', MessagesController.send);
 router.patch('/:messageId', MessagesController.edit);
 router.post('/stop', MessagesController.stop);
+router.delete('/:conversationId/:messageId/after', MessagesController.deleteAfter);
 
 export default router;

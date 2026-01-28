@@ -9,7 +9,7 @@ router = APIRouter()
 class TTSRequest(BaseModel):
     text: str
     language: str = "en"
-    engine: str = "auto" # 'parler', 'piper', or 'auto'
+    engine: str = "auto" # 'parler', 'edge', or 'auto'
 
 @router.post("/tts")
 async def text_to_speech(payload: TTSRequest):
@@ -25,9 +25,15 @@ async def text_to_speech(payload: TTSRequest):
     
     if not file_path or not os.path.exists(file_path):
         raise HTTPException(status_code=500, detail="TTS generation failed")
+    
+    # Determine media type based on extension
+    ext = os.path.splitext(file_path)[1].lower()
+    media_type = "audio/mpeg" if ext == ".mp3" else "audio/wav"
+    filename = f"speech{ext}"
         
     return FileResponse(
         file_path, 
-        media_type="audio/wav", 
-        filename="speech.wav"
+        media_type=media_type, 
+        filename=filename
     )
+

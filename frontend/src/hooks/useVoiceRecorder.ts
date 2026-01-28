@@ -83,8 +83,13 @@ export const useVoiceRecorder = (
           const langMap: Record<string, string> = {
             'en': 'en-US',
             'hi': 'hi-IN',
-            // 'kn': 'kn-IN',
-            // 'bn': 'bn-IN'
+            'kn': 'kn-IN',
+            'bn': 'bn-IN',
+            'mr': 'mr-IN',
+            'ta': 'ta-IN',
+            'te': 'te-IN',
+            'gu': 'gu-IN',
+            'ml': 'ml-IN'
           };
           recognition.lang = langMap[language] || 'en-US';
 
@@ -142,7 +147,7 @@ export const useVoiceRecorder = (
 
         if (method === 'google-webkit' && recognitionRef.current && finalTranscriptRef.current.trim()) {
           console.log(`[VoiceRecorder] 📝 Using browser transcription result`);
-          onTranscriptionComplete({ text: finalTranscriptRef.current, language: 'en' });
+          onTranscriptionComplete({ text: finalTranscriptRef.current, language: language });
         } else if (chunksRef.current.length > 0) {
           console.log(`[VoiceRecorder] 📤 Sending audio to backend for processing`);
           const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' });

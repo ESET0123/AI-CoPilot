@@ -75,4 +75,33 @@ export class MessagesController {
             throw new AppError('Failed to signal stop', 500);
         }
     });
+
+    static deleteAfter = asyncHandler(async (req: Request, res: Response) => {
+        try {
+            const { conversationId, messageId } = req.params;
+            if (!conversationId || !messageId) {
+                throw new AppError('Conversation ID and Message ID required', 400);
+            }
+
+            const deletedCount = await MessagesService.deleteMessagesAfter(
+                conversationId,
+                req.userId!,
+                messageId
+            );
+
+            res.json({ deletedCount, message: 'Messages deleted successfully' });
+        } catch (err: any) {
+            switch (err.message) {
+                case 'NOT_FOUND':
+                    throw new AppError('Message not found', 404);
+                case 'ACCESS_DENIED':
+                    throw new AppError('Access denied', 403);
+                case 'INVALID_MESSAGE':
+                    throw new AppError('Message does not belong to this conversation', 400);
+                default:
+                    console.error('DELETE MESSAGES AFTER ERROR:', err);
+                    throw new AppError('Failed to delete messages', 500);
+            }
+        }
+    });
 }

@@ -51,6 +51,10 @@ export const chatApi = {
   stopMessage(conversationId: string) {
     return axiosClient.post('/api/messages/stop', { conversation_id: conversationId });
   },
+
+  deleteMessagesAfter(conversationId: string, messageId: string) {
+    return axiosClient.delete(`/api/messages/${conversationId}/${messageId}/after`);
+  },
 };
 
 

@@ -240,6 +240,16 @@ const chatSlice = createSlice({
         loading: true,
       });
     },
+
+    removeMessagesFromIndex(state, action: { payload: { conversationId: string; messageIndex: number } }) {
+      const convo = state.conversations.find(
+        c => c.id === action.payload.conversationId
+      );
+      if (!convo) return;
+
+      // Remove all messages from the specified index onwards
+      convo.messages = convo.messages.slice(0, action.payload.messageIndex);
+    },
   },
 
   extraReducers: (builder) => {
@@ -424,6 +434,7 @@ export const {
   setActiveConversation,
   addUserMessage,
   addAssistantLoading,
+  removeMessagesFromIndex,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

@@ -2,7 +2,8 @@ import { Stack } from '@mantine/core';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import MessageBubble from './MessageBubble';
 import React, { useEffect } from 'react';
-import { sendMessage, addAssistantLoading } from '../../features/chat/chatSlice';
+import { sendMessage, addAssistantLoading, removeMessagesFromIndex } from '../../features/chat/chatSlice';
+import { chatApi } from '../../services/api';
 
 interface ChatWindowProps {
   scrollContainerRef: React.RefObject<HTMLDivElement | null>;
@@ -34,7 +35,7 @@ export default function ChatWindow({ scrollContainerRef }: ChatWindowProps) {
     });
   }, [convo, scrollContainerRef]);
 
-  const handleRefresh = (messageIndex: number) => {
+  const handleRefresh = async (messageIndex: number) => {
     if (!convo || !activeConversationId || isCurrentSending) return;
 
     // Find the previous user message
@@ -48,16 +49,35 @@ export default function ChatWindow({ scrollContainerRef }: ChatWindowProps) {
 
     if (!userMessage) return;
 
-    // Resend the user message
-    dispatch(addAssistantLoading());
-    dispatch(
-      sendMessage({
+    try {
+      // 1. Remove messages from UI immediately (from the assistant message onwards)
+      dispatch(removeMessagesFromIndex({
         conversationId: activeConversationId,
-        message: userMessage.text,
-        optimisticId: crypto.randomUUID(),
-        language: primaryLanguage,
-      })
-    );
+        messageIndex: messageIndex,
+      }));
+
+      // 2. Delete messages from backend
+      const targetMessageId = convo.messages[messageIndex].id;
+      await chatApi.deleteMessagesAfter(activeConversationId, targetMessageId);
+
+      // 3. Resend the user message
+      dispatch(addAssistantLoading());
+
+      // IMPORTANT: Await the sendMessage thunk so it can be aborted by the stop button
+      await dispatch(
+        sendMessage({
+          conversationId: activeConversationId,
+          message: userMessage.text,
+          optimisticId: crypto.randomUUID(),
+          language: primaryLanguage,
+        })
+      ).unwrap();
+    } catch (error: any) {
+      // Don't log abort errors as they're expected when user clicks stop
+      if (error?.message !== 'Request cancelled' && error?.message !== 'Aborted') {
+        console.error('Failed to regenerate response:', error);
+      }
+    }
   };
 
   if (!convo) return null;
