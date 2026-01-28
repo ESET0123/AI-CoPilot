@@ -1,6 +1,6 @@
 from app.core.logger import log_with_prefix
-from app.modules.speech.engines.translation.indictrans_engine import indictrans_engine
-from app.modules.speech.engines.translation.helsinki_engine import HelsinkiEngine
+from app.modules.engines.translation.indictrans_engine import indictrans_engine
+from app.modules.engines.translation.helsinki_engine import HelsinkiEngine
 
 class TranslationEngine:
     _instance = None

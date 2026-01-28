@@ -1,7 +1,7 @@
 from app.models.schemas import ProcessRequest, ProcessResponse
 from app.modules.intelligence.services.intent_classifier import intent_classifier
 from app.modules.intelligence.services.dispatcher import Dispatcher
-from app.modules.speech.engines.whisper.translation_engine import translation_engine
+from app.modules.speech_client import speech_client
 from app.core.logger import log_with_prefix
 
 class PipelineService:
@@ -25,7 +25,7 @@ class PipelineService:
             else:
                 log_with_prefix("Pipeline", f"Step 0: Translating query to English...")
                 try:
-                    processing_query = await translation_engine.translate(payload.query, payload.language, "en")
+                    processing_query = await speech_client.translate(payload.query, payload.language, "en")
                     log_with_prefix("Pipeline", f"Working Context: {processing_query}")
                 except Exception as e:
                     log_with_prefix("Pipeline", f"⚠️ Translation failed: {str(e)}. Using original query.", level="warning")
@@ -44,7 +44,7 @@ class PipelineService:
         if payload.language and payload.language != "en":
             log_with_prefix("Pipeline", f"Step 3: Translating response back to {payload.language}...")
             try:
-                translated_response = await translation_engine.translate(response_text, "en", payload.language)
+                translated_response = await speech_client.translate(response_text, "en", payload.language)
                 final_response_text = translated_response # SWAP: Main response becomes the translated one
                 log_with_prefix("Pipeline", "Translation complete")
             except Exception as e:

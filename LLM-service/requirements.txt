@@ -2,18 +2,9 @@ fastapi
 uvicorn
 httpx
 python-multipart
-faster-whisper
 pydantic
 python-dotenv
 torch
 transformers
-git+https://github.com/huggingface/parler-tts.git
-indic-nlp-library
-sacremoses
-sentencepiece
-
-# TTS Engine
-edge-tts  # Pure Python-native TTS solution (no C++ build tools required)
-
 langchain
 langchain-huggingface

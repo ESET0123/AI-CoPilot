@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pydantic-settings
+requests
+python-dotenv
+pandas
+openpyxl
+sqlite3

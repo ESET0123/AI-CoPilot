@@ -9,7 +9,7 @@ class ColoredFormatter(logging.Formatter):
         if hasattr(record, 'prefix'):
             prefix = f"[{record.prefix}]"
         else:
-            prefix = "[Intent Service]"
+            prefix = "[Speech Service]"
         
         # Format the message
         msg = record.getMessage()

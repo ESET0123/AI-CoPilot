@@ -1,4 +1,4 @@
-import { aiServiceClient } from './aiServiceClient';
+import { speechServiceClient } from './speechServiceClient';
 
 export class TTSService {
     /**
@@ -9,13 +9,13 @@ export class TTSService {
     async synthesize(text: string, language: string = 'en'): Promise<Buffer> {
         console.log(`[TTS Service] 📢 Requesting synthesis for text (Lang: ${language})`);
 
-        const data = await aiServiceClient.getClient().post('/api/tts', {
+        const response = await speechServiceClient.getClient().post('/api/tts', {
             text,
             language
         }, {
             responseType: 'arraybuffer'
         });
 
-        return Buffer.from(data.data);
+        return Buffer.from(response.data);
     }
 }

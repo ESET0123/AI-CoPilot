@@ -15,7 +15,7 @@ class Settings:
     
     # LLM Configuration
     OLLAMA_API: str = os.getenv("OLLAMA_API", "http://localhost:11434/api/generate")
-    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "gemma3:12b")
+    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "llama3.2")
     OLLAMA_TIMEOUT: float = float(os.getenv("OLLAMA_TIMEOUT", "1000"))
     
     # Domain Service URLs

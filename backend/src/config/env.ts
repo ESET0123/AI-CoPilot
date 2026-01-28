@@ -24,6 +24,7 @@ export const env = {
   JWT_SECRET: required('JWT_SECRET'),
 
   AI_SERVICE_URL: (process.env.AI_SERVICE_URL || 'http://localhost:8002').trim(),
+  SPEECH_SERVICE_URL: (process.env.SPEECH_SERVICE_URL || 'http://localhost:8003').trim(),
   KEYCLOAK_CLIENT_SECRET: required('KEYCLOAK_CLIENT_SECRET'),
   KEYCLOAK_URL: (process.env.KEYCLOAK_URL || 'http://localhost:8080').trim(),
   KEYCLOAK_REALM: (process.env.KEYCLOAK_REALM || 'my_realm').trim(),

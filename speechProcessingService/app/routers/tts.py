@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from app.modules.speech.services.tts_service import TTSService
+from app.modules.services.tts_service import TTSService
 import os
 
 router = APIRouter()

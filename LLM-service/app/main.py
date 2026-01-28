@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.core.config import settings
-from app.routers import process, transcribe, tts
-from app.modules.speech.engines.whisper.whisper_engine import whisper_engine
+from app.routers import process
+# Removed transcribe and tts routers - now handled by speechProcessingService
 from app.core.logger import log_with_prefix, setup_logger
 
 # Setup logging
@@ -17,13 +17,8 @@ async def lifespan(app: FastAPI):
     log_with_prefix("Server", f"Environment: {settings.ENVIRONMENT}")
     log_with_prefix("Server", f"Ollama Model: {settings.OLLAMA_MODEL}")
     
-    # Pre-load Whisper model for zero-lag first request
-    try:
-        whisper_engine.initialize()
-        log_with_prefix("Server", "✅ Whisper Engine pre-loaded")
-    except Exception as e:
-        log_with_prefix("Server", f"⚠️ Whisper pre-loading failed: {e}")
-        
+    # Speech processing is now decoupled: models are loaded in speechProcessingService
+    log_with_prefix("Server", "System ready: Intent Classifier active (Speech services decoupled to port 8003)")        
     log_with_prefix("Server", f"API endpoint: /api/process")
     
     yield
@@ -49,8 +44,7 @@ def create_app() -> FastAPI:
 
     # Include routers
     app.include_router(process.router, prefix="/api", tags=["process"])
-    app.include_router(transcribe.router, prefix="/api", tags=["transcribe"])
-    app.include_router(tts.router, prefix="/api", tags=["tts"])
+    # transcribe and tts routers moved to speechProcessingService
     
     return app
 

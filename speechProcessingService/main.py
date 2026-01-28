@@ -7,11 +7,11 @@ sys.path.insert(0, current_dir)
 
 if __name__ == "__main__":
     import uvicorn
-    print("[Server] Starting Intent Classifier Service on port 8002...")
+    print("[Server] Starting Speech Processing Service on port 8003...")
     uvicorn.run(
         "app.main:app", 
         host="127.0.0.1", 
-        port=8002, 
-        log_level="info",  # Keep as "info" to see all logs
+        port=8003, 
+        log_level="info",
         reload=True
     )

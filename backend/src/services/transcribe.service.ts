@@ -1,4 +1,4 @@
-import { aiServiceClient } from './aiServiceClient';
+import { speechServiceClient } from './speechServiceClient';
 
 export class TranscribeService {
     /**
@@ -26,11 +26,13 @@ export class TranscribeService {
             formData.append('language', language);
         }
 
-        const data = await aiServiceClient.post('/api/transcribe', formData, {
+        const response = await speechServiceClient.getClient().post('/api/transcribe', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         });
+
+        const data = response.data;
 
         if (data.error) {
             throw new Error(data.error);
