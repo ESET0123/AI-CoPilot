@@ -60,7 +60,7 @@ export default function DefaulterPredictionChart({ data }: DefaulterPredictionCh
                         data={chartData}
                         margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                     >
-                        <CartesianGrid vertical={false} stroke="var(--mantine-color-gray-2)" strokeDasharray="3 3" />
+                        <CartesianGrid vertical={false} stroke="var(--mantine-color-gray-2)" strokeDasharray="0" />
                         <XAxis
                             dataKey="label"
                             tickLine={false}
@@ -76,7 +76,7 @@ export default function DefaulterPredictionChart({ data }: DefaulterPredictionCh
                             tickMargin={10}
                             tickCount={5}
                         />
-                        <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'var(--mantine-color-gray-2)', strokeWidth: 1, strokeDasharray: '3 3' }} />
+                        <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'var(--mantine-color-gray-2)', strokeWidth: 1, strokeDasharray: '0' }} />
                         <Line
                             type="monotone"
                             dataKey="Actual"

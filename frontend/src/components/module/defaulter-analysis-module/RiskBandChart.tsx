@@ -60,11 +60,13 @@ export default function RiskBandChart({ data }: RiskBandChartProps) {
                             nameKey="name"
                             cx="50%"
                             cy="50%"
-                            innerRadius={40}
-                            outerRadius={80}
+                            innerRadius={0}
+                            outerRadius={100}
                             startAngle={90}
                             endAngle={-270}
+                            paddingAngle={2}
                             strokeWidth={0}
+                            cornerRadius="5%"
                         >
                             {chartData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.color} />

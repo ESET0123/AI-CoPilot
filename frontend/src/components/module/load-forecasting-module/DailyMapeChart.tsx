@@ -57,8 +57,8 @@ export default function DailyMapeChart({ data }: DailyMapeChartProps) {
                     >
                         <defs>
                             <linearGradient id="daily-mape-gradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="#8b9ef8" stopOpacity={0.7} />
-                                <stop offset="100%" stopColor="#8b9ef8" stopOpacity={0.05} />
+                                <stop offset="0%" stopColor="#8b9ef8" stopOpacity={1} />
+                                <stop offset="100%" stopColor="#f9f2f2" stopOpacity={1} />
                             </linearGradient>
                         </defs>
                         <CartesianGrid vertical={false} stroke="var(--mantine-color-gray-2)" strokeDasharray="0" />

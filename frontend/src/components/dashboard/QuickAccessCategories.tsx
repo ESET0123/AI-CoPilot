@@ -1,5 +1,5 @@
 import { Box, SimpleGrid, Text } from '@mantine/core';
-import { TbAlertTriangle, TbActivity, TbCalculator, TbUsers } from 'react-icons/tb';
+import { TbAlertTriangle, TbActivity, TbCalculator, TbUsers, TbHeartbeat } from 'react-icons/tb';
 import { IconType } from 'react-icons';
 import QuickActionCard from '../ui/QuickActionCard';
 import { useAccessControl, type AccessControlConfig } from '../../hooks/useAccessControl';
@@ -50,6 +50,15 @@ export default function QuickAccessCategories() {
                 icon: TbUsers,
                 onClick: () => { navigate("/defaulter-analysis") },
                 allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_SUPERVISOR', 'ROLE_FIELD_OFFICER'],
+                allowedGroups: ['/zones/ZONE_SOUTH'],
+                requireAll: true
+            },
+            {
+                title: "Asset Health",
+                description: "Monitor health and aging of assets",
+                icon: TbHeartbeat,
+                onClick: () => { navigate("/asset-health") },
+                allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_FIELD_OFFICER'],
                 allowedGroups: ['/zones/ZONE_SOUTH'],
                 requireAll: true
             }

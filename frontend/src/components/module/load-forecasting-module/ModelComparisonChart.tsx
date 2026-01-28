@@ -79,7 +79,7 @@ export default function ModelComparisonChart({ data }: ModelComparisonChartProps
                             tickMargin={10}
                             tickCount={6}
                         />
-                        <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'var(--mantine-color-gray-2)', strokeWidth: 1, strokeDasharray: '3 3' }} />
+                        <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'var(--mantine-color-gray-2)', strokeWidth: 1, strokeDasharray: '0' }} />
                         <Line
                             type="monotone"
                             dataKey="esyaModel"

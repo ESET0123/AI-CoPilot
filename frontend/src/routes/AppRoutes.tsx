@@ -8,6 +8,7 @@ import TheftDetectionPage from '../pages/TheftDetectionPage';
 import LoadForecastingPage from '../pages/LoadForecastingPage';
 import SmartTariffPage from '../pages/SmartTariffPage';
 import DefaulterAnalysisPage from '../pages/DefaulterAnalysisPage';
+import AssetHealthPage from '../pages/AssetHealthPage';
 import { useAppSelector } from '../app/hooks';
 
 export default function AppRoutes() {
@@ -74,6 +75,15 @@ export default function AppRoutes() {
         element={
           <RoleProtectedRoute roles={['ROLE_ADMINISTRATOR', 'ROLE_FIELD_OFFICER']}>
             <DefaulterAnalysisPage />
+          </RoleProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/asset-health"
+        element={
+          <RoleProtectedRoute roles={['ROLE_ADMINISTRATOR', 'ROLE_FIELD_OFFICER']}>
+            <AssetHealthPage />
           </RoleProtectedRoute>
         }
       />

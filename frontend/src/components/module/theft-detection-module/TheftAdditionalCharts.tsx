@@ -105,7 +105,9 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                                     innerRadius={0} // Thickness 90 with Size 180 means full pie
                                     startAngle={90}
                                     endAngle={-270}
+                                    paddingAngle={2}
                                     strokeWidth={0}
+                                    cornerRadius="5%"
                                 >
                                     {caseStatusData.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={entry.color} />
@@ -147,10 +149,10 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                                 <defs>
                                     <linearGradient id="lime-gradient-add" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="0%" stopColor="#bef264" stopOpacity={1} />
-                                        <stop offset="100%" stopColor="#bef264" stopOpacity={0.1} />
+                                        <stop offset="100%" stopColor="#f9f2f2" stopOpacity={1} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--mantine-color-gray-2)" />
+                                <CartesianGrid strokeDasharray="0" vertical={false} stroke="var(--mantine-color-gray-2)" />
                                 <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
                                 <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
                                 <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'transparent' }} />
@@ -180,10 +182,10 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                                 <defs>
                                     <linearGradient id="purple-gradient-panchnama" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="0%" stopColor="#a78bfa" stopOpacity={1} />
-                                        <stop offset="100%" stopColor="#a78bfa" stopOpacity={0.1} />
+                                        <stop offset="100%" stopColor="#f9f2f2" stopOpacity={1} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--mantine-color-gray-2)" />
+                                <CartesianGrid strokeDasharray="0" vertical={false} stroke="var(--mantine-color-gray-2)" />
                                 <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
                                 <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
                                 <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'transparent' }} />
@@ -215,10 +217,10 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                                 <defs>
                                     <linearGradient id="purple-gradient-intensity" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="0%" stopColor="#a78bfa" stopOpacity={1} />
-                                        <stop offset="100%" stopColor="#a78bfa" stopOpacity={0.1} />
+                                        <stop offset="100%" stopColor="#f9f2f2" stopOpacity={1} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--mantine-color-gray-2)" />
+                                <CartesianGrid strokeDasharray="0" vertical={false} stroke="var(--mantine-color-gray-2)" />
                                 <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
                                 <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
                                 <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'transparent' }} />

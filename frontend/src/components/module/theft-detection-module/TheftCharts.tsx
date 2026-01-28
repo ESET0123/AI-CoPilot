@@ -91,14 +91,14 @@ export function CaseCheckedChart({ data }: SingleChartProps) {
                         <defs>
                             <linearGradient id="purple-gradient" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="0%" stopColor="#a78bfa" stopOpacity={1} />
-                                <stop offset="100%" stopColor="#a78bfa" stopOpacity={0.1} />
+                                <stop offset="100%" stopColor="#f9f2f2" stopOpacity={1} />
                             </linearGradient>
                             <linearGradient id="orange-gradient" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="0%" stopColor="#bef264" stopOpacity={1} />
-                                <stop offset="100%" stopColor="#bef264" stopOpacity={0.1} />
+                                <stop offset="100%" stopColor="#f9f2f2" stopOpacity={1} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--mantine-color-gray-2)" />
+                        <CartesianGrid strokeDasharray="0" vertical={false} stroke="var(--mantine-color-gray-2)" />
                         <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
                         <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
                         <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'transparent' }} />
@@ -142,14 +142,14 @@ export function CasesByDivisionChart({ data }: SingleChartProps) {
                         <defs>
                             <linearGradient id="purple-gradient-div" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="0%" stopColor="#a78bfa" stopOpacity={1} />
-                                <stop offset="100%" stopColor="#a78bfa" stopOpacity={0.1} />
+                                <stop offset="100%" stopColor="#f9f2f2" stopOpacity={1} />
                             </linearGradient>
                             <linearGradient id="lime-gradient-div" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="0%" stopColor="#bef264" stopOpacity={1} />
-                                <stop offset="100%" stopColor="#bef264" stopOpacity={0.1} />
+                                <stop offset="100%" stopColor="#f9f2f2" stopOpacity={1} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--mantine-color-gray-2)" />
+                        <CartesianGrid strokeDasharray="0" vertical={false} stroke="var(--mantine-color-gray-2)" />
                         <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
                         <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
                         <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'transparent' }} />
@@ -180,11 +180,13 @@ export function TheftByCaseTypeChart({ data }: SingleChartProps) {
                             nameKey="name"
                             cx="50%"
                             cy="50%"
-                            innerRadius={60}
+                            innerRadius={0}
                             outerRadius={100}
                             startAngle={90}
                             endAngle={-270}
+                            paddingAngle={2}
                             strokeWidth={0}
+                            cornerRadius="5%"
                         >
                             {chartData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.color} />
