@@ -1,4 +1,4 @@
-import { BarChart, DonutChart } from '@mantine/charts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LabelList } from 'recharts';
 import { Paper, Title as MantineTitle, Grid, Group, Text, Box } from '@mantine/core';
 import { ChartData as ChartDataType } from '../../../services/theftService';
 
@@ -11,8 +11,7 @@ interface TheftAdditionalChartsProps {
     };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomBarTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
         return (
             <div style={{
@@ -23,8 +22,30 @@ const CustomTooltip = ({ active, payload }: any) => {
                 fontSize: '12px',
                 fontWeight: 600
             }}>
-                {payload[0].value}
-                {/* Tooltip arrow */}
+                <div style={{ marginBottom: 4 }}>{label}</div>
+                {payload.map((entry: any, index: number) => (
+                    <div key={index} style={{ color: entry.fill.includes('purple') ? '#a78bfa' : '#bef264' }}>
+                        {entry.name === 'consumption' || entry.name === 'count' ? 'Count' : entry.name}: {entry.value}
+                    </div>
+                ))}
+            </div>
+        );
+    }
+    return null;
+};
+
+const CustomPieTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div style={{
+                backgroundColor: '#000000',
+                color: '#ffffff',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                fontSize: '12px',
+                fontWeight: 600
+            }}>
+                {payload[0].name}: {payload[0].value}
                 <div style={{
                     position: 'absolute',
                     bottom: '-6px',
@@ -71,15 +92,28 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
             <Grid.Col span={{ base: 12, md: 4 }}>
                 <Paper p="md" radius="md" withBorder h="100%">
                     <MantineTitle order={4} size="h5" mb="xl">Case Status Distribution</MantineTitle>
-                    <Box style={{ height: '220px', display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', width: '220px', margin: '0 auto' }}>
-                        <DonutChart
-                            data={caseStatusData}
-                            size={180}
-                            thickness={90}
-                            tooltipDataSource="segment"
-                            tooltipProps={{ content: <CustomTooltip /> }}
-                            pieProps={{ cornerRadius: 5, paddingAngle: 5, strokeWidth: 0 }}
-                        />
+                    <Box style={{ height: '220px', display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', width: '100%', margin: '0 auto' }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={caseStatusData}
+                                    dataKey="value"
+                                    nameKey="name"
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={90}
+                                    innerRadius={0} // Thickness 90 with Size 180 means full pie
+                                    startAngle={90}
+                                    endAngle={-270}
+                                    strokeWidth={0}
+                                >
+                                    {caseStatusData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                    ))}
+                                </Pie>
+                                <Tooltip content={<CustomPieTooltip />} />
+                            </PieChart>
+                        </ResponsiveContainer>
                     </Box>
                     <Group justify="center" mt="xl">
                         <Group gap={4}>
@@ -105,24 +139,24 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                         </Group>
                     </Group>
                     <div style={{ height: 250, width: '100%', minHeight: 0, minWidth: 0 }}>
-                        <BarChart
-                            h={250}
-                            data={assessedLossData}
-                            dataKey="label"
-                            series={[{ name: 'consumption', label: 'Consumption', color: 'url(#lime-gradient-add)' }]}
-                            gridAxis="xy"
-                            gridProps={{ vertical: false, horizontal: false, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
-                            yAxisProps={{ domain: ['auto', 'auto'], tickLine: false, axisLine: false }}
-                            xAxisProps={{ tickLine: false, axisLine: false }}
-                            barProps={{ radius: [7, 7, 0, 0] }}
-                        >
-                            <defs>
-                                <linearGradient id="lime-gradient-add" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#bef264" stopOpacity={1} />
-                                    <stop offset="100%" stopColor="#bef264" stopOpacity={0.1} />
-                                </linearGradient>
-                            </defs>
-                        </BarChart>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                                data={assessedLossData}
+                                margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
+                            >
+                                <defs>
+                                    <linearGradient id="lime-gradient-add" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="#bef264" stopOpacity={1} />
+                                        <stop offset="100%" stopColor="#bef264" stopOpacity={0.1} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--mantine-color-gray-2)" />
+                                <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
+                                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
+                                <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'transparent' }} />
+                                <Bar dataKey="consumption" fill="url(#lime-gradient-add)" radius={[7, 7, 0, 0]} barSize={40} />
+                            </BarChart>
+                        </ResponsiveContainer>
                     </div>
                 </Paper>
             </Grid.Col>
@@ -138,25 +172,26 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                         </Group>
                     </Group>
                     <div style={{ height: 300, width: '85%', minHeight: 0, minWidth: 0 }}>
-                        <BarChart
-                            h={300}
-                            data={panchnamaData}
-                            dataKey="label"
-                            withLegend={false}
-                            series={[{ name: 'count', label: 'Consumer Survey Count', color: 'url(#purple-gradient-panchnama)' }]}
-                            gridAxis="xy"
-                            gridProps={{ vertical: false, horizontal: false, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
-                            yAxisProps={{ domain: ['auto', 'auto'], tickLine: false, axisLine: false }}
-                            xAxisProps={{ tickLine: false, axisLine: false }}
-                            barProps={{ radius: [7, 7, 0, 0], label: { position: 'insideTop', fill: '#fff', fontSize: 10, offset: 10 } }}
-                        >
-                            <defs>
-                                <linearGradient id="purple-gradient-panchnama" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#a78bfa" stopOpacity={1} />
-                                    <stop offset="100%" stopColor="#a78bfa" stopOpacity={0.1} />
-                                </linearGradient>
-                            </defs>
-                        </BarChart>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                                data={panchnamaData}
+                                margin={{ top: 20, right: 0, left: -20, bottom: 0 }}
+                            >
+                                <defs>
+                                    <linearGradient id="purple-gradient-panchnama" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="#a78bfa" stopOpacity={1} />
+                                        <stop offset="100%" stopColor="#a78bfa" stopOpacity={0.1} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--mantine-color-gray-2)" />
+                                <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
+                                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
+                                <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'transparent' }} />
+                                <Bar dataKey="count" fill="url(#purple-gradient-panchnama)" radius={[7, 7, 0, 0]} barSize={40}>
+                                    <LabelList dataKey="count" position="insideTop" fill="#fff" fontSize={10} offset={10} />
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
                     </div>
                 </Paper>
             </Grid.Col>
@@ -172,25 +207,26 @@ export default function TheftAdditionalCharts({ data }: TheftAdditionalChartsPro
                         </Group>
                     </Group>
                     <div style={{ height: 300, width: '85%', minHeight: 0, minWidth: 0 }}>
-                        <BarChart
-                            h={300}
-                            data={theftIntensityData}
-                            dataKey="label"
-                            withLegend={false}
-                            series={[{ name: 'count', label: 'Consumer Survey Count', color: 'url(#purple-gradient-intensity)' }]}
-                            gridAxis="xy"
-                            gridProps={{ vertical: false, horizontal: false, strokeDasharray: '3 3', stroke: 'var(--mantine-color-gray-2)' }}
-                            yAxisProps={{ domain: ['auto', 'auto'], tickLine: false, axisLine: false }}
-                            xAxisProps={{ tickLine: false, axisLine: false }}
-                            barProps={{ radius: [10, 10, 0, 0], label: { position: 'insideTop', fill: '#fff', fontSize: 10, offset: 10 } }}
-                        >
-                            <defs>
-                                <linearGradient id="purple-gradient-intensity" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#a78bfa" stopOpacity={1} />
-                                    <stop offset="100%" stopColor="#a78bfa" stopOpacity={0.1} />
-                                </linearGradient>
-                            </defs>
-                        </BarChart>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                                data={theftIntensityData}
+                                margin={{ top: 20, right: 0, left: -20, bottom: 0 }}
+                            >
+                                <defs>
+                                    <linearGradient id="purple-gradient-intensity" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="#a78bfa" stopOpacity={1} />
+                                        <stop offset="100%" stopColor="#a78bfa" stopOpacity={0.1} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--mantine-color-gray-2)" />
+                                <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
+                                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#868e96' }} tickMargin={10} />
+                                <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'transparent' }} />
+                                <Bar dataKey="count" fill="url(#purple-gradient-intensity)" radius={[10, 10, 0, 0]} barSize={40}>
+                                    <LabelList dataKey="count" position="insideTop" fill="#fff" fontSize={10} offset={10} />
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
                     </div>
                 </Paper>
             </Grid.Col>

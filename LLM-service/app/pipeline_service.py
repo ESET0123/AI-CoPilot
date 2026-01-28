@@ -1,5 +1,5 @@
 from app.models.schemas import ProcessRequest, ProcessResponse
-from app.modules.intelligence.services.intent_classifier import IntentClassifier
+from app.modules.intelligence.services.intent_classifier import intent_classifier
 from app.modules.intelligence.services.dispatcher import Dispatcher
 from app.modules.speech.engines.whisper.translation_engine import translation_engine
 from app.core.logger import log_with_prefix
@@ -32,7 +32,7 @@ class PipelineService:
                     processing_query = payload.query
 
         # Step 1: Classify Intent
-        intent = await IntentClassifier.classify(processing_query)
+        intent = await intent_classifier.classify(processing_query)
         
         # Step 2: Route and Execute Handler
         response_text = await Dispatcher.route(intent, processing_query)

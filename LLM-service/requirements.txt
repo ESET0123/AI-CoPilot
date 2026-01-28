@@ -14,3 +14,6 @@ sentencepiece
 
 
 # piper-tts  # Uncomment if using Piper locally
+
+langchain
+langchain-huggingface

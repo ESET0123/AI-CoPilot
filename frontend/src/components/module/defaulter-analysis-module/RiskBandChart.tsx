@@ -1,4 +1,4 @@
-import { DonutChart } from '@mantine/charts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { Paper, Title, Group, Text } from '@mantine/core';
 import { RiskBandDistributionData } from '../../../services/defaulterService';
 
@@ -24,7 +24,6 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
                 position: 'relative'
             }}>
                 {payload[0].value}%
-                {/* Tooltip arrow */}
                 <div style={{
                     position: 'absolute',
                     bottom: '-6px',
@@ -43,7 +42,6 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
 };
 
 export default function RiskBandChart({ data }: RiskBandChartProps) {
-    // Transform data for Mantine DonutChart
     const chartData = data.labels.map((label, index) => ({
         name: label,
         value: data.data[index],
@@ -53,15 +51,28 @@ export default function RiskBandChart({ data }: RiskBandChartProps) {
     return (
         <Paper p="md" radius="md" withBorder h="100%">
             <Title order={4} size="14px" mb="sm">Risk Band Distribution</Title>
-            <div style={{ height: '220px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <DonutChart
-                    data={chartData}
-                    size={160}
-                    thickness={40}
-                    tooltipDataSource="segment"
-                    tooltipProps={{ content: <CustomTooltip /> }}
-                    pieProps={{ cornerRadius: 5, paddingAngle: 5, strokeWidth: 0 }}
-                />
+            <div style={{ height: '220px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+                <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                        <Pie
+                            data={chartData}
+                            dataKey="value"
+                            nameKey="name"
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={40}
+                            outerRadius={80}
+                            startAngle={90}
+                            endAngle={-270}
+                            strokeWidth={0}
+                        >
+                            {chartData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                        </Pie>
+                        <Tooltip content={<CustomTooltip />} />
+                    </PieChart>
+                </ResponsiveContainer>
             </div>
             <Group justify="center" mt="sm" gap="md">
                 {data.labels.map((label, index) => (
