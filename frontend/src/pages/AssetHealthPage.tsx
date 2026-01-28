@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Container, Title, Button, Group, Box, LoadingOverlay, Text, ThemeIcon, Grid, Stack } from '@mantine/core';
-import { TfiDashboard } from "react-icons/tfi";
 import { FaAngleLeft } from "react-icons/fa6";
+import { FiRefreshCw } from "react-icons/fi";
 import { Link } from 'react-router-dom';
 import AppShellLayout from '../components/layout/AppShellLayout';
 import HeaderBar from '../components/layout/HeaderBar';
@@ -73,7 +73,7 @@ export default function AssetHealthPage() {
 
                                 <Group align="center">
                                     <ThemeIcon size={32} radius="md" color="green" variant="filled">
-                                        <TfiDashboard size={20} />
+                                        <FiRefreshCw size={20} />
                                     </ThemeIcon>
 
                                     <Title order={2} size="h4" fw={700}>
