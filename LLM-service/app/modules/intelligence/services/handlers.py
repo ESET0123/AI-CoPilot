@@ -121,6 +121,7 @@ class OtherHandler:
             "I can help you with:\n"
             "• Load Forecasting - Ask about power demand predictions\n"
             "• Theft Detection - Ask about suspicious activity or alerts\n\n"
+            "• Asset Monitoring - Ask about asset status or alerts\n\n"
             "Your query didn't match these categories.\n\n"
             "[This is a mock response from the fallback handler]"
         )
