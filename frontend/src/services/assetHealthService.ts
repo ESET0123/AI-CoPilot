@@ -44,15 +44,15 @@ export const assetHealthService = {
                         normalPercent: 75,
                     },
                     riskDistribution: [
-                        { name: 'Low Risk', value: 32, color: '#baff99' },
-                        { name: 'Medium Risk', value: 45, color: '#ffeb3b' },
-                        { name: 'High Risk', value: 23, color: '#ff6b6b' },
+                        { name: 'Low Risk', value: 32, color: '#4caf50' }, // success[5]
+                        { name: 'Medium Risk', value: 45, color: '#ffc107' }, // warning[5]
+                        { name: 'High Risk', value: 23, color: '#f44336' }, // error[5]
                     ],
                     alerts: [
-                        { severity: 'Critical', count: 16255, color: '#ffe3e3' },
-                        { severity: 'Major', count: 1255, color: '#fff9db' },
-                        { severity: 'Minor', count: 155, color: '#ebfbee' },
-                        { severity: 'Warning', count: 1025, color: '#fff4e6' },
+                        { severity: 'Critical', count: 16255, color: '#ffebee' }, // error[0]
+                        { severity: 'Major', count: 1255, color: '#fff8e1' }, // warning[0]
+                        { severity: 'Minor', count: 155, color: '#e8f5e9' }, // success[0]
+                        { severity: 'Warning', count: 1025, color: '#fff3e0' }, // orange[0]
                     ],
                     activeAlerts: 6504,
                     agingAssets: [

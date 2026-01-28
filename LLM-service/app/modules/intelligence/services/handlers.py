@@ -3,118 +3,89 @@ from app.core.logger import log_with_prefix
 import httpx
 from app.core.config import settings
 
+class BaseIntentHandler:
+    """Base class for intent handlers to reduce redundancy"""
+    
+    @staticmethod
+    async def call_service(
+        service_name: str, 
+        url: str, 
+        query: str, 
+        role: str, 
+        allowed_roles: list,
+        intent_label: str,
+        response_key: str = "human_answer"
+    ) -> str:
+        if role != "ROLE_ADMINISTRATOR" and role not in allowed_roles:
+            return f"Access Denied: You do not have permission to access {intent_label} services."
+
+        log_with_prefix(f"{service_name} Handler", "Executing handler")
+        log_with_prefix(f"{service_name} Handler", f"Sending query to {service_name.lower()} service: {query}")
+        
+        try:
+            async with httpx.AsyncClient(timeout=300.0) as client:
+                response = await client.post(url, json={"prompt": query})
+                response.raise_for_status()
+                data = response.json()
+                
+                if data.get("success"):
+                    answer = data.get(response_key, "No response received.")
+                    log_with_prefix(f"{service_name} Handler", f"Query successful, answer length: {len(answer)}")
+                    return f"Intent: {intent_label}\n\n{answer}"
+                else:
+                    error = data.get(response_key, data.get("error", "Unknown error"))
+                    log_with_prefix(f"{service_name} Handler", f"Query failed: {error}")
+                    return f"{intent_label} Error: {error}"
+                    
+        except httpx.RequestError as e:
+            log_with_prefix(f"{service_name} Handler", f"Request error: {str(e)}")
+            return f"{service_name} Service unavailable: {str(e)}"
+        except Exception as e:
+            log_with_prefix(f"{service_name} Handler", f"Unexpected error: {str(e)}")
+            return f"Unexpected error in {service_name.lower()}: {str(e)}"
+
 class LoadForecastingHandler:
     """Handles load forecasting requests"""
 
     @staticmethod
     async def handle(intent: Intent, query: str, role: str = None) -> str:
-        if role != "ROLE_ADMINISTRATOR" and role != "ROLE_FIELD_OFFICER":
-            return f"Access Denied: You do not have permission to access {intent.value} services."
-        
-        log_with_prefix("Load Forecasting Handler", "Executing handler")
-        log_with_prefix("Load Forecasting Handler", f"Sending query to load forecasting service: {query}")
-        
-        try:
-            async with httpx.AsyncClient(timeout=300.0) as client:
-                response = await client.post(
-                    "http://127.0.0.1:8012/api/v1/forecast/query",
-                    json={"prompt": query}
-                )
-                response.raise_for_status()
-                data = response.json()
-                
-                if data.get("success"):
-                    answer = data.get("answer", "No response received.")
-                    log_with_prefix("Load Forecasting Handler", f"Query successful, answer length: {len(answer)}")
-                    
-                    return f"Intent: Load Forecasting\n\n{answer}"
-                else:
-                    error = data.get("answer", data.get("error", "Unknown error"))
-                    log_with_prefix("Load Forecasting Handler", f"Query failed: {error}")
-                    return f"Load Forecasting Error: {error}"
-                    
-        except httpx.RequestError as e:
-            log_with_prefix("Load Forecasting Handler", f"Request error: {str(e)}")
-            return f"Load Forecasting Service unavailable: {str(e)}"
-        except Exception as e:
-            log_with_prefix("Load Forecasting Handler", f"Unexpected error: {str(e)}")
-            return f"Unexpected error in load forecasting: {str(e)}"
-
-
+        return await BaseIntentHandler.call_service(
+            service_name="Load Forecasting",
+            url=settings.LOAD_FORECASTING_API,
+            query=query,
+            role=role,
+            allowed_roles=["ROLE_FIELD_OFFICER"],
+            intent_label="Load Forecasting",
+            response_key="answer"
+        )
 
 class TheftDetectionHandler:
     """Handles theft detection requests"""
     
     @staticmethod
     async def handle(intent: Intent, query: str, role: str = None) -> str:
-        if role not in ["ROLE_ADMINISTRATOR", "ROLE_FIELD_OFFICER", "ROLE_SUPERVISOR"]:
-            return f"Access Denied: You do not have permission to access {intent.value} services."
-
-        log_with_prefix("Theft Detection Handler", "Executing handler")
-        log_with_prefix("Theft Detection Handler", f"Sending query to theft detection service: {query}")
-        
-        try:
-            async with httpx.AsyncClient(timeout=300.0) as client:
-                response = await client.post(
-                    "http://127.0.0.1:8013/api/v1/theft-detection/query",
-                    json={"prompt": query}
-                )
-                response.raise_for_status()
-                data = response.json()
-                
-                if data.get("success"):
-                    human_answer = data.get("human_answer", "No response received.")
-                    log_with_prefix("Theft Detection Handler", f"Query successful, answer length: {len(human_answer)}")
-                    
-                    return f"Intent: Theft Detection\n\n{human_answer}"
-                else:
-                    error = data.get("human_answer", data.get("error", "Unknown error"))
-                    log_with_prefix("Theft Detection Handler", f"Query failed: {error}")
-                    return f"Theft Detection Error: {error}"
-                    
-        except httpx.RequestError as e:
-            log_with_prefix("Theft Detection Handler", f"Request error: {str(e)}")
-            return f"Theft Detection Service unavailable: {str(e)}"
-        except Exception as e:
-            log_with_prefix("Theft Detection Handler", f"Unexpected error: {str(e)}")
-            return f"Unexpected error in theft detection: {str(e)}"
+        return await BaseIntentHandler.call_service(
+            service_name="Theft Detection",
+            url=settings.THEFT_DETECTION_API,
+            query=query,
+            role=role,
+            allowed_roles=["ROLE_FIELD_OFFICER", "ROLE_SUPERVISOR"],
+            intent_label="Theft Detection"
+        )
         
 class AssetMonitoringHandler:
     """Handles asset monitoring requests"""
     
     @staticmethod
     async def handle(intent: Intent, query: str, role: str = None) -> str:
-        if role != "ROLE_ADMINISTRATOR" and role != "ROLE_FIELD_OFFICER":
-            return f"Access Denied: You do not have permission to access {intent.value} services."
-
-        log_with_prefix("Asset Monitoring Handler", "Executing handler")
-        log_with_prefix("Asset Monitoring Handler", f"Sending query to asset monitoring service: {query}")
-        
-        try:
-            async with httpx.AsyncClient(timeout=300.0) as client:
-                response = await client.post(
-                    "http://127.0.0.1:8011/api/v1/asset-monitoring/query",
-                    json={"prompt": query}
-                )
-                response.raise_for_status()
-                data = response.json()
-                
-                if data.get("success"):
-                    human_answer = data.get("human_answer", "No response received.")
-                    log_with_prefix("Asset Monitoring Handler", f"Query successful, answer length: {len(human_answer)}")
-                    
-                    return f"Intent: Asset Monitoring\n\n{human_answer}"
-                else:
-                    error = data.get("human_answer", data.get("error", "Unknown error"))
-                    log_with_prefix("Asset Monitoring Handler", f"Query failed: {error}")
-                    return f"Asset Monitoring Error: {error}"
-                    
-        except httpx.RequestError as e:
-            log_with_prefix("Asset Monitoring Handler", f"Request error details: {type(e).__name__}: {str(e)}", level="error")
-            return f"Asset Monitoring Service unavailable: {type(e).__name__}"
-        except Exception as e:
-            log_with_prefix("Asset Monitoring Handler", f"Unexpected error: {str(e)}")
-            return f"Unexpected error in asset monitoring: {str(e)}"
+        return await BaseIntentHandler.call_service(
+            service_name="Asset Monitoring",
+            url=settings.ASSET_MONITORING_API,
+            query=query,
+            role=role,
+            allowed_roles=["ROLE_FIELD_OFFICER"],
+            intent_label="Asset Monitoring"
+        )
 
 
 class OtherHandler:

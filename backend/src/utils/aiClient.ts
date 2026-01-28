@@ -1,9 +1,6 @@
 import { aiServiceClient } from '../services/aiServiceClient';
 import { env } from '../config/env';
 
-// Removed direct axios.create. Using aiServiceClient singleton.
-
-
 /**
  * Calls the Intent Classifier Service
  * 
@@ -58,52 +55,9 @@ export async function callAIService(
 }
 
 /**
- * Stop function - can be removed if not needed
+ * Stop function - kept as stub as it is used in MessagesService
  */
 export async function stopAIService(conversationId: string) {
   console.log('[AI Client] Stop requested for conversation:', conversationId);
   // No-op for now since we don't have streaming
-}
-
-/**
- * Transcription function - can be removed if not needed
- */
-export async function transcribeAudio(
-  audioData: Buffer | Blob,
-  method: string = 'google-webkit',
-  language?: string
-): Promise<string> {
-  console.log(`[AI Client] 🎤 Transcribing audio with method: ${method}`);
-
-  const formData = new FormData();
-
-  if (Buffer.isBuffer(audioData)) {
-    const blob = new Blob([audioData as unknown as BlobPart], {
-      type: 'audio/wav',
-    });
-    formData.append('file', blob, 'voice.wav');
-  } else {
-    formData.append('file', audioData, 'voice.wav');
-  }
-
-  formData.append('method', method);
-  if (language) {
-    formData.append('language', language);
-  }
-
-  console.log(`[AI Client] 📡 Sending to LLM-service: ${env.AI_SERVICE_URL}/api/transcribe`);
-
-  const data = await aiServiceClient.post<any>('/api/transcribe', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-
-  if (data.error) {
-    console.error(`[AI Client] ❌ Transcription error: ${data.error}`);
-    throw new Error(data.error);
-  }
-
-  console.log(`[AI Client] ✅ Transcription successful: ${data.text.length} characters`);
-  return data.text;
 }

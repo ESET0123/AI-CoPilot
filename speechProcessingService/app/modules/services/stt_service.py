@@ -1,14 +1,15 @@
 import os
 from app.modules.engines.whisper.whisper_engine import whisper_engine
-from app.modules.engines.whisper.translation_engine import translation_engine
+from app.modules.engines.whisper.whisper_engine import whisper_engine
 from app.core.logger import log_with_prefix
 
 class STTService:
     @staticmethod
-    async def process_audio(file_path: str, method: str = "google-webkit", language: str = None) -> dict:
+    async def process_audio(file_path: str, method: str = "review", language: str = None) -> dict:
         """
         Processes audio and returns both transcribed and translated text if needed.
-        Returns: {"text": str, "original_text": str, "detected_language": str}
+        Supported methods: 'review', 'translate-direct'
+        Returns: {"text": str, "original_text": str, "language": str}
         """
         log_with_prefix("STTService", f"🎤 Processing audio with method: {method}")
         log_with_prefix("STTService", f"📄 Params: Language={language or 'auto'}")

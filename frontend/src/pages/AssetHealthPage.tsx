@@ -86,7 +86,7 @@ export default function AssetHealthPage() {
                             <Button
                                 component={Link}
                                 to="/copilot"
-                                bg="#1e1e1e"
+                                bg="var(--app-background-dark)"
                                 leftSection={
                                     <Box
                                         w={18}
@@ -100,6 +100,7 @@ export default function AssetHealthPage() {
                                 radius="xl"
                                 size="md"
                                 fw={600}
+                                style={{ transition: 'all 0.2s ease' }}
                             >
                                 Ask Ai
                             </Button>

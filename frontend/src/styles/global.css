@@ -136,30 +136,6 @@ body,
 }
 
 
-/* Global smooth transitions */
-* {
-    transition-property: background-color, border-color, color, fill, stroke;
-    transition-duration: 200ms;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Disable transitions for specific properties */
-*,
-*::before,
-*::after {
-    transition-property: none;
-}
-
-/* Re-enable for specific elements */
-button,
-a,
-input,
-textarea,
-select,
-[role="button"] {
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 /* Focus visible styles */
 *:focus-visible {
     outline: 2px solid rgba(79, 172, 254, 0.5);

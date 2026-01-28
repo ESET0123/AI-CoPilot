@@ -43,7 +43,6 @@ app.use('/api/defaulter', requireAuth, defaulterRoutes);
 app.use('/api/tts', requireAuth, ttsRoutes);
 
 // Global error handling middleware
-// Global error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error('[Global Error Handler]:', err);
 

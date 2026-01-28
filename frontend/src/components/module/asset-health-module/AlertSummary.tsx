@@ -15,9 +15,16 @@ export default function AlertSummary({ alerts, activeAlerts }: Props) {
 
             <Stack gap="xs">
                 {alerts.map((alert) => (
-                    <Paper key={alert.severity} p="xs" radius="sm" bg={alert.color} style={{ border: '1px solid transparent' }}>
+                    <Paper
+                        key={alert.severity}
+                        p="xs"
+                        radius="md"
+                        bg={alert.color}
+                        style={{ border: 'none' }}
+                        className="alert-item"
+                    >
                         <Group justify="space-between">
-                            <Text size="sm" fw={600} color={alert.severity === 'Critical' ? 'red' : 'inherit'}>
+                            <Text size="sm" fw={600} color={alert.severity === 'Critical' ? 'red.7' : 'inherit'}>
                                 {alert.severity}: {alert.count}
                             </Text>
                         </Group>

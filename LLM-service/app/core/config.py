@@ -21,7 +21,15 @@ class Settings:
     # Domain Service URLs
     LOAD_FORECASTING_API: str = os.getenv(
         "LOAD_FORECASTING_API", 
-        "http://127.0.0.1:8013/api/v1/forecast/query"
+        "http://127.0.0.1:8012/api/v1/forecast/query"
+    )
+    THEFT_DETECTION_API: str = os.getenv(
+        "THEFT_DETECTION_API", 
+        "http://127.0.0.1:8013/api/v1/theft-detection/query"
+    )
+    ASSET_MONITORING_API: str = os.getenv(
+        "ASSET_MONITORING_API", 
+        "http://127.0.0.1:8011/api/v1/asset-monitoring/query"
     )
 
 settings = Settings()
