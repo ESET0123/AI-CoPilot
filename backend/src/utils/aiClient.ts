@@ -18,6 +18,7 @@ export async function callAIService(
     conversationId: string;
     message: string;
     language?: string;
+    role?: string;
   },
   signal?: AbortSignal
 ): Promise<string> {
@@ -28,7 +29,8 @@ export async function callAIService(
     '/api/process',
     {
       query: payload.message,
-      language: payload.language || 'en'
+      language: payload.language || 'en',
+      role: payload.role
     },
     { signal }
   );

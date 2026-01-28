@@ -7,7 +7,10 @@ class LoadForecastingHandler:
     """Handles load forecasting requests"""
 
     @staticmethod
-    async def handle(intent: Intent, query: str) -> str:
+    async def handle(intent: Intent, query: str, role: str = None) -> str:
+        if role != "ROLE_ADMINISTRATOR" and role != "ROLE_FIELD_OFFICER":
+            return f"Access Denied: You do not have permission to access {intent.value} services."
+        
         log_with_prefix("Load Forecasting Handler", "Executing handler")
         log_with_prefix("Load Forecasting Handler", f"Sending query to load forecasting service: {query}")
         
@@ -43,7 +46,10 @@ class TheftDetectionHandler:
     """Handles theft detection requests"""
     
     @staticmethod
-    async def handle(intent: Intent, query: str) -> str:
+    async def handle(intent: Intent, query: str, role: str = None) -> str:
+        if role not in ["ROLE_ADMINISTRATOR", "ROLE_FIELD_OFFICER", "ROLE_SUPERVISOR"]:
+            return f"Access Denied: You do not have permission to access {intent.value} services."
+
         log_with_prefix("Theft Detection Handler", "Executing handler")
         log_with_prefix("Theft Detection Handler", f"Sending query to theft detection service: {query}")
         
@@ -77,7 +83,10 @@ class AssetMonitoringHandler:
     """Handles asset monitoring requests"""
     
     @staticmethod
-    async def handle(intent: Intent, query: str) -> str:
+    async def handle(intent: Intent, query: str, role: str = None) -> str:
+        if role != "ROLE_ADMINISTRATOR" and role != "ROLE_FIELD_OFFICER":
+            return f"Access Denied: You do not have permission to access {intent.value} services."
+
         log_with_prefix("Asset Monitoring Handler", "Executing handler")
         log_with_prefix("Asset Monitoring Handler", f"Sending query to asset monitoring service: {query}")
         
@@ -112,7 +121,7 @@ class OtherHandler:
     """Handles unrecognized requests"""
     
     @staticmethod
-    async def handle(intent: Intent, query: str) -> str:
+    async def handle(intent: Intent, query: str, role: str = None) -> str:
         log_with_prefix("Other Handler", "Executing fallback handler")
         log_with_prefix("Other Handler", f"Query did not match any domain. Detected: {intent.value}")
         

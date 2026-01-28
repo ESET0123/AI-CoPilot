@@ -11,7 +11,7 @@ export class MessagesService {
         return MessagesRepository.listByConversationId(conversationId);
     }
 
-    static async sendMessage(conversationId: string, userId: string, content: string, language?: string): Promise<{ user: StoredMessage; assistant: StoredMessage }> {
+    static async sendMessage(conversationId: string, userId: string, content: string, language?: string, role?: string): Promise<{ user: StoredMessage; assistant: StoredMessage }> {
         // 1. Assert Ownership
         await ConversationsService.assertOwnership(conversationId, userId);
 
@@ -24,7 +24,7 @@ export class MessagesService {
 
         try {
             const replyContent = await callAIService(
-                { conversationId, message: content.trim(), language },
+                { conversationId, message: content.trim(), language, role },
                 controller.signal
             );
 

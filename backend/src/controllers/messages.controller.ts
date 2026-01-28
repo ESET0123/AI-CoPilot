@@ -23,7 +23,11 @@ export class MessagesController {
                 throw new AppError('Conversation and message required', 400);
             }
 
-            const result = await MessagesService.sendMessage(conversationId, req.userId!, message, language);
+            // Pick the most relevant role (Administrator > Supervisor > Field Officer > Assistant Engineer)
+            const priorityRoles = ['ROLE_ADMINISTRATOR', 'ROLE_SUPERVISOR', 'ROLE_FIELD_OFFICER', 'ROLE_ASSISTANT_ENGINEER'];
+            const userRole = priorityRoles.find(r => req.userRoles?.includes(r)) || req.userRoles?.[0];
+
+            const result = await MessagesService.sendMessage(conversationId, req.userId!, message, language, userRole);
             res.json(result);
         } catch (err: any) {
             if (err.message === 'ABORTED') {

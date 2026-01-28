@@ -4,6 +4,7 @@ from typing import Optional
 class ProcessRequest(BaseModel):
     query: str
     language: str = "en"  # Default to English
+    role: Optional[str] = None
 
 class ProcessResponse(BaseModel):
     query: str

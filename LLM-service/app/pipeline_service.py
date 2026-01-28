@@ -35,7 +35,7 @@ class PipelineService:
         intent = await intent_classifier.classify(processing_query)
         
         # Step 2: Route and Execute Handler
-        response_text = await Dispatcher.route(intent, processing_query)
+        response_text = await Dispatcher.route(intent, processing_query, payload.role)
         
         # Step 3: Response Translation (Convert back to user's native language)
         translated_response = None
