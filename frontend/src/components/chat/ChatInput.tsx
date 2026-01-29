@@ -27,7 +27,9 @@ interface ChatInputProps {
   isHeroMode?: boolean;
 }
 
-const activeRequests = new Map<string, { abort: () => void }>();
+import { requestManager } from '../../utils/requestManager';
+
+const activeRequests = requestManager; // Alias for minimal code change or replace usages directly
 
 export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   const dispatch = useAppDispatch();
@@ -107,10 +109,8 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
     audioManager.stopAudio();
 
     if (activeConversationId) {
-      const globalPromise = activeRequests.get(activeConversationId);
-      if (globalPromise) {
-        globalPromise.abort();
-        activeRequests.delete(activeConversationId);
+      if (activeConversationId) {
+        activeRequests.abort(activeConversationId);
       }
     }
 
@@ -182,7 +182,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
 
         // No need to reset global language
         pendingThunkRef.current = promise;
-        activeRequests.set(targetConvoId, promise);
+        activeRequests.register(targetConvoId, promise.abort);
 
         await promise.unwrap();
       }
@@ -198,7 +198,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
     } finally {
       pendingThunkRef.current = null;
       if (targetConvoId) {
-        activeRequests.delete(targetConvoId);
+        activeRequests.unregister(targetConvoId);
       }
     }
   };

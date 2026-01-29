@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import MessageBubble from './MessageBubble';
 import React, { useEffect } from 'react';
 import { sendMessage, addAssistantLoading, removeMessagesFromIndex, addUserMessage } from '../../features/chat/chatSlice';
+import { requestManager } from '../../utils/requestManager';
 import { chatApi } from '../../services/api';
 
 interface ChatWindowProps {
@@ -79,18 +80,26 @@ export default function ChatWindow({ scrollContainerRef }: ChatWindowProps) {
 
       // 3. Resend the user message (creates new User+Assistant on backend)
       // IMPORTANT: Await the sendMessage thunk so it can be aborted by the stop button
-      await dispatch(
+      const promise = dispatch(
         sendMessage({
           conversationId: activeConversationId,
           message: userText,
           optimisticId: optimisticId,
           language: primaryLanguage,
         })
-      ).unwrap();
+      );
+
+      requestManager.register(activeConversationId, promise.abort);
+
+      await promise.unwrap();
     } catch (error: any) {
       // Don't log abort errors as they're expected when user clicks stop
       if (error?.message !== 'Request cancelled' && error?.message !== 'Aborted') {
         console.error('Failed to regenerate response:', error);
+      }
+    } finally {
+      if (activeConversationId) {
+        requestManager.unregister(activeConversationId);
       }
     }
   };
