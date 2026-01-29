@@ -1,4 +1,4 @@
-import { Paper, Title, Box, Image, Text, Stack } from '@mantine/core';
+import { Paper, Title, Box, Text, Stack } from '@mantine/core';
 
 export default function AssetNetworkMap() {
     return (
