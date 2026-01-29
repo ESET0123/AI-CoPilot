@@ -44,6 +44,20 @@ class BaseIntentHandler:
             log_with_prefix(f"{service_name} Handler", f"Unexpected error: {str(e)}")
             return f"Unexpected error in {service_name.lower()}: {str(e)}"
 
+class AssetMonitoringHandler:
+    """Handles asset monitoring requests"""
+    
+    @staticmethod
+    async def handle(intent: Intent, query: str, role: str = None) -> str:
+        return await BaseIntentHandler.call_service(
+            service_name="Asset Monitoring",
+            url=settings.ASSET_MONITORING_API,
+            query=query,
+            role=role,
+            allowed_roles=["ROLE_FIELD_OFFICER"],
+            intent_label="Asset Monitoring"
+        )
+
 class LoadForecastingHandler:
     """Handles load forecasting requests"""
 
@@ -54,7 +68,7 @@ class LoadForecastingHandler:
             url=settings.LOAD_FORECASTING_API,
             query=query,
             role=role,
-            allowed_roles=["ROLE_FIELD_OFFICER"],
+            allowed_roles=["ROLE_CUSTOMER"],
             intent_label="Load Forecasting",
             response_key="answer"
         )
@@ -69,23 +83,10 @@ class TheftDetectionHandler:
             url=settings.THEFT_DETECTION_API,
             query=query,
             role=role,
-            allowed_roles=["ROLE_FIELD_OFFICER", "ROLE_SUPERVISOR"],
+            allowed_roles=["ROLE_FIELD_OFFICER", "ROLE_CUSTOMER"],
             intent_label="Theft Detection"
         )
         
-class AssetMonitoringHandler:
-    """Handles asset monitoring requests"""
-    
-    @staticmethod
-    async def handle(intent: Intent, query: str, role: str = None) -> str:
-        return await BaseIntentHandler.call_service(
-            service_name="Asset Monitoring",
-            url=settings.ASSET_MONITORING_API,
-            query=query,
-            role=role,
-            allowed_roles=["ROLE_FIELD_OFFICER"],
-            intent_label="Asset Monitoring"
-        )
 
 
 class OtherHandler:

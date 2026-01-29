@@ -22,7 +22,7 @@ export default function QuickAccessCategories() {
                 description: "View Real Time data and detect anomalies",
                 icon: TbAlertTriangle,
                 onClick: () => { navigate("/theft-detection") },
-                allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_SUPERVISOR', 'ROLE_FIELD_OFFICER'],
+                allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_FIELD_OFFICER'],
                 // allowedGroups: ['/zones/ZONE_SOUTH'],
                 requireAll: true
             },
@@ -49,7 +49,7 @@ export default function QuickAccessCategories() {
                 description: "Predictive analysis for payments",
                 icon: TbUsers,
                 onClick: () => { navigate("/defaulter-analysis") },
-                allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_SUPERVISOR', 'ROLE_FIELD_OFFICER'],
+                allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_FIELD_OFFICER'],
                 // allowedGroups: ['/zones/ZONE_SOUTH'],
                 requireAll: true
             },
