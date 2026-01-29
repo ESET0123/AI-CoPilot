@@ -37,7 +37,7 @@ export function useAccessControl() {
      * @returns true if user has access, false otherwise
      */
     const hasAccess = (config: AccessControlConfig): boolean => {
-        const { allowedRoles = [], allowedGroups = [], requireAll = false } = config;
+        const { allowedRoles = [], allowedGroups = [], requireAll = true } = config;
 
         // If no restrictions defined, allow access
         if (allowedRoles.length === 0 && allowedGroups.length === 0) {

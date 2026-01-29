@@ -55,7 +55,7 @@ export default function AppRoutes() {
       <Route
         path="/load-forecasting"
         element={
-          <RoleProtectedRoute roles={['ROLE_FIELD_OFFICER', 'ROLE_ADMINISTRATOR']}>
+          <RoleProtectedRoute roles={['ROLE_ADMINISTRATOR']}>
             <LoadForecastingPage />
           </RoleProtectedRoute>
         }

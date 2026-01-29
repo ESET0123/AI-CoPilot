@@ -23,7 +23,7 @@ export default function QuickAccessCategories() {
                 icon: TbAlertTriangle,
                 onClick: () => { navigate("/theft-detection") },
                 allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_SUPERVISOR', 'ROLE_FIELD_OFFICER'],
-                allowedGroups: ['/zones/ZONE_SOUTH'],
+                // allowedGroups: ['/zones/ZONE_SOUTH'],
                 requireAll: true
             },
             {
@@ -31,8 +31,8 @@ export default function QuickAccessCategories() {
                 description: "View Real Time data and detect patterns",
                 icon: TbActivity,
                 onClick: () => { navigate("/load-forecasting") },
-                allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_FIELD_OFFICER'],
-                allowedGroups: ['/zones/ZONE_SOUTH'],
+                allowedRoles: ['ROLE_ADMINISTRATOR'],
+                // allowedGroups: ['/zones/ZONE_SOUTH'],
                 requireAll: true
             },
             {
@@ -41,8 +41,8 @@ export default function QuickAccessCategories() {
                 icon: TbCalculator,
                 onClick: () => { navigate("/smart-tariff") },
                 allowedRoles: ['ROLE_CUSTOMER', 'ROLE_ADMINISTRATOR'],
-                // No specific group restriction for customer-facing tariff
-                requireAll: false
+                // allowedGroups: ['/zones/ZONE_NORTH'],
+                requireAll: true
             },
             {
                 title: "Defaulter Analysis",
@@ -50,7 +50,7 @@ export default function QuickAccessCategories() {
                 icon: TbUsers,
                 onClick: () => { navigate("/defaulter-analysis") },
                 allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_SUPERVISOR', 'ROLE_FIELD_OFFICER'],
-                allowedGroups: ['/zones/ZONE_SOUTH'],
+                // allowedGroups: ['/zones/ZONE_SOUTH'],
                 requireAll: true
             },
             {
@@ -59,7 +59,7 @@ export default function QuickAccessCategories() {
                 icon: TbHeartbeat,
                 onClick: () => { navigate("/asset-health") },
                 allowedRoles: ['ROLE_ADMINISTRATOR', 'ROLE_FIELD_OFFICER'],
-                allowedGroups: ['/zones/ZONE_SOUTH'],
+                // allowedGroups: ['/zones/ZONE_SOUTH'],
                 requireAll: true
             }
         ];
