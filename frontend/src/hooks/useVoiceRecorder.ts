@@ -49,6 +49,7 @@ export const useVoiceRecorder = (
   const streamRef = useRef<MediaStream | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const finalTranscriptRef = useRef('');
+  const isCancelledRef = useRef(false);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -138,6 +139,16 @@ export const useVoiceRecorder = (
       };
 
       mediaRecorder.onstop = async () => {
+        if (isCancelledRef.current) {
+          console.log(`[VoiceRecorder] 🚫 Recording cancelled, discarding audio.`);
+          isCancelledRef.current = false;
+          if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+            streamRef.current = null;
+          }
+          return;
+        }
+
         console.log(`[VoiceRecorder] ⏹️ MediaRecorder stopped, processing audio...`);
         // cleanup stream
         if (streamRef.current) {
@@ -165,6 +176,7 @@ export const useVoiceRecorder = (
   }, [onInterimTranscription, onTranscriptionComplete, method, language]);
 
   const stopRecording = useCallback(() => {
+    isCancelledRef.current = false;
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       recognitionRef.current = null;
@@ -172,6 +184,20 @@ export const useVoiceRecorder = (
 
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  }, [isRecording]);
+
+  const cancelRecording = useCallback(() => {
+    isCancelledRef.current = true;
+
+    if (recognitionRef.current) {
+      recognitionRef.current.stop(); // This triggers onend/result potentially, but we'll ignore it via logic if needed or just let it close
+      recognitionRef.current = null;
+    }
+
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop(); // Triggers onstop, which checks isCancelledRef
       setIsRecording(false);
     }
   }, [isRecording]);
@@ -208,5 +234,6 @@ export const useVoiceRecorder = (
     isLoading,
     startRecording,
     stopRecording,
+    cancelRecording,
   };
 };

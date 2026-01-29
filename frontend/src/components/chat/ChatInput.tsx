@@ -53,7 +53,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
   const [baseValue, setBaseValue] = useState('');
   const { primaryLanguage, speechRecognitionMethod } = useAppSelector((s) => s.settings);
 
-  const { isRecording, isLoading: isTranscribing, startRecording, stopRecording } =
+  const { isRecording, isLoading: isTranscribing, startRecording, stopRecording, cancelRecording } =
     useVoiceRecorder(
       ({ text, language }) => {
         console.log(`[ChatInput] 🎤 Transcription completed: ${text.length} characters (Lang: ${language || primaryLanguage})`);
@@ -94,7 +94,7 @@ export default function ChatInput({ isHeroMode = false }: ChatInputProps) {
 
   const handleToggleRecording = () => {
     if (isRecording) {
-      stopRecording();
+      cancelRecording();
     } else {
       setBaseValue(value);
       startRecording();
